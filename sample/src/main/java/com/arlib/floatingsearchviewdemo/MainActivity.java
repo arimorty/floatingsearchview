@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
                 //since the drawer might have opened as a results of
                 //a click on the left menu, we need to make sure
                 //to close it right after the drawer opens, so that
-                //it is closed when the drawer is closed.
+                //it is closed when the drawer is  closed.
                 mSearchView.closeMenu(false);
             }
 
