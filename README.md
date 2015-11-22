@@ -1,4 +1,5 @@
 Floating Search View
+=============
 
 Usage
 -----
@@ -20,7 +21,8 @@ Example:
 Contributing
 ============
 
-At this point we want to focus on stability and efficiency before adding new features. All suggestions or bug reports are welcome.
+At this point we want to focus on stability and efficiency before adding new features. All suggestions
+or bug reports are welcome.
 
 License
 =======
