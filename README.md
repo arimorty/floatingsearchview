@@ -1,6 +1,10 @@
 Floating Search View
 =============
 
+An implementation of a floating search box with search suggestions.
+
+![Alt text](/images/inaction.gif)
+
 Usage
 -----
 Example:
