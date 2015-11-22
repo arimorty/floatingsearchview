@@ -47,8 +47,8 @@ Usage
               }
           });
 ```
-
-<b>To enable voice recognition</b>
+<br/>
+<b>To enable voice recognition:</b>
 
 
 In your xml, add
