@@ -30,7 +30,6 @@ import com.arlib.floatingsearchview.R;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -123,13 +122,8 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     public void swapData(List<? extends SearchSuggestion> searchSuggestions){
 
-        notifyItemRangeRemoved(0,mSearchSuggestions.size());
-
         mSearchSuggestions.clear();
         mSearchSuggestions.addAll(searchSuggestions);
-
-        Collections.reverse(mSearchSuggestions);
-
         notifyDataSetChanged();
     }
 

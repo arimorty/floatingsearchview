@@ -1128,6 +1128,7 @@ public class FloatingSearchView extends FrameLayout {
      * @param newSearchSuggestions a list containing the new suggestions
      */
     public void swapSuggestions(final List<? extends SearchSuggestion> newSearchSuggestions){
+        Collections.reverse(newSearchSuggestions);
         swapSuggestions(newSearchSuggestions, true);
     }
 
@@ -1517,9 +1518,6 @@ public class FloatingSearchView extends FrameLayout {
 
             mSuggestionsSection.setVisibility(VISIBLE);
             mHandleRestoreSuggestions = true;
-
-            //todo refactor to avoid reversal
-            Collections.reverse(savedState.suggestions);
 
             ViewTreeObserver vto = mSuggestionListContainer.getViewTreeObserver();
             vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
