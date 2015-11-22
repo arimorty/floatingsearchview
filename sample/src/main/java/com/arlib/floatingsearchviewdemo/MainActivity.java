@@ -56,13 +56,25 @@ public class MainActivity extends AppCompatActivity {
                     mSearchView.clearSuggestions();
                 } else {
 
+                    //this shows the top left circular progress
+                    //you can call it where ever you want, but
+                    //it makes sense to do it when loading something in
+                    //the background.
                     mSearchView.showProgress();
+
+                    //simulates a query call to a data source
+                    //with a new query.
                     DataHelper.find(MainActivity.this, newQuery, new DataHelper.OnFindResultsListener() {
 
                         @Override
                         public void onResults(List<ColorSuggestion> results) {
 
+                            //this will swap the data and
+                            //render the collapse/expand animations as necessary
                             mSearchView.swapSuggestions(results);
+
+                            //let the users know that the background
+                            //process has completed
                             mSearchView.hideProgress();
                         }
                     });
@@ -94,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
             public void onFocus() {
 
                 mSearchView.swapSuggestions(DataHelper.getHistory(MainActivity.this, 3));
+
+                Log.d(TAG, "onFocus()");
             }
 
             @Override
@@ -103,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //handle menu clicks the same way as you would
+        //in a regular activity
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
             @Override
             public void onMenuItemSelected(MenuItem item) {
@@ -121,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
             @Override
             public void onMenuOpened() {
+
                 mDrawerLayout.openDrawer(GravityCompat.START);
             }
 
@@ -132,25 +149,23 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-
-            }
+            public void onDrawerSlide(View drawerView, float slideOffset) {}
 
             @Override
             public void onDrawerOpened(View drawerView) {
 
+                //since the drawer might have opened as a results of
+                //a click on the left menu, we need to make sure
+                //to close it right after the drawer opens, so that
+                //it is closed when the drawer is closed.
                 mSearchView.closeMenu(false);
             }
 
             @Override
-            public void onDrawerClosed(View drawerView) {
-
-            }
+            public void onDrawerClosed(View drawerView) { }
 
             @Override
-            public void onDrawerStateChanged(int newState) {
-
-            }
+            public void onDrawerStateChanged(int newState) { }
         });
 
     }
@@ -158,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        //this is needed in order for voice recognition to work
         mSearchView.onHostActivityResult(requestCode, resultCode, data);
     }
 

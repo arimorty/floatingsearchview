@@ -712,6 +712,9 @@ public class FloatingSearchView extends FrameLayout {
     /**
      * Mimics a menu click that closes. Useful when fo navigation
      * drawers when they close as a result of selecting and item.
+     *
+     * @param withAnim true, will close the menu button with
+     *                 the Material animation
      */
     public void closeMenu(boolean withAnim){
 
