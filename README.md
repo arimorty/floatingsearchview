@@ -8,12 +8,11 @@ An implementation of a floating search box with search suggestions.
 Usage
 -----
 
-1. Add a [FloatingSearchView](/library/src/main/java/com/arlib/floatingsearchview/FloatingSearchView)FloatingSearchView to your view hierarchy, and make sure that it takes
+1. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen.
-2. Listen to query changes and provide suggestion items that implement [SearchSuggestion](/library/src/main/java/com/arlib/floatingsearchview/suggestions/model/SearchSuggestion).
+2. Listen to query changes and provide suggestion items that implement SearchSuggestion.
 
- Example:
- -------------
+# Example:
 
 ```xml
     <com.arlib.floatingsearchview.FloatingSearchView
@@ -49,8 +48,8 @@ Usage
           });
 ```
 
-To enable voice recognition
--------------
+# To enable voice recognition
+
 
 In your xml, add
 ```xml
