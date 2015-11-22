@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="divider_color">#F0F0F0</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+    <color name="semi_transparent">#33000000</color>
+    <color name="suggestion_item_regular_color">#FAFAFA</color>
+    <color name="suggestion_item_pressed_color">#bbbbbb</color>
+    <color name="suggestion_list_color">#FFFFFF</color>
+    <color name="search_input_background_color">#FFFFFF</color>
+    <color name="light_gray_inactive_icon">#BEBEBE</color>
+    <color name="gray_active_icon">#787878</color>
+    <color name="light_gray">#e9e9e9</color>
+    <color name="pressed_color">#E7E7E7</color>
+</resources>

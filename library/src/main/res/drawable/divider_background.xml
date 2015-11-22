@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/divider_color"/>
+            <padding
+                android:top="0dp"
+                android:right="1dp"
+                android:bottom="0dp"
+                android:left="1dp"/>
+            <solid android:color="#00CCCCCC"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/divider_color"/>
+            <padding
+                android:top="0dp"
+                android:right="1dp"
+                android:bottom="0dp"
+                android:left="1dp"/>
+            <solid android:color="#10CCCCCC"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/divider_color"/>
+            <padding
+                android:top="0dp"
+                android:right="1dp"
+                android:bottom="0dp"
+                android:left="1dp"/>
+            <solid android:color="#20CCCCCC"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/divider_color"/>
+            <padding
+                android:top="0dp"
+                android:right="1dp"
+                android:bottom="0dp"
+                android:left="1dp"/>
+            <solid android:color="#30CCCCCC"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/divider_color"/>
+            <padding
+                android:top="0dp"
+                android:right="0dp"
+                android:bottom="0dp"
+                android:left="0dp"/>
+            <solid android:color="#50CCCCCC"/>
+        </shape>
+    </item>
+
+    <!-- Background -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/divider_color"/>
+        </shape>
+    </item>
+
+</layer-list>

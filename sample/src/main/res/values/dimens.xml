@@ -1,0 +1,3 @@
+<resources>
+    <dimen name="search_view_inset">5dp</dimen>
+</resources>

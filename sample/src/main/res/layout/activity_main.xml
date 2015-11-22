@@ -1,0 +1,59 @@
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/parent_view"
+        tools:context=".MainActivity">
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:id="@+id/color_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="RED"/>
+
+        <TextView
+            android:id="@+id/color_value_text"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/color_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="#000000"/>
+
+        <com.arlib.floatingsearchview.FloatingSearchView
+            android:id="@+id/floating_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:floatingSearch_showVoiceInput="true"
+            app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
+            app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
+            app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
+            app:floatingSearch_dismissOnOutsideTouch="true"
+            app:floatingSearch_menu="@menu/menu_main"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:choiceMode="singleChoice"
+        android:dividerHeight="0dp"
+        android:background="@android:color/white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text="blank navigation drawer"/>
+    </RelativeLayout>
+
+</android.support.v4.widget.DrawerLayout>

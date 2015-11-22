@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FloatingSearchView">
+        <attr name="floatingSearch_searchBarWidth" format="dimension"/>
+        <attr name="floatingSearch_searchBarMarginTop" format="dimension"/>
+        <attr name="floatingSearch_searchBarMarginLeft" format="dimension"/>
+        <attr name="floatingSearch_searchBarMarginRight" format="dimension"/>
+        <attr name="floatingSearch_scrollBehavior" format="boolean"/>
+        <attr name="floatingSearch_showMenuAction" format="boolean"/>
+        <attr name="floatingSearch_showVoiceInput" format="boolean"/>
+        <attr name="floatingSearch_showSearchKey" format="boolean"/>
+        <attr name="floatingSearch_voiceRecHint" format="string"/>
+        <attr name="floatingSearch_searchHint" format="string"/>
+        <attr name="floatingSearch_showSearchHintWhenInactive" format="boolean"/>
+        <attr name="floatingSearch_dismissOnOutsideTouch" format="boolean"/>
+        <attr name="floatingSearch_menu" format="reference"/>
+        <attr name="floatingSearch_hideOverflowMenuWhenInactive" format="boolean"/>
+        <attr name="floatingSearch_showOverFlowMenu" format="boolean"/>
+    </declare-styleable>
+</resources>
