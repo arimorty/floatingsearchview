@@ -8,11 +8,12 @@ An implementation of a floating search box with search suggestions.
 Usage
 -----
 
-1. Add FloatingSearchView to your view hierarchy and make sure that it takes
-   up the full screen width and height.
-2. Listen to query changes and provide suggestions items that implement SearchSuggestion.
+1. Add a [FloatingSearchView](/library/src/main/java/com/arlib/floatingsearchview/FloatingSearchView)FloatingSearchView to your view hierarchy, and make sure that it takes
+   up the full width and height of the screen.
+2. Listen to query changes and provide suggestion items that implement [SearchSuggestion](/library/src/main/java/com/arlib/floatingsearchview/suggestions/model/SearchSuggestion).
 
  Example:
+ -------------
 
 ```xml
     <com.arlib.floatingsearchview.FloatingSearchView
@@ -49,13 +50,14 @@ Usage
 ```
 
 To enable voice recognition
+-------------
 
 In your xml, add
 ```xml
    app:floatingSearch_showVoiceInput="true"
 ```
 
-In your Activity, add this single line to its ```onActivityResult(int requestCode, int resultCode, Intent data)```
+In your Activity, add this single line in ```onActivityResult(int requestCode, int resultCode, Intent data)```
 ```
    mSearchView.onHostActivityResult(requestCode, resultCode, data);
 ```
