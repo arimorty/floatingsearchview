@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Ari C
+ * Copyright (C) 2015 Arlib
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -350,7 +350,7 @@ public class FloatingSearchView extends FrameLayout {
             //we need to add 5dp to the mSuggestionsSection because we are
             //going to move it up by 5dp in order o cover the search bar's
             //rounded corners. We also need to add an additional 10dp to
-            //mSuggestionsSection in in order to hide mSuggestionListContainer
+            //mSuggestionsSection in order to hide mSuggestionListContainer
             //rounded corners and top/bottom padding.
             mSuggestionsSection.getLayoutParams().height = mSuggestionsSection.getMeasuredHeight()
                   +addedHeight;
