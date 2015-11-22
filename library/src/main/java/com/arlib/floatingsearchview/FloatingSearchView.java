@@ -93,15 +93,15 @@ public class FloatingSearchView extends FrameLayout {
 
     private final boolean ATTRS_SEARCH_BAR_SHOW_MENU_ACTION_DEFAULT = true;
 
-    private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH__DEFAULT = false;
+    private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = false;
 
     private final boolean ATTRS_SEARCH_BAR_SHOW_VOICE_ACTION_DEFAULT = false;
 
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
 
-    private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_HINT_INACTIVE_DEFAULT = true;
+    private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_HINT_NOT_FOCUSED_DEFAULT = true;
 
-    private final boolean ATTRS_HIDE_OVERFLOW_MENU_INACTIVE_DEFAULT = true;
+    private final boolean ATTRS_HIDE_OVERFLOW_MENU_FOCUSED_DEFAULT = true;
 
     private final boolean ATTRS_SHOW_OVERFLOW_MENU_DEFAULT = true;
 
@@ -147,7 +147,7 @@ public class FloatingSearchView extends FrameLayout {
     private int mVoiceRecRequestCode = VOICE_REC_DEFAULT_REQUEST_CODE;
     private String mVoiceRecHint;
     private boolean mShowVoiceInput;
-    private boolean mShowHintInactive;
+    private boolean mShowHintNotFocused;
     private String mSearchHint;
     private boolean mMenuOpen = false;
     private boolean mIsActiveOnClick;
@@ -156,7 +156,7 @@ public class FloatingSearchView extends FrameLayout {
     private MenuPopupHelper mMenuPopupHelper;
     private SupportMenuInflater mMenuInflater;
     private OnMenuItemClickListener mOnOverflowMenuItemListener;
-    private boolean mHideOverflowMenuInactive;
+    private boolean mHideOverflowMenuFocused;
     private boolean mShowOverFlowMenu;
     private boolean mSearchEnabled;
     private boolean mSkipQueryFocusChangeEvent;
@@ -417,7 +417,7 @@ public class FloatingSearchView extends FrameLayout {
 
             setSearchHint(a.getString(R.styleable.FloatingSearchView_floatingSearch_searchHint));
 
-            setShowHintWhenInactive(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchHintWhenInactive, ATTRS_SEARCH_BAR_SHOW_SEARCH_HINT_INACTIVE_DEFAULT));
+            setShowHintWhenNotFocused(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchHintWhenNotFocused, ATTRS_SEARCH_BAR_SHOW_SEARCH_HINT_NOT_FOCUSED_DEFAULT));
 
             setLeftShowMenu(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showMenuAction, ATTRS_SEARCH_BAR_SHOW_MENU_ACTION_DEFAULT));
 
@@ -427,7 +427,7 @@ public class FloatingSearchView extends FrameLayout {
 
             setVoiceSearchHint(a.getString(R.styleable.FloatingSearchView_floatingSearch_voiceRecHint));
 
-            setDismissOnOutsideClick(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dismissOnOutsideTouch, ATTRS_DISMISS_ON_OUTSIDE_TOUCH__DEFAULT));
+            setDismissOnOutsideClick(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dismissOnOutsideTouch, ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT));
 
             setShowOverflowMenu(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showOverFlowMenu, ATTRS_SHOW_OVERFLOW_MENU_DEFAULT));
 
@@ -435,7 +435,7 @@ public class FloatingSearchView extends FrameLayout {
                 inflateOverflowMenu(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
             }
 
-            setHideOverflowMenuWhenInactive(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_hideOverflowMenuWhenInactive, ATTRS_HIDE_OVERFLOW_MENU_INACTIVE_DEFAULT));
+            setHideOverflowMenuWhenFocused(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_hideOverflowMenuWhenFocused, ATTRS_HIDE_OVERFLOW_MENU_FOCUSED_DEFAULT));
 
         } finally {
 
@@ -692,7 +692,7 @@ public class FloatingSearchView extends FrameLayout {
 
         if(mShowOverFlowMenu) {
 
-            if(!(mHideOverflowMenuInactive && mSearchInput.isFocused()))
+            if(!(mHideOverflowMenuFocused && mSearchInput.isFocused()))
                 newPaddingEnd += mOverflowMenu.getWidth();
         }
 
@@ -739,9 +739,9 @@ public class FloatingSearchView extends FrameLayout {
      *
      * @param hide
      */
-    public void setHideOverflowMenuWhenInactive(boolean hide){
+    public void setHideOverflowMenuWhenFocused(boolean hide){
 
-        this.mHideOverflowMenuInactive = hide;
+        this.mHideOverflowMenuFocused = hide;
     }
 
     /**
@@ -753,15 +753,25 @@ public class FloatingSearchView extends FrameLayout {
     public void setShowOverflowMenu(boolean show){
 
         this.mShowOverFlowMenu = show;
+
+        if(mShowVoiceInput)
+            if(show)showOverflowMenuWithAnim(false);
+        else hideOverflowMenu(false);
     }
 
-    private void showOverflowMenuWithAnim(){
+    private void showOverflowMenuWithAnim(boolean withAnim){
 
         mOverflowMenu.setClickable(true);
 
-        ViewPropertyAnimatorCompatSet hidAnimSet = new ViewPropertyAnimatorCompatSet();
-        hidAnimSet.playSequentially(ViewCompat.animate(mVoiceInputOrClearButton).translationX(0),
-                ViewCompat.animate(mOverflowMenu).alpha(1.0f)).setDuration(150).start();
+        if(withAnim) {
+            ViewPropertyAnimatorCompatSet hidAnimSet = new ViewPropertyAnimatorCompatSet();
+            hidAnimSet.playSequentially(ViewCompat.animate(mVoiceInputOrClearButton).translationX(0),
+                    ViewCompat.animate(mOverflowMenu).alpha(1.0f)).setDuration(150).start();
+        } else{
+
+            mOverflowMenu.setAlpha(1.0f);
+            mVoiceInputOrClearButton.setTranslationX(0);
+        }
     }
 
     private void hideOverflowMenu(boolean withAnim){
@@ -865,7 +875,7 @@ public class FloatingSearchView extends FrameLayout {
 
         mSearchHint = searchHint != null ? searchHint : getResources().getString(R.string.abc_search_hint);
 
-        if(mShowHintInactive || mSearchInput.isFocused())
+        if(mShowHintNotFocused || mSearchInput.isFocused())
             mSearchInput.setHint(mSearchHint);
         else
             mSearchInput.setHint("");
@@ -878,11 +888,11 @@ public class FloatingSearchView extends FrameLayout {
      * @param show true to show hint when search
      *             is inactive
      */
-    public void setShowHintWhenInactive(boolean show){
+    public void setShowHintWhenNotFocused(boolean show){
 
-        mShowHintInactive = show;
+        mShowHintNotFocused = show;
 
-        if(mShowHintInactive)
+        if(mShowHintNotFocused)
             mSearchInput.setHint(mSearchHint);
     }
 
@@ -1270,7 +1280,7 @@ public class FloatingSearchView extends FrameLayout {
 
             mSearchInput.requestFocus();
 
-            if(mShowOverFlowMenu && mHideOverflowMenuInactive)
+            if(mShowOverFlowMenu && mHideOverflowMenuFocused)
                 hideOverflowMenu(true);
 
             adjustSearchInputPadding();
@@ -1300,14 +1310,14 @@ public class FloatingSearchView extends FrameLayout {
 
             Util.closeSoftKeyboard((Activity) getContext());
 
-            if(mShowVoiceInput && !mHideOverflowMenuInactive)
+            if(mShowVoiceInput && !mHideOverflowMenuFocused)
                 changeIcon(mVoiceInputOrClearButton, mIconMic, true);
 
             if(mSearchInput.length()!=0)
                 mSearchInput.setText("");
 
-            if(mShowOverFlowMenu && mHideOverflowMenuInactive)
-                showOverflowMenuWithAnim();
+            if(mShowOverFlowMenu && mHideOverflowMenuFocused)
+                showOverflowMenuWithAnim(true);
 
             adjustSearchInputPadding();
 
@@ -1537,7 +1547,7 @@ public class FloatingSearchView extends FrameLayout {
                 mVoiceInputOrClearButton.setVisibility(View.VISIBLE);
             }
 
-            if(mShowOverFlowMenu && mHideOverflowMenuInactive)
+            if(mShowOverFlowMenu && mHideOverflowMenuFocused)
                 hideOverflowMenu(false);
 
             if(mShowMenuAction && !mMenuOpen)
