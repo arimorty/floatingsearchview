@@ -24,5 +24,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.0.1'
     compile 'com.android.support:design:23.0.1'
     compile 'com.android.support:cardview-v7:23.1.0'
-    compile 'me.grantland:autofittextview:0.2.+'
+    //compile 'me.grantland:autofittextview:0.2.0'
 }
+
+apply from: 'maven-push.gradle'

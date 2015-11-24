@@ -15,15 +15,17 @@
         android:layout_gravity="center"
         android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin"/>
 
-    <me.grantland.widget.AutofitTextView
+    <TextView
         android:id="@+id/body"
         android:layout_gravity="center"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:maxLines="2"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:layout_marginLeft="@dimen/search_bar_search_input_left_margin"
         android:gravity="left|center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="body"/>
 
     <ImageView
