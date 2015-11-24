@@ -1,4 +1,4 @@
-/library/gradle.properties
+gradle.properties
 .idea
 .gradle
 /local.properties
