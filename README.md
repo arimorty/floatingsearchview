@@ -8,9 +8,13 @@ An implementation of a floating search box with search suggestions.
 Usage
 -----
 
-1. Add a FloatingSearchViewFloatingSearchView to your view hierarchy, and make sure that it takes
+1. In your dependencies, add:
+```
+    compile 'com.github.arimorty:floatingsearchview:1.0.0'
+```
+1. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen.
-2. Listen to query changes and provide suggestion items that implement SearchSuggestion.
+3. Listen to query changes and provide suggestion items that implement SearchSuggestion.
 
 <b>Example</b>:
 
