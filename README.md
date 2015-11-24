@@ -8,7 +8,7 @@ An implementation of a floating search box with search suggestions.
 Usage
 -----
 
-1. In your dependencies, add:
+1. In your dependencies, add
 ```
     compile 'com.github.arimorty:floatingsearchview:1.0.0'
 ```
