@@ -29,7 +29,7 @@ public  class ColorSuggestion implements SearchSuggestion {
     public ColorSuggestion(ColorWrapper color){
 
         this.mColor = color;
-        this.mColorName = mColor.getName();
+        this.mColorName = mColor.getName()+"fsdfsdfsssssssssssssssssssssssssssssssssssssssssffffffff";
     }
 
     public ColorSuggestion(Parcel source) {
