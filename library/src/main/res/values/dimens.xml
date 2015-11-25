@@ -12,4 +12,6 @@
     <dimen name="square_button_icon_size">24dp</dimen>
     <dimen name="square_button_size">48dp</dimen>
     <dimen name="square_button_padding">12dp</dimen>
+
+    <dimen name="suggestion_body_text_size">18sp</dimen>
 </resources>
