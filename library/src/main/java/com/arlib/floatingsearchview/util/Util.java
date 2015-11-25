@@ -67,6 +67,11 @@ public class Util {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics);
     }
 
+    public static int pxToSp(int px) {
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        return px/(int)metrics.scaledDensity;
+    }
+
     public static int getScreenWidth(Activity activity){
 
         Display display = activity.getWindowManager().getDefaultDisplay();

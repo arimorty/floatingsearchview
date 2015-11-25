@@ -24,6 +24,9 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -39,7 +42,12 @@ import android.support.v7.view.ViewPropertyAnimatorCompatSet;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Layout;
+import android.text.StaticLayout;
+import android.text.TextPaint;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -169,7 +177,6 @@ public class FloatingSearchView extends FrameLayout {
     private RecyclerView mSuggestionsList;
     private SearchSuggestionsAdapter mSuggestionsAdapter;
     private boolean isCollapsing = false;
-    private int mItemHeight;
 
     /**
      * Interface for implementing a callback to be
@@ -273,8 +280,6 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void init(AttributeSet attrs){
-
-        mItemHeight =  Util.dpToPx(SUGGESTION_ITEM_HEIGHT_DP);
 
         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -1143,17 +1148,16 @@ public class FloatingSearchView extends FrameLayout {
         //todo inspect line
         //this is needed because the list gets populated
         //from bottom up.
-        mSuggestionsList.scrollBy(0, -(newSearchSuggestions.size() * mItemHeight));
+        mSuggestionsList.scrollBy(0, -(newSearchSuggestions.size() * getTotalItemsHeight(newSearchSuggestions)));
 
         int fiveDp = Util.dpToPx(6);
         int threeDp = Util.dpToPx(3);
         ViewCompat.animate(mSuggestionListContainer).cancel();
-        final int newListSize = newSearchSuggestions.size();
-        float translationY = (-mSuggestionListContainer.getHeight())+(newListSize * mItemHeight);
+        float translationY = (-mSuggestionListContainer.getHeight())+getVisibleItemsHeight(newSearchSuggestions);
 
         //todo refactor go over and make more clear
         final float newTranslationY = translationY<0 ?
-                newListSize==0 ? translationY : translationY+threeDp
+                newSearchSuggestions.size()==0 ? translationY : translationY+threeDp
                 : -fiveDp;
 
         if(withAnim) {
@@ -1179,15 +1183,66 @@ public class FloatingSearchView extends FrameLayout {
             //the full height of mSuggestionListContainer is not known.
             //*refactor* as soon as possible to eliminate confusion.
              float transY = translationY<0 ?
-                    newListSize==0 ? translationY : translationY+threeDp-3*fiveDp
+                     newSearchSuggestions.size()==0 ? translationY : translationY+threeDp-3*fiveDp
                     : -fiveDp;
             mSuggestionListContainer.setTranslationY(transY);
         }
 
-        if(newListSize>0)
+        if(newSearchSuggestions.size()>0)
             mDivider.setVisibility(View.VISIBLE);
         else
             mDivider.setVisibility(View.GONE);
+    }
+
+    //returns the height that a given suggestion list's items
+    //will take up.
+    private int getVisibleItemsHeight(List<? extends SearchSuggestion> suggestions){
+
+        int visibleItemsHeight = 0;
+
+        for(SearchSuggestion suggestion: suggestions) {
+            visibleItemsHeight += getSuggestionItemHeight(suggestion);
+
+            //if the current total is more than the list container's height, we
+            //don't care about the rest of the items' heights because they won't be
+            //visible.
+            if(visibleItemsHeight>mSuggestionListContainer.getHeight())
+                break;
+        }
+
+        return visibleItemsHeight;
+    }
+
+    private int getTotalItemsHeight(List<? extends SearchSuggestion> suggestions){
+
+        int totalItemHeight = 0;
+
+        for(SearchSuggestion suggestion: suggestions)
+            totalItemHeight += getSuggestionItemHeight(suggestion);
+
+        return totalItemHeight;
+    }
+
+    //returns the height of a given suggestion item based on it's text length
+    private int getSuggestionItemHeight(SearchSuggestion suggestion) {
+
+        TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.LINEAR_TEXT_FLAG);
+        paint.setTextSize(Util.spToPx(18));
+        paint.setTypeface(Typeface.DEFAULT);
+
+        //the width taken up by the left and right icon and the text's left padding
+        //todo use res dimensions for measuring
+        int leftRightMarginsWidth = Util.dpToPx(124);
+
+        StaticLayout textLayout = new StaticLayout( suggestion.getBody(), paint, mSuggestionsList.getWidth()-leftRightMarginsWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 1.0f, false);
+
+        int heightPlusPadding = textLayout.getHeight()+Util.dpToPx(8);
+
+        //min height is the dictated by the left and right icons' height
+        //todo use res dimensions for measuring
+        int minHeight = Util.dpToPx(48);
+        int height = heightPlusPadding >= minHeight ? heightPlusPadding : minHeight;
+        return height;
     }
 
     /**

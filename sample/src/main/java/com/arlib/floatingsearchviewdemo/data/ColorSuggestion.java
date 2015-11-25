@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.arlib.floatingsearchview.R;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
-
 /**
  * Copyright (c) 2015 Ari C
  * <p/>
@@ -29,7 +28,7 @@ public  class ColorSuggestion implements SearchSuggestion {
     public ColorSuggestion(ColorWrapper color){
 
         this.mColor = color;
-        this.mColorName = mColor.getName()+"ssssssssssssssssssssssssssssfffffffffsdfsdfsssssssssssssssssssssssssssssssssssssssssfffffffffsdfsdfsssssssssssssssss";
+        this.mColorName = mColor.getName();
     }
 
     public ColorSuggestion(Parcel source) {
@@ -46,7 +45,7 @@ public  class ColorSuggestion implements SearchSuggestion {
 
     @Override
     public String getBody() {
-        return "ssssssssssssssssssssssssssssfffffffffsdfsdfsssssssssssssssssssssssssssssssssssssssssfffffffffsdfsdfsssssssssssssssss";
+        return mColor.getName()+"fssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss";
     }
 
     @Override
@@ -92,7 +91,6 @@ public  class ColorSuggestion implements SearchSuggestion {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-       dest.writeString(mColorName);
+        dest.writeString(mColorName);
     }
 }
-

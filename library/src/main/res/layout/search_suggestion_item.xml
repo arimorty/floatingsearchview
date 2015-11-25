@@ -22,6 +22,8 @@
         android:layout_weight="1"
         android:layout_height="wrap_content"
         android:ellipsize="end"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
         android:layout_marginLeft="@dimen/search_bar_search_input_left_margin"
         android:gravity="left|center"
         android:textSize="@dimen/suggestion_body_text_size"
