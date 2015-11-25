@@ -45,7 +45,7 @@ public  class ColorSuggestion implements SearchSuggestion {
 
     @Override
     public String getBody() {
-        return mColor.getName()+"fssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss";
+        return mColor.getName();
     }
 
     @Override
