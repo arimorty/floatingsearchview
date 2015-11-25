@@ -29,7 +29,7 @@ public  class ColorSuggestion implements SearchSuggestion {
     public ColorSuggestion(ColorWrapper color){
 
         this.mColor = color;
-        this.mColorName = mColor.getName()+"fsdfsdfsssssssssssssssssssssssssssssssssssssssssffffffff";
+        this.mColorName = mColor.getName()+"ssssssssssssssssssssssssssssfffffffffsdfsdfsssssssssssssssssssssssssssssssssssssssssfffffffffsdfsdfsssssssssssssssss";
     }
 
     public ColorSuggestion(Parcel source) {
@@ -46,7 +46,7 @@ public  class ColorSuggestion implements SearchSuggestion {
 
     @Override
     public String getBody() {
-        return mColor.getName();
+        return "ssssssssssssssssssssssssssssfffffffffsdfsdfsssssssssssssssssssssssssssssssssssssssssfffffffffsdfsdfsssssssssssssssss";
     }
 
     @Override

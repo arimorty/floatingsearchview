@@ -18,8 +18,10 @@ package com.arlib.floatingsearchview.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -50,13 +52,19 @@ public class Util {
         }
     }
 
-    public static int dpToPx(Context context, int dp){
-        return (int) (dp * context.getResources().getDisplayMetrics().density);
+    public static int dpToPx(int dp){
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        return (int) (dp * metrics.density);
     }
 
+    public static int pxToDp(int px){
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        return (int) (px /metrics.density);
+    }
 
-    public static int pxToDp(Context context,int px){
-        return (int) (px / context.getResources().getDisplayMetrics().density);
+    public static int spToPx(int sp){
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, metrics);
     }
 
     public static int getScreenWidth(Activity activity){

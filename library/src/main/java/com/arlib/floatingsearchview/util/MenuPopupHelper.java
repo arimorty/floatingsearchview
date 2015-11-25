@@ -154,11 +154,11 @@ public class MenuPopupHelper implements AdapterView.OnItemClickListener, View.On
         mPopup.setContentWidth(mContentWidth);
         mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
 
-        int vertOffset = -mAnchorView.getHeight() + Util.dpToPx(mContext, 4);
+        int vertOffset = -mAnchorView.getHeight() + Util.dpToPx(4);
         int horizontalOffset = -mContentWidth + mAnchorView.getWidth();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            vertOffset = -mAnchorView.getHeight() - Util.dpToPx(mContext, 4);
-            horizontalOffset = -mContentWidth+mAnchorView.getWidth()-Util.dpToPx(mContext, 8);
+            vertOffset = -mAnchorView.getHeight() - Util.dpToPx(4);
+            horizontalOffset = -mContentWidth+mAnchorView.getWidth()-Util.dpToPx(8);
         }
         mPopup.setVerticalOffset(vertOffset);
         mPopup.setHorizontalOffset(horizontalOffset);

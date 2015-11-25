@@ -274,7 +274,7 @@ public class FloatingSearchView extends FrameLayout {
 
     private void init(AttributeSet attrs){
 
-        mItemHeight =  Util.dpToPx(getContext(), SUGGESTION_ITEM_HEIGHT_DP);
+        mItemHeight =  Util.dpToPx(SUGGESTION_ITEM_HEIGHT_DP);
 
         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -345,7 +345,7 @@ public class FloatingSearchView extends FrameLayout {
         if(mIsInitialLayout) {
 
 
-            int addedHeight = Util.dpToPx(getContext(), 5*3);
+            int addedHeight = Util.dpToPx(5*3);
 
             //we need to add 5dp to the mSuggestionsSection because we are
             //going to move it up by 5dp in order o cover the search bar's
@@ -786,8 +786,8 @@ public class FloatingSearchView extends FrameLayout {
         mOverflowMenu.setClickable(false);
 
         //accounts for anim direction based on the language direction
-        int deltaX = isRTL() ? -Util.dpToPx(getContext(), OVERFLOW_ICON_WIDTH_DP)
-                 : Util.dpToPx(getContext(), OVERFLOW_ICON_WIDTH_DP);
+        int deltaX = isRTL() ? -Util.dpToPx(OVERFLOW_ICON_WIDTH_DP)
+                 : Util.dpToPx(OVERFLOW_ICON_WIDTH_DP);
 
         if(withAnim) {
             ViewPropertyAnimatorCompatSet hidAnimSet = new ViewPropertyAnimatorCompatSet();
@@ -1109,7 +1109,7 @@ public class FloatingSearchView extends FrameLayout {
 
         mSuggestionsList.setAdapter(mSuggestionsAdapter);
 
-        int cardViewBottomPadding = Util.dpToPx(getContext(), 5);
+        int cardViewBottomPadding = Util.dpToPx(5);
 
         //move up the suggestions section enough to cover the search bar
         //card's bottom left and right corners
@@ -1145,8 +1145,8 @@ public class FloatingSearchView extends FrameLayout {
         //from bottom up.
         mSuggestionsList.scrollBy(0, -(newSearchSuggestions.size() * mItemHeight));
 
-        int fiveDp = Util.dpToPx(getContext(), 6);
-        int threeDp = Util.dpToPx(getContext(), 3);
+        int fiveDp = Util.dpToPx(6);
+        int threeDp = Util.dpToPx(3);
         ViewCompat.animate(mSuggestionListContainer).cancel();
         final int newListSize = newSearchSuggestions.size();
         float translationY = (-mSuggestionListContainer.getHeight())+(newListSize * mItemHeight);
@@ -1231,7 +1231,7 @@ public class FloatingSearchView extends FrameLayout {
 
         isCollapsing = true;
 
-        final int destTranslationY = -(mSuggestionListContainer.getHeight()+Util.dpToPx(getContext(), 3));
+        final int destTranslationY = -(mSuggestionListContainer.getHeight()+Util.dpToPx(3));
 
         ViewCompat.animate(mSuggestionListContainer).
                 translationY(destTranslationY).
