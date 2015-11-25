@@ -10,7 +10,7 @@ Usage
 
 1. In your dependencies, add
 ```
-    compile 'com.github.arimorty:floatingsearchview:1.0.0'
+    compile 'com.github.arimorty:floatingsearchview:1.0.1'
 ```
 1. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen.
