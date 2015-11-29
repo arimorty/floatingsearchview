@@ -81,6 +81,7 @@ In your Activity, add this single line in ```onActivityResult(int requestCode, i
 ```
    mSearchView.onHostActivityResult(requestCode, resultCode, data);
 ```
+
 Contributing
 ============
 
