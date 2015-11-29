@@ -49,11 +49,11 @@ public interface SearchSuggestion extends Parcelable{
      * Sets the ImageView that will holds the icon that will
      * be displayed to the left/start of the suggestion text.
      *
-     * <p>This allows clients the freedom to choose their desired
-     * image loading library and customize the way the icon's look</p>      *
+     * <p>This gives clients the freedom to choose their desired
+     * image loading library and customize the way the icons look</p>
      *
      * @param imageView The imageView that holds the icon
-     * @return True, if the ImageView was set and the icon should
+     * @return true, if the ImageView was set and the icon should
      *         be displayed. Returning false will cause the icon to
      *         be invisible.
      */
