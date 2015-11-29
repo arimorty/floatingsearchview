@@ -51,9 +51,27 @@ Usage
               }
           });
 ```
+
+<br/>
+<b>Configure <i>overflow</i> menu:</b>
+
+In your xml, add menu resource
+```xml
+    app:floatingSearch_menu="@menu/menu_main"
+```
+
+Listen for item selections 
+```  
+   mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+      @Override
+      public void onMenuItemSelected(MenuItem item) {                  
+            
+      }
+   });
+```
+
 <br/>
 <b>To enable voice recognition:</b>
-
 
 In your xml, add
 ```xml
