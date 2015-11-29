@@ -12,9 +12,9 @@ Usage
 ```
     compile 'com.github.arimorty:floatingsearchview:1.0.1'
 ```
-2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
++ Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen.
-3. Listen to query changes and provide suggestion items that implement SearchSuggestion.
++ Listen to query changes and provide suggestion items that implement SearchSuggestion.
 
 <b>Example</b>:
 
