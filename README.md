@@ -9,13 +9,11 @@ Usage
 -----
 
 1. In your dependencies, add
-```
-    compile 'com.github.arimorty:floatingsearchview:1.0.1'
-```
-
+    ```
+         compile 'com.github.arimorty:floatingsearchview:1.0.1'
+    ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
-   up the full width and height of the screen
-   
+   up the full width and height of the screen   
 3. Listen to query changes and provide suggestion items that implement SearchSuggestion
 
 <b>Example</b>:
