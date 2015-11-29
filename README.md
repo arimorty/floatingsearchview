@@ -70,6 +70,33 @@ Listen for item selections
 ```
 
 <br/>
+<b>Configure suggestion item:</b>
+
+First, implement [SearchSuggestion](https://github.com/arimorty/floatingsearchview/blob/master/library/src/main/java/com/arlib/floatingsearchview/suggestions/model/SearchSuggestion.java) 
+
+<i>Optional</i>:
+
++ Control the look of suggestion text.
+    ```  
+       @Override
+       public void setBodyText(TextView textView) {
+      
+           //here you have complete control over the TextView that will hold
+           //the search suggestion.
+       }
+    ```
++ Control the look of the left icon.  
+     ```  
+        @Override
+        public void setBodyText(TextView textView) {
+          
+            //here you have complete control over the ImageView that will hold
+            //the search suggestion's left icon. You can choose your favorite image-loading library
+            //for setting the ImageView's image. 
+        }
+     ```    
+
+<br/>
 <b>To enable voice recognition:</b>
 
 In your xml, add
