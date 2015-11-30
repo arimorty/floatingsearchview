@@ -88,7 +88,7 @@ First, implement [SearchSuggestion](https://github.com/arimorty/floatingsearchvi
 + Control the look of the left icon.  
      ```  
         @Override
-        public void setBodyText(TextView textView) {
+        public boolean setLeftIcon(ImageView imageView) {
           
             //here you have complete control over the ImageView that will hold
             //the search suggestion's left icon. You can choose your favorite image-loading library
