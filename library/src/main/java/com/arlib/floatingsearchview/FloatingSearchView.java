@@ -177,7 +177,7 @@ public class FloatingSearchView extends FrameLayout {
     private View mSuggestionListContainer;
     private RecyclerView mSuggestionsList;
     private SearchSuggestionsAdapter mSuggestionsAdapter;
-    private boolean isCollapsing = false;
+    private boolean mIsCollapsing = false;
 
     /**
      * Interface for implementing a callback to be
@@ -1277,7 +1277,7 @@ public class FloatingSearchView extends FrameLayout {
 
     private void clearSuggestions(final OnSuggestionsClearListener listener) {
 
-        if(!isCollapsing) {
+        if(!mIsCollapsing) {
 
             collapseSuggestionsSection(new OnSuggestionsCollapsedListener() {
                 @Override
@@ -1301,7 +1301,7 @@ public class FloatingSearchView extends FrameLayout {
 
     private void collapseSuggestionsSection(final OnSuggestionsCollapsedListener listener){
 
-        isCollapsing = true;
+        mIsCollapsing = true;
 
         final int destTranslationY = -(mSuggestionListContainer.getHeight()+Util.dpToPx(3));
 
@@ -1316,7 +1316,7 @@ public class FloatingSearchView extends FrameLayout {
                         if (listener != null)
                             listener.onCollapsed();
 
-                        isCollapsing = false;
+                        mIsCollapsing = false;
                     }
 
                     @Override
