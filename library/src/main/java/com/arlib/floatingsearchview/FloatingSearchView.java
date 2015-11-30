@@ -124,8 +124,6 @@ public class FloatingSearchView extends FrameLayout {
 
     private final int VOICE_REC_DEFAULT_REQUEST_CODE = 1024;
 
-    private final int SUGGESTION_ITEM_HEIGHT_DP = 48;
-
     private final int SUGGESTION_ITEM_ANIM_DURATION = 120;
 
     private final int OVERFLOW_ICON_WIDTH_DP = 36;
