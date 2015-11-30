@@ -19,6 +19,7 @@ package com.arlib.floatingsearchview;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -974,7 +975,11 @@ public class FloatingSearchView extends FrameLayout {
         Intent voiceIntent = createVoiceRecIntent(mHostActivity, mVoiceRecHint);
 
         if(mHostActivity!=null)
-            mHostActivity.startActivityForResult(voiceIntent, mVoiceRecRequestCode);
+            try {
+                mHostActivity.startActivityForResult(voiceIntent, mVoiceRecRequestCode);
+            } catch(ActivityNotFoundException e){
+
+            }
     }
 
     private Intent createVoiceRecIntent(Activity activity, String hint){
