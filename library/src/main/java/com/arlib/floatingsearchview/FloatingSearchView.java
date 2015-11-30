@@ -114,6 +114,8 @@ public class FloatingSearchView extends FrameLayout {
 
     private final boolean ATTRS_SHOW_OVERFLOW_MENU_DEFAULT = true;
 
+    private final int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
+
     private final int SUGGEST_LIST_COLLAPSE_ANIM_DURATION = 200;
 
     private final Interpolator SUGGEST_LIST_COLLAPSE_ANIM_INTERPOLATOR = new LinearInterpolator();
@@ -178,6 +180,7 @@ public class FloatingSearchView extends FrameLayout {
     private RecyclerView mSuggestionsList;
     private SearchSuggestionsAdapter mSuggestionsAdapter;
     private boolean mIsCollapsing = false;
+    private int mSuggestionsTextSizePx;
 
     /**
      * Interface for implementing a callback to be
@@ -438,6 +441,8 @@ public class FloatingSearchView extends FrameLayout {
             setDismissOnOutsideClick(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dismissOnOutsideTouch, ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT));
 
             setShowOverflowMenu(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showOverFlowMenu, ATTRS_SHOW_OVERFLOW_MENU_DEFAULT));
+
+            setSuggestionItemTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize, Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
 
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
                 inflateOverflowMenu(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
@@ -735,7 +740,7 @@ public class FloatingSearchView extends FrameLayout {
      * @param withAnim true, will close the menu button with
      *                 the  Material animation
      */
-    public void closeMenu(boolean withAnim){
+    public void closeMenu(boolean withAnim) {
 
         closeMenu(true, withAnim, false);
     }
@@ -1079,6 +1084,12 @@ public class FloatingSearchView extends FrameLayout {
         mSearchProgress.setVisibility(View.GONE);
         ObjectAnimator fadeInExit = new ObjectAnimator().ofFloat(mMenuSearchOrExitButton, "alpha", 0.0f, 1.0f);
         fadeInExit.start();
+    }
+
+    private void setSuggestionItemTextSize(int sizePx){
+
+        this.mSuggestionsTextSizePx = sizePx;
+        //setup adapter
     }
 
     private void setupSuggestionSection() {
