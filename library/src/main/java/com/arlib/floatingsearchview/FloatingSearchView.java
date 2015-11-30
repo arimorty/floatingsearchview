@@ -1255,6 +1255,7 @@ public class FloatingSearchView extends FrameLayout {
     private int getSuggestionItemHeight(SearchSuggestion suggestion) {
         int leftRightMarginsWidth = Util.dpToPx(124);
 
+        //todo improve efficiency
         TextView textView = new TextView(getContext());
         textView.setTypeface(Typeface.DEFAULT);
         textView.setText(suggestion.getBody(), TextView.BufferType.SPANNABLE);
