@@ -1119,7 +1119,7 @@ public class FloatingSearchView extends FrameLayout {
             }
         });
 
-        mSuggestionsAdapter = new SearchSuggestionsAdapter(getContext(), new SearchSuggestionsAdapter.Listener() {
+        mSuggestionsAdapter = new SearchSuggestionsAdapter(getContext(), mSuggestionsTextSizePx, new SearchSuggestionsAdapter.Listener() {
 
             @Override
             public void onItemSelected(SearchSuggestion item) {

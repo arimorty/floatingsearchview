@@ -20,6 +20,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +46,8 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
     private SearchSuggestion mSelectedItem;
 
     private Drawable mRightIconDrawable;
+
+    private int mBodyTextSizePx;
 
     public interface Listener{
 
@@ -102,18 +105,17 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     }
 
-    public SearchSuggestionsAdapter(Context context, Listener listener) {
+    public SearchSuggestionsAdapter(Context context, int suggestionTextSize, Listener listener) {
 
         this.mContext = context;
         this.mListener = listener;
+        this.mBodyTextSizePx = suggestionTextSize;
 
         mSearchSuggestions = new ArrayList<>();
 
         mRightIconDrawable = mContext.getResources().getDrawable(R.drawable.ic_arrow_back_black_24dp);
         mRightIconDrawable = DrawableCompat.wrap(mRightIconDrawable);
         DrawableCompat.setTint(mRightIconDrawable, mContext.getResources().getColor(R.color.gray_active_icon));
-
-
     }
 
     public List<? extends SearchSuggestion> getDataSet(){
@@ -150,6 +152,7 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
         });
 
         viewHolder.rightIcon.setImageDrawable(mRightIconDrawable);
+        viewHolder.body.setTextSize(TypedValue.COMPLEX_UNIT_PX, mBodyTextSizePx);
 
         return viewHolder;
     }
