@@ -20,6 +20,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
@@ -128,6 +129,8 @@ public class FloatingSearchView extends FrameLayout {
     private final int SUGGESTION_ITEM_ANIM_DURATION = 120;
 
     private final int OVERFLOW_ICON_WIDTH_DP = 36;
+
+    private Activity mHostActivity;
 
     private Drawable mBackgroundDrawable;
     private boolean mDismissOnOutsideTouch = true;
@@ -280,6 +283,8 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void init(AttributeSet attrs){
+
+        mHostActivity = getHostActivity();
 
         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -448,10 +453,21 @@ public class FloatingSearchView extends FrameLayout {
         }
     }
 
+    private Activity getHostActivity() {
+        Context context = getContext();
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                return (Activity)context;
+            }
+            context = ((ContextWrapper)context).getBaseContext();
+        }
+        return null;
+    }
+
     private void setupQueryBar(){
 
-        if(!isInEditMode())
-          ((Activity) getContext()).getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+        if(!isInEditMode() && mHostActivity!=null)
+            mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
         mOverflowMenu.setOnClickListener(new OnClickListener() {
             @Override
@@ -952,10 +968,10 @@ public class FloatingSearchView extends FrameLayout {
 
     private void startVoiceInput(){
 
-        Activity hostActivity = (Activity)getContext();
-        Intent voiceIntent = createVoiceRecIntent(hostActivity, mVoiceRecHint);
+        Intent voiceIntent = createVoiceRecIntent(mHostActivity, mVoiceRecHint);
 
-        hostActivity.startActivityForResult(voiceIntent, mVoiceRecRequestCode);
+        if(mHostActivity!=null)
+            mHostActivity.startActivityForResult(voiceIntent, mVoiceRecRequestCode);
     }
 
     private Intent createVoiceRecIntent(Activity activity, String hint){
@@ -1078,7 +1094,10 @@ public class FloatingSearchView extends FrameLayout {
 
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                Util.closeSoftKeyboard((Activity) getContext());
+
+                if(mHostActivity!=null)
+                  Util.closeSoftKeyboard(mHostActivity);
+
                 return false;
             }
         });
@@ -1367,7 +1386,8 @@ public class FloatingSearchView extends FrameLayout {
 
             findViewById(R.id.search_bar).requestFocus();
 
-            Util.closeSoftKeyboard((Activity) getContext());
+            if(mHostActivity!=null)
+               Util.closeSoftKeyboard(mHostActivity);
 
             if(mShowVoiceInput && !mHideOverflowMenuFocused)
                 changeIcon(mVoiceInputOrClearButton, mIconMic, true);
