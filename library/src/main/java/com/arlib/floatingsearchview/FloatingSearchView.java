@@ -1560,8 +1560,6 @@ public class FloatingSearchView extends FrameLayout {
         return new SavedState(superState, mIsFocused, mSuggestionsAdapter.getDataSet(), getQuery());
     }
 
-    private boolean mHandleRestoreSuggestions;
-
     @Override
     public void onRestoreInstanceState(Parcelable state) {
         final SavedState savedState = (SavedState) state;
@@ -1575,7 +1573,6 @@ public class FloatingSearchView extends FrameLayout {
             mIsFocused = savedState.isFocused;
 
             mSuggestionsSection.setVisibility(VISIBLE);
-            mHandleRestoreSuggestions = true;
 
             ViewTreeObserver vto = mSuggestionListContainer.getViewTreeObserver();
             vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
