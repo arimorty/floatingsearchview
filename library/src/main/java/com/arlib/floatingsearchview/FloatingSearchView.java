@@ -1253,24 +1253,19 @@ public class FloatingSearchView extends FrameLayout {
 
     //returns the height of a given suggestion item based on it's text length
     private int getSuggestionItemHeight(SearchSuggestion suggestion) {
-
-        TextPaint paint = new TextPaint(Paint.ANTI_ALIAS_FLAG | Paint.LINEAR_TEXT_FLAG);
-        paint.setTextSize(Util.spToPx(18));
-        paint.setTypeface(Typeface.DEFAULT);
-
-        //the width taken up by the left and right icon and the text's left padding
-        //todo use res dimensions for measuring
         int leftRightMarginsWidth = Util.dpToPx(124);
 
-        StaticLayout textLayout = new StaticLayout( suggestion.getBody(), paint, mSuggestionsList.getWidth()-leftRightMarginsWidth, Layout.Alignment.ALIGN_CENTER, 1.0f, 1.0f, false);
-
-        int heightPlusPadding = textLayout.getHeight()+Util.dpToPx(8);
-
-        //min height is the dictated by the left and right icons' height
-        //todo use res dimensions for measuring
+        TextView textView = new TextView(getContext());
+        textView.setTypeface(Typeface.DEFAULT);
+        textView.setText(suggestion.getBody(), TextView.BufferType.SPANNABLE);
+        textView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mSuggestionsTextSizePx);
+        int widthMeasureSpec = View.MeasureSpec.makeMeasureSpec(mSuggestionsList.getWidth()-leftRightMarginsWidth, View.MeasureSpec.AT_MOST);
+        int heightMeasureSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        textView.measure(widthMeasureSpec, heightMeasureSpec);
+        int heightPlusPadding = textView.getMeasuredHeight()+Util.dpToPx(8);
         int minHeight = Util.dpToPx(48);
         int height = heightPlusPadding >= minHeight ? heightPlusPadding : minHeight;
-        return height;
+        return heightPlusPadding >= minHeight ? heightPlusPadding : minHeight;
     }
 
     /**
