@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">FloatingSearchView</string>
-    <string name="action_show_menu">Show menu</string>
-    <string name="action_hide_menu">Hide menu</string>
+    <string name="action_show_nothing_mode">hide left action</string>
+    <string name="action_show_home_mode">show action home</string>
+    <string name="action_show_search_mode">show action search</string>
+    <string name="action_show_menu_mode">show action menu</string>
 </resources>

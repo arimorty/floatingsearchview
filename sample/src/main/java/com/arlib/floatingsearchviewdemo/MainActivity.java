@@ -125,10 +125,16 @@ public class MainActivity extends AppCompatActivity {
 
                 switch (item.getItemId()) {
                     case R.id.action_show_menu:
-                        mSearchView.setLeftShowMenu(true);
+                        mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL);
                         break;
-                    case R.id.action_hide_menu:
-                        mSearchView.setLeftShowMenu(false);
+                    case R.id.action_show_search:
+                        mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL);
+                        break;
+                    case R.id.action_show_home:
+                        mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL);
+                        break;
+                    case R.id.action_show_nothing:
+                        mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL);
                         break;
                 }
             }
@@ -137,13 +143,26 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
             @Override
             public void onMenuOpened() {
+                Log.d(TAG, "onMenuOpened()");
 
                 mDrawerLayout.openDrawer(GravityCompat.START);
             }
 
             @Override
             public void onMenuClosed() {
+
+                Log.d(TAG, "onMenuClosed()");
+
                 mDrawerLayout.closeDrawer(GravityCompat.START);
+            }
+        });
+
+        mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
+            @Override
+            public void onHomeClicked() {
+
+                Log.d(TAG, "onHomeClicked()");
+
             }
         });
 
