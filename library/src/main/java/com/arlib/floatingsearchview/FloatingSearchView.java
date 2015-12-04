@@ -1425,6 +1425,8 @@ public class FloatingSearchView extends FrameLayout {
 
         if(focused){
 
+            mLeftAction.setVisibility(View.VISIBLE);
+
             if(mLeftActionMode==LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL && !mMenuOpen)
                 openMenuDrawable(mMenuBtnDrawable, true);
             else if(mLeftActionMode!=LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL
@@ -1739,6 +1741,8 @@ public class FloatingSearchView extends FrameLayout {
 
             if(mShowOverFlowMenu && mHideOverflowMenuFocused)
                 hideOverflowMenu(false);
+
+            mLeftAction.setVisibility(View.VISIBLE);
 
             if(mLeftActionMode==LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL && !mMenuOpen)
                 openMenuDrawable(mMenuBtnDrawable, false);
