@@ -26,7 +26,7 @@
 
             <ImageView
                 android:alpha="1"
-                android:id="@+id/search_bar_exit"
+                android:id="@+id/left_action"
                 android:layout_width="@dimen/square_button_size"
                 android:layout_height="@dimen/square_button_size"
                 android:padding="@dimen/square_button_padding"

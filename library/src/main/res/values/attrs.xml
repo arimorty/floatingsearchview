@@ -7,6 +7,12 @@
         <attr name="floatingSearch_searchBarMarginRight" format="dimension"/>
         <attr name="floatingSearch_searchSuggestionTextSize" format="dimension"/>
         <attr name="floatingSearch_showMenuAction" format="boolean"/>
+        <attr name="floatingSearch_leftAction">
+            <enum name="showHamburger" value="1" />
+            <enum name="showSearch" value="2" />
+            <enum name="showHome" value="3" />
+            <enum name="showNothing" value="4" />
+        </attr>
         <attr name="floatingSearch_showVoiceInput" format="boolean"/>
         <attr name="floatingSearch_showSearchKey" format="boolean"/>
         <attr name="floatingSearch_voiceRecHint" format="string"/>
