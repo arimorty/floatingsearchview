@@ -1679,14 +1679,14 @@ public class FloatingSearchView extends FrameLayout {
         this.mIsFocused = savedState.isFocused;
 
         setSuggestionItemTextSize(savedState.suggestionTextSize);
-        setSearchHint(savedState.searchHint);
-        setVoiceSearchHint(savedState.voiceSearchHint);
         setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
         setShowOverflowMenu(savedState.showOverFlowMenu);
         setShowSearchKey(savedState.showSearchKey);
-        setShowVoiceInput(savedState.showVoiceInput);
         setShowHintWhenNotFocused(savedState.showHintWhenNotFocused);
         setLeftActionMode(savedState.leftMode);
+        setSearchHint(savedState.searchHint);
+        setShowVoiceInput(savedState.showVoiceInput);
+        setVoiceSearchHint(savedState.voiceSearchHint);
 
         if(this.mIsFocused) {
 
