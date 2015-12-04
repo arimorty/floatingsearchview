@@ -197,6 +197,7 @@ public class FloatingSearchView extends FrameLayout {
     private SearchSuggestionsAdapter mSuggestionsAdapter;
     private boolean mIsCollapsing = false;
     private int mSuggestionsTextSizePx;
+    private boolean mIsInitialLayout = true;
 
     //An interface for implementing a listener that will get notified when the suggestions
     //section's height is set. This is to be used internally only.
@@ -386,8 +387,6 @@ public class FloatingSearchView extends FrameLayout {
         DrawableCompat.setTint(mIconBackArrow, color);
         DrawableCompat.setTint(mIconSearch, color);
     }
-
-    private boolean mIsInitialLayout = true;
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
