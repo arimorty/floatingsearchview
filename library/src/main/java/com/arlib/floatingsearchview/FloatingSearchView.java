@@ -198,6 +198,13 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mIsCollapsing = false;
     private int mSuggestionsTextSizePx;
 
+    //An interface for implementing a listener that will get notified when the suggestions
+    //section's height is set. This is to be used internally only.
+    private interface OnSuggestionSecHeightSetListener{
+        void onSuggestionSecHeightSet();
+    }
+    private OnSuggestionSecHeightSetListener mSuggestionSecHeightListener;
+
     /**
      * Interface for implementing a callback to be
      * invoked when the left menu (navigation menu) is
@@ -387,18 +394,40 @@ public class FloatingSearchView extends FrameLayout {
 
         if(mIsInitialLayout) {
 
-
             int addedHeight = Util.dpToPx(5*3);
+            final int finalHeight = mSuggestionsSection.getMeasuredHeight()+addedHeight;
 
             //we need to add 5dp to the mSuggestionsSection because we are
-            //going to move it up by 5dp in order o cover the search bar's
+            //going to move it up by 5dp in order to cover the search bar's
             //rounded corners. We also need to add an additional 10dp to
             //mSuggestionsSection in order to hide mSuggestionListContainer
             //rounded corners and top/bottom padding.
-            mSuggestionsSection.getLayoutParams().height = mSuggestionsSection.getMeasuredHeight()
-                  +addedHeight;
+            mSuggestionsSection.getLayoutParams().height = finalHeight;
+            mSuggestionsSection.requestLayout();
+
+            ViewTreeObserver vto = mSuggestionListContainer.getViewTreeObserver();
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+
+                    if (mSuggestionsSection.getHeight() == finalHeight) {
+
+                        if (Build.VERSION.SDK_INT < 16) {
+                            mSuggestionListContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+                        } else {
+                            mSuggestionListContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+
+                        if (mSuggestionSecHeightListener != null)
+                            mSuggestionSecHeightListener.onSuggestionSecHeightSet();
+                    }
+                }
+
+            });
 
             mIsInitialLayout = false;
+
         }
 
         //todo check if this is safe here
@@ -425,7 +454,7 @@ public class FloatingSearchView extends FrameLayout {
         setupQueryBar();
 
         if(!isInEditMode())
-           setupSuggestionSection();
+            setupSuggestionSection();
     }
 
     private void applyXmlAttributes(AttributeSet attrs){
@@ -634,7 +663,7 @@ public class FloatingSearchView extends FrameLayout {
                                 mOnHomeActionClickListener.onHomeClicked();
                         }break;
                         case LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL:{
-                           //do nothing
+                            //do nothing
                         }
                     }
                 }
@@ -836,7 +865,7 @@ public class FloatingSearchView extends FrameLayout {
 
         if(mShowVoiceInput)
             if(show)showOverflowMenuWithAnim(false);
-        else hideOverflowMenu(false);
+            else hideOverflowMenu(false);
     }
 
     private void showOverflowMenuWithAnim(boolean withAnim){
@@ -864,7 +893,7 @@ public class FloatingSearchView extends FrameLayout {
 
         //accounts for anim direction based on the language direction
         int deltaX = isRTL() ? -Util.dpToPx(OVERFLOW_ICON_WIDTH_DP)
-                 : Util.dpToPx(OVERFLOW_ICON_WIDTH_DP);
+                : Util.dpToPx(OVERFLOW_ICON_WIDTH_DP);
 
         if(withAnim) {
             ViewPropertyAnimatorCompatSet hidAnimSet = new ViewPropertyAnimatorCompatSet();
@@ -1162,7 +1191,7 @@ public class FloatingSearchView extends FrameLayout {
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
                 if(mHostActivity!=null)
-                  Util.closeSoftKeyboard(mHostActivity);
+                    Util.closeSoftKeyboard(mHostActivity);
 
                 return false;
             }
@@ -1262,15 +1291,7 @@ public class FloatingSearchView extends FrameLayout {
                     }).start();
         }else{
 
-            //todo refactor
-            //the extra -3*fiveDp is because this will only
-            //get called from onRestoreSavedState(), and when it is called,
-            //the full height of mSuggestionListContainer is not known.
-            //*refactor* as soon as possible to eliminate confusion.
-             float transY = translationY<0 ?
-                     newSearchSuggestions.size()==0 ? translationY : translationY+threeDp-3*fiveDp
-                    : -fiveDp;
-            mSuggestionListContainer.setTranslationY(transY);
+            mSuggestionListContainer.setTranslationY(newTranslationY);
         }
 
         if(newSearchSuggestions.size()>0)
@@ -1453,7 +1474,7 @@ public class FloatingSearchView extends FrameLayout {
             findViewById(R.id.search_bar).requestFocus();
 
             if(mHostActivity!=null)
-               Util.closeSoftKeyboard(mHostActivity);
+                Util.closeSoftKeyboard(mHostActivity);
 
             if(mShowVoiceInput && !mHideOverflowMenuFocused)
                 changeIcon(mVoiceInputOrClearButton, mIconMic, true);
@@ -1696,19 +1717,14 @@ public class FloatingSearchView extends FrameLayout {
 
             mSuggestionsSection.setVisibility(VISIBLE);
 
-            ViewTreeObserver vto = mSuggestionListContainer.getViewTreeObserver();
-            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            //restore suggestions list when suggestion section's height is fully set
+            mSuggestionSecHeightListener = new OnSuggestionSecHeightSetListener() {
                 @Override
-                public void onGlobalLayout() {
-                    if (Build.VERSION.SDK_INT < 16) {
-                        mSuggestionListContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    } else {
-                        mSuggestionListContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-
+                public void onSuggestionSecHeightSet() {
                     swapSuggestions(savedState.suggestions, false);
+                    mSuggestionSecHeightListener = null;
                 }
-            });
+            };
 
             if (savedState.query.length() == 0) {
 
