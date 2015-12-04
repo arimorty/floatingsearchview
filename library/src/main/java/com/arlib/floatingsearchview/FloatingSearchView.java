@@ -1654,18 +1654,20 @@ public class FloatingSearchView extends FrameLayout {
     public Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
-        savedState.setmSuggestions(mSuggestionsAdapter.getDataSet());
-        savedState.setIsFocused(mIsFocused);
-        savedState.setQuery(getQuery());
-        savedState.setSuggestionTextSize(mSuggestionsTextSizePx);
-        savedState.setSearchHint(mSearchHint);
-        savedState.setVoiceSearchHint(mVoiceRecHint);
-        savedState.setDismissOnOutsideClick(mDismissOnOutsideTouch);
-        savedState.setShowOverFlowMenu(mShowOverFlowMenu);
-        savedState.setShowSearchKey(mShowSearchKey);
-        savedState.setShowVoiceInput(mShowVoiceInput);
-        savedState.setShowHintWhenNotFocused(mShowHintNotFocused);
-        savedState.setLeftMode(mLeftActionMode);
+        savedState.suggestions = this.mSuggestionsAdapter.getDataSet();
+        if(!this.mSuggestionsAdapter.getDataSet().isEmpty())
+            savedState.suggestObjectCreator = this.mSuggestionsAdapter.getDataSet().get(0).getCreator();
+        savedState.isFocused = this.mIsFocused;
+        savedState.query = getQuery();
+        savedState.suggestionTextSize = this.mSuggestionsTextSizePx;
+        savedState.searchHint = this.mSearchHint;
+        savedState.voiceSearchHint = this.mVoiceRecHint;
+        savedState.dismissOnOutsideClick = this.mDismissOnOutsideTouch;
+        savedState.showOverFlowMenu = this.mShowOverFlowMenu;
+        savedState.showSearchKey = this.mShowSearchKey;
+        savedState.showVoiceInput = this.mShowVoiceInput;
+        savedState.showHintWhenNotFocused = this.mShowHintNotFocused;
+        savedState.leftMode = this.mLeftActionMode;
         return savedState;
     }
 
@@ -1674,17 +1676,17 @@ public class FloatingSearchView extends FrameLayout {
         final SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
 
-        this.mIsFocused = savedState.isFocused();
+        this.mIsFocused = savedState.isFocused;
 
-        setSuggestionItemTextSize(savedState.getSuggestionTextSize());
-        setSearchHint(savedState.getSearchHint());
-        setVoiceSearchHint(savedState.getVoiceSearchHint());
-        setDismissOnOutsideClick(savedState.isDismissOnOutsideClick());
-        setShowOverflowMenu(savedState.isShowOverFlowMenu());
-        setShowSearchKey(savedState.isShowSearchKey());
-        setShowVoiceInput(savedState.isShowVoiceInput());
-        setShowHintWhenNotFocused(savedState.isShowHintWhenNotFocused());
-        setLeftActionMode(savedState.getLeftMode());
+        setSuggestionItemTextSize(savedState.suggestionTextSize);
+        setSearchHint(savedState.searchHint);
+        setVoiceSearchHint(savedState.voiceSearchHint);
+        setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
+        setShowOverflowMenu(savedState.showOverFlowMenu);
+        setShowSearchKey(savedState.showSearchKey);
+        setShowVoiceInput(savedState.showVoiceInput);
+        setShowHintWhenNotFocused(savedState.showHintWhenNotFocused);
+        setLeftActionMode(savedState.leftMode);
 
         if(this.mIsFocused) {
 
@@ -1704,11 +1706,11 @@ public class FloatingSearchView extends FrameLayout {
                         mSuggestionListContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                     }
 
-                    swapSuggestions(savedState.getSuggestions(), false);
+                    swapSuggestions(savedState.suggestions, false);
                 }
             });
 
-            if (savedState.mQuery.length() == 0) {
+            if (savedState.query.length() == 0) {
 
                 if (mShowVoiceInput)
                     changeIcon(mVoiceInputOrClearButton, mIconMic, false);
@@ -1737,158 +1739,58 @@ public class FloatingSearchView extends FrameLayout {
 
     static class SavedState extends BaseSavedState {
 
-        private List<? extends SearchSuggestion> mSuggestions = new ArrayList<>();
-        private Creator SUGGEST_CREATOR;
+        private Creator suggestObjectCreator;
 
-        private boolean mIsFocused;
+        private List<? extends SearchSuggestion> suggestions = new ArrayList<>();
+        private boolean isFocused;
+        private String query;
+        private int suggestionTextSize;
+        private String searchHint;
+        private String voiceSearchHint;
+        private boolean dismissOnOutsideClick;
+        private boolean showOverFlowMenu;
+        private boolean showSearchKey;
+        private boolean showVoiceInput;
+        private boolean showHintWhenNotFocused;
+        private int leftMode;
 
-        private String mQuery;
-        private int mSuggestionTextSize;
-        private String mSearchHint;
-        private String mVoiceSearchHint;
-        private boolean mDismissOnOutsideClick;
-        private boolean mShowOverFlowMenu;
-        private boolean mShowSearchKey;
-        private boolean mShowVoiceInput;
-        private boolean mShowHintWhenNotFocused;
-        private int mLeftMode;
-
-        SavedState(Parcelable superState){
+        SavedState(Parcelable superState) {
             super(superState);
         }
 
         private SavedState(Parcel in) {
             super(in);
 
-            if(SUGGEST_CREATOR!=null)
-                in.readTypedList(mSuggestions, SUGGEST_CREATOR);
-
-            mIsFocused = (in.readInt() != 0);
-
-            mQuery = in.readString();
-            mSuggestionTextSize = in.readInt();
-            mSearchHint = in.readString();
-            mVoiceSearchHint = in.readString();
-            mDismissOnOutsideClick = (in.readInt() != 0);
-            mShowOverFlowMenu = (in.readInt() != 0);
-            mShowSearchKey = (in.readInt() != 0);
-            mShowVoiceInput = (in.readInt() != 0);
-            mShowHintWhenNotFocused = (in.readInt() != 0);
-            mLeftMode = in.readInt();
+            if (suggestObjectCreator != null)
+                in.readTypedList(suggestions, suggestObjectCreator);
+            isFocused = (in.readInt() != 0);
+            query = in.readString();
+            suggestionTextSize = in.readInt();
+            searchHint = in.readString();
+            voiceSearchHint = in.readString();
+            dismissOnOutsideClick = (in.readInt() != 0);
+            showOverFlowMenu = (in.readInt() != 0);
+            showSearchKey = (in.readInt() != 0);
+            showVoiceInput = (in.readInt() != 0);
+            showHintWhenNotFocused = (in.readInt() != 0);
+            leftMode = in.readInt();
         }
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeTypedList(mSuggestions);
-            out.writeInt(mIsFocused ? 1 : 0);
-            out.writeString(mQuery);
-            out.writeInt(mSuggestionTextSize);
-            out.writeString(mSearchHint);
-            out.writeString(mVoiceSearchHint);
-            out.writeInt(mDismissOnOutsideClick ? 1 : 0);
-            out.writeInt(mShowOverFlowMenu ? 1 : 0);
-            out.writeInt(mShowSearchKey ? 1 : 0);
-            out.writeInt(mShowVoiceInput ? 1 : 0);
-            out.writeInt(mShowHintWhenNotFocused ? 1 : 0);
-            out.writeInt(mLeftMode);
-        }
-
-        public void setmSuggestions(List<? extends SearchSuggestion> suggestions){
-            if(!suggestions.isEmpty())
-                SUGGEST_CREATOR = suggestions.get(0).getCreator();
-        }
-
-        public void setIsFocused(boolean isFocused) {
-            this.mIsFocused = isFocused;
-        }
-
-        public void setQuery(String mQuery) {
-            this.mQuery = mQuery;
-        }
-
-        public void setSuggestionTextSize(int mSuggestionTextSize) {
-            this.mSuggestionTextSize = mSuggestionTextSize;
-        }
-
-        public void setSearchHint(String mSearchHint) {
-            this.mSearchHint = mSearchHint;
-        }
-
-        public void setVoiceSearchHint(String mVoiceSearchHint) {
-            this.mVoiceSearchHint = mVoiceSearchHint;
-        }
-
-        public void setDismissOnOutsideClick(boolean mDismissOnOutsideClick) {
-            this.mDismissOnOutsideClick = mDismissOnOutsideClick;
-        }
-
-        public void setShowOverFlowMenu(boolean mShowOverFlowMenu) {
-            this.mShowOverFlowMenu = mShowOverFlowMenu;
-        }
-
-        public void setShowSearchKey(boolean mShowSearchKey) {
-            this.mShowSearchKey = mShowSearchKey;
-        }
-
-        public void setShowVoiceInput(boolean mShowVoiceInput) {
-            this.mShowVoiceInput = mShowVoiceInput;
-        }
-
-        public void setShowHintWhenNotFocused(boolean mShowHintWhenNotFocused) {
-            this.mShowHintWhenNotFocused = mShowHintWhenNotFocused;
-        }
-
-        public void setLeftMode(int mLeftMode) {
-            this.mLeftMode = mLeftMode;
-        }
-
-        public List<? extends SearchSuggestion> getSuggestions(){
-            return mSuggestions;
-        }
-
-        public int getLeftMode() {
-            return mLeftMode;
-        }
-
-        public boolean isShowHintWhenNotFocused() {
-            return mShowHintWhenNotFocused;
-        }
-
-        public boolean isShowVoiceInput() {
-            return mShowVoiceInput;
-        }
-
-        public boolean isShowSearchKey() {
-            return mShowSearchKey;
-        }
-
-        public boolean isShowOverFlowMenu() {
-            return mShowOverFlowMenu;
-        }
-
-        public boolean isDismissOnOutsideClick() {
-            return mDismissOnOutsideClick;
-        }
-
-        public String getVoiceSearchHint() {
-            return mVoiceSearchHint;
-        }
-
-        public String getSearchHint() {
-            return mSearchHint;
-        }
-
-        public int getSuggestionTextSize() {
-            return mSuggestionTextSize;
-        }
-
-        public String getQuery() {
-            return mQuery;
-        }
-
-        public boolean isFocused() {
-            return mIsFocused;
+            out.writeTypedList(suggestions);
+            out.writeInt(isFocused ? 1 : 0);
+            out.writeString(query);
+            out.writeInt(suggestionTextSize);
+            out.writeString(searchHint);
+            out.writeString(voiceSearchHint);
+            out.writeInt(dismissOnOutsideClick ? 1 : 0);
+            out.writeInt(showOverFlowMenu ? 1 : 0);
+            out.writeInt(showSearchKey ? 1 : 0);
+            out.writeInt(showVoiceInput ? 1 : 0);
+            out.writeInt(showHintWhenNotFocused ? 1 : 0);
+            out.writeInt(leftMode);
         }
 
         public static final Creator<SavedState> CREATOR
