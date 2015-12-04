@@ -3,7 +3,6 @@ package com.arlib.floatingsearchviewdemo;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -135,14 +134,11 @@ public class MainActivity extends AppCompatActivity {
                         mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL);
                         break;
                     case R.id.action_show_nothing:
-                        mSearchView.setSearchFocused(true);
-
-                       // mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL);
+                        mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL);
                         break;
                 }
             }
         });
-
 
         mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
             @Override
@@ -172,8 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-            }
+            public void onDrawerSlide(View drawerView, float slideOffset) {}
 
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -186,8 +181,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDrawerClosed(View drawerView) {
-            }
+            public void onDrawerClosed(View drawerView) { }
 
             @Override
             public void onDrawerStateChanged(int newState) { }
