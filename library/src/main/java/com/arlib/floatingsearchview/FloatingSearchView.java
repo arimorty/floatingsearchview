@@ -198,6 +198,7 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mIsCollapsing = false;
     private int mSuggestionsTextSizePx;
     private boolean mIsInitialLayout = true;
+    private boolean mIsSuggestionsSecHeightSet;
 
     //An interface for implementing a listener that will get notified when the suggestions
     //section's height is set. This is to be used internally only.
@@ -420,6 +421,8 @@ public class FloatingSearchView extends FrameLayout {
 
                         if (mSuggestionSecHeightListener != null)
                             mSuggestionSecHeightListener.onSuggestionSecHeightSet();
+
+                        mIsSuggestionsSecHeightSet = true;
                     }
                 }
 
@@ -616,7 +619,7 @@ public class FloatingSearchView extends FrameLayout {
                 }else {
 
                     if (hasFocus != mIsFocused)
-                        setSearchFocused(hasFocus);
+                        setSearchFocusedInternal(hasFocus);
                 }
             }
         });
@@ -627,7 +630,7 @@ public class FloatingSearchView extends FrameLayout {
 
                 if (mShowSearchKey && keyCode == KeyEvent.KEYCODE_ENTER) {
 
-                    setSearchFocused(false);
+                    setSearchFocusedInternal(false);
 
                     if (mSearchListener != null)
                         mSearchListener.onSearchAction();
@@ -646,7 +649,7 @@ public class FloatingSearchView extends FrameLayout {
 
                 if (mSearchInput.isFocused()) {
 
-                    setSearchFocused(false);
+                    setSearchFocusedInternal(false);
                 } else {
 
                     switch (mLeftActionMode){
@@ -655,7 +658,7 @@ public class FloatingSearchView extends FrameLayout {
                             toggleMenu();
                         }break;
                         case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
-                            setSearchFocused(true);
+                            setSearchFocusedInternal(true);
                         }break;
                         case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:{
                             if(mOnHomeActionClickListener!=null)
@@ -1171,6 +1174,30 @@ public class FloatingSearchView extends FrameLayout {
         fadeInExit.start();
     }
 
+    /**
+     * Sets whether the search is focused or not.
+     *
+     * @param focused true, to set the search to be active/focused.
+     */
+    public void setSearchFocused(boolean focused) {
+
+        if(!this.mIsFocused && mSuggestionSecHeightListener==null){
+
+            if(mIsSuggestionsSecHeightSet){
+                setSearchFocusedInternal(true);
+            }else{
+
+                mSuggestionSecHeightListener = new OnSuggestionSecHeightSetListener() {
+                    @Override
+                    public void onSuggestionSecHeightSet() {
+                        setSearchFocusedInternal(true);
+                        mSuggestionSecHeightListener = null;
+                    }
+                };
+            }
+        }
+    }
+
     private void setSuggestionItemTextSize(int sizePx){
 
         this.mSuggestionsTextSizePx = sizePx;
@@ -1209,7 +1236,7 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onItemSelected(SearchSuggestion item) {
 
-                setSearchFocused(false);
+                setSearchFocusedInternal(false);
 
                 if(mSearchListener!=null)
                     mSearchListener.onSuggestionClicked(item);
@@ -1412,14 +1439,14 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     public void clearSearchFocus(){
-        setSearchFocused(false);
+        setSearchFocusedInternal(false);
     }
 
     public boolean isSearchBarFocused(){
         return mIsFocused;
     }
 
-    private void setSearchFocused(boolean focused){
+    private void setSearchFocusedInternal(boolean focused){
 
         this.mIsFocused = focused;
 
@@ -1659,7 +1686,7 @@ public class FloatingSearchView extends FrameLayout {
 
                 //todo check if this is called twice
                 if (mDismissOnOutsideTouch && mIsFocused)
-                    setSearchFocused(false);
+                    setSearchFocusedInternal(false);
 
                 return true;
             }
