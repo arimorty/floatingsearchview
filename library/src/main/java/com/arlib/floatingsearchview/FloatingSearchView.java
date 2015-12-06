@@ -77,6 +77,7 @@ import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.arlib.floatingsearchview.util.MenuPopupHelper;
 import com.arlib.floatingsearchview.util.Util;
+import com.arlib.floatingsearchview.util.actionmenu.MenuView;
 import com.arlib.floatingsearchview.util.adapter.GestureDetectorListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.OnItemTouchListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.TextWatcherAdapter;
@@ -188,6 +189,7 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mSearchEnabled;
     private boolean mSkipQueryFocusChangeEvent;
     private boolean mSkipTextChangeEvent;
+    private MenuView mMenuView;
 
     private View mDivider;
 
@@ -347,6 +349,7 @@ public class FloatingSearchView extends FrameLayout {
         initDrawables();
         mVoiceInputOrClearButton.setImageDrawable(mIconMic);
         mOverflowMenu.setImageDrawable(mIconOverflowMenu);
+        mMenuView = (MenuView)findViewById(R.id.menu_view);
 
         mDivider = findViewById(R.id.divider);
 
