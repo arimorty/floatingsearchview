@@ -1,12 +1,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
-    <item android:id="@+id/action_show_menu" android:title="@string/action_show_menu_mode"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_show_search" android:title="@string/action_show_search_mode"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_show_home" android:title="@string/action_show_home_mode"
-        android:orderInCategory="100" app:showAsAction="never" />
-    <item android:id="@+id/action_show_nothing" android:title="@string/action_show_nothing_mode"
-        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_show_menu"
+        android:title="@string/action_show_menu_mode"
+        android:orderInCategory="1"
+        app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_show_search"
+        android:title="@string/action_show_search_mode"
+        android:orderInCategory="2"
+        app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_show_home"
+        android:title="@string/action_show_home_mode"
+        android:orderInCategory="3"
+        app:showAsAction="ifRoom" />
+    <item android:id="@+id/action_show_nothing"
+        android:title="@string/action_show_nothing_mode"
+        android:orderInCategory="4"
+        app:showAsAction="ifRoom" />
 </menu>
