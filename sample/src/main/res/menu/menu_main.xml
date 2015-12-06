@@ -4,17 +4,21 @@
     <item android:id="@+id/action_show_menu"
         android:title="@string/action_show_menu_mode"
         android:orderInCategory="1"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_keyboard_voice_black_24dp"/>
     <item android:id="@+id/action_show_search"
         android:title="@string/action_show_search_mode"
         android:orderInCategory="2"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_my_location_black_24dp"/>
     <item android:id="@+id/action_show_home"
         android:title="@string/action_show_home_mode"
         android:orderInCategory="3"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_local_taxi_black_24dp"/>
     <item android:id="@+id/action_show_nothing"
         android:title="@string/action_show_nothing_mode"
         android:orderInCategory="4"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_restaurant_menu_black_24dp"/>
 </menu>

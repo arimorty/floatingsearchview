@@ -106,6 +106,13 @@ public class FloatingSearchView extends FrameLayout {
 
     private final int ATTRS_SEARCH_BAR_MARGIN_DEFAULT = 0;
 
+    /*
+     * The ideal min width that the left icon plus the query EditText
+     * should have. It applies only when determining how to render
+     * the action menu, it doesn't set the views' min attributes.
+     */
+    public final int SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
+
     public final static int LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL = 1;
     public final static int LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL = 2;
     public final static int LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL = 3;
@@ -324,6 +331,7 @@ public class FloatingSearchView extends FrameLayout {
 
     public FloatingSearchView(Context context, AttributeSet attrs){
         super(context, attrs);
+        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(150+4+48+20);
         init(attrs);
     }
 
@@ -436,7 +444,7 @@ public class FloatingSearchView extends FrameLayout {
         }
 
         //todo check if this is safe here
-        adjustSearchInputPadding();
+        //adjustSearchInputPadding();
 
         //pass on the layout
         super.onLayout(changed, l, t, r, b);
@@ -537,6 +545,23 @@ public class FloatingSearchView extends FrameLayout {
 
         if(!isInEditMode() && mHostActivity!=null)
             mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+        ViewTreeObserver vto = mQuerySection.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+
+                if (Build.VERSION.SDK_INT < 16) {
+                    mQuerySection.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+                } else {
+                    mQuerySection.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+
+                int actionMenuAvailWidth = mQuerySection.getWidth() - SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
+                mMenuView.invalidate(actionMenuAvailWidth);
+            }
+        });
 
         mOverflowMenu.setOnClickListener(new OnClickListener() {
             @Override

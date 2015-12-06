@@ -9,9 +9,10 @@
     android:clickable="true"
     android:background="@color/light_gray">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/square_button_size"
+        android:orientation="horizontal"
         android:layout_gravity="center">
 
         <FrameLayout
@@ -19,10 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/search_bar_left_icon_left_margin"
-            android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin"
-            android:layout_centerInParent="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true">
+            android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin">
 
             <ImageView
                 android:alpha="1"
@@ -45,7 +43,8 @@
         </FrameLayout>
 
         <FrameLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="match_parent"
             android:layout_toEndOf="@+id/search_bar_left_action_container"
             android:layout_toRightOf="@+id/search_bar_left_action_container"
@@ -83,6 +82,7 @@
             android:layout_toStartOf="@+id/search_bar_overflow_menu"
             android:layout_toLeftOf="@+id/search_bar_overflow_menu"
             android:alpha="1"
+            android:visibility="gone"
             android:id="@+id/search_bar_mic_or_ex"
             android:layout_width="@dimen/square_button_size"
             android:layout_height="@dimen/square_button_size"
@@ -96,6 +96,7 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:alpha="1"
+            android:visibility="gone"
             android:id="@+id/search_bar_overflow_menu"
             android:layout_width="36dp"
             android:layout_height="@dimen/square_button_size"
@@ -108,12 +109,14 @@
 
         <com.arlib.floatingsearchview.util.actionmenu.MenuView
             android:id="@+id/menu_view"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:background="@color/cardview_shadow_start_color"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="right"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
 </android.support.v7.widget.CardView>
