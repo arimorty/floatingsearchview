@@ -76,13 +76,25 @@
 
         </FrameLayout>
 
+        <ImageView
+            android:alpha="1"
+            android:id="@+id/clear_btn"
+            android:layout_width="@dimen/square_button_size"
+            android:layout_height="@dimen/square_button_size"
+            android:padding="@dimen/square_button_padding"
+            android:clickable="true"
+            android:layout_alignParentLeft="true"
+            android:layout_centerInParent="true"
+            android:background="@drawable/oval_btn_selector"
+            android:src="@drawable/ic_history_black_24dp"/>
+
         <com.arlib.floatingsearchview.util.actionmenu.MenuView
             android:id="@+id/menu_view"
             android:layout_width="wrap_content"
-            android:background="@color/cardview_shadow_start_color"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:gravity="right"/>
+            android:gravity="center|right"
+            android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"/>
 
     </LinearLayout>
 

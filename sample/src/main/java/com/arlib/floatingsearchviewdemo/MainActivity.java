@@ -189,14 +189,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //this is needed in order for voice recognition to work
-        mSearchView.onHostActivityResult(requestCode, resultCode, data);
-    }
-
     private void refreshBackgroundColor(String colorName, String colorValue){
 
         int color = Color.parseColor(colorValue);

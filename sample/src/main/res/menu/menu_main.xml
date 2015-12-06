@@ -4,7 +4,7 @@
     <item android:id="@+id/action_show_menu"
         android:title="@string/action_show_menu_mode"
         android:orderInCategory="1"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:icon="@drawable/ic_keyboard_voice_black_24dp"/>
     <item android:id="@+id/action_show_search"
         android:title="@string/action_show_search_mode"
