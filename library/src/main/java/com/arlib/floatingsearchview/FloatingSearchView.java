@@ -920,6 +920,7 @@ public class FloatingSearchView extends FrameLayout {
     public void inflateOverflowMenu(int menuId){
         mMenuBuilder.clearAll();
         getMenuInflater().inflate(menuId, mMenuBuilder);
+        mMenuView.setMenuBuilder(mMenuBuilder);
     }
 
     private MenuInflater getMenuInflater() {
