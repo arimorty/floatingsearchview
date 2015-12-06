@@ -76,42 +76,9 @@
 
         </FrameLayout>
 
-
-        <ImageView
-            android:layout_centerInParent="true"
-            android:layout_toStartOf="@+id/search_bar_overflow_menu"
-            android:layout_toLeftOf="@+id/search_bar_overflow_menu"
-            android:alpha="1"
-            android:visibility="gone"
-            android:id="@+id/search_bar_mic_or_ex"
-            android:layout_width="@dimen/square_button_size"
-            android:layout_height="@dimen/square_button_size"
-            android:padding="@dimen/square_button_padding"
-            android:clickable="true"
-            android:background="@drawable/oval_btn_selector"
-            android:src="@drawable/ic_mic_black_24dp"/>
-
-        <ImageView
-            android:layout_centerInParent="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:alpha="1"
-            android:visibility="gone"
-            android:id="@+id/search_bar_overflow_menu"
-            android:layout_width="36dp"
-            android:layout_height="@dimen/square_button_size"
-            android:paddingBottom="@dimen/square_button_padding"
-            android:paddingTop="@dimen/square_button_padding"
-            android:clickable="true"
-            android:src="@drawable/ic_more_vert_black_24dp"
-            android:layout_marginEnd="@dimen/search_bar_right_icon_right_margin"
-            android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"/>
-
         <com.arlib.floatingsearchview.util.actionmenu.MenuView
             android:id="@+id/menu_view"
             android:layout_width="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:background="@color/cardview_shadow_start_color"
             android:layout_height="match_parent"
             android:orientation="horizontal"
