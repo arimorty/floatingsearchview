@@ -43,6 +43,7 @@ import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
@@ -525,11 +526,12 @@ public class FloatingSearchView extends FrameLayout {
 
         });
 
-        mMenuView.setOnViewItemsTransXChangedListener(new MenuView.OnViewItemsTransXChangedListener() {
+        mMenuView.setOnVisibleWidthChanged(new MenuView.OnVisibleWidthChanged() {
             @Override
-            public void onTranslationXChanged(int dx) {
+            public void onVisibleWidthChanged(int newVisibleWidth) {
 
-                ViewCompat.animate(mClearButton).translationXBy(dx).setDuration(0).start();
+                mClearButton.setTranslationX(-newVisibleWidth);
+                mSearchInput.setPadding(0, 0, newVisibleWidth+Util.dpToPx(48), 0);
             }
         });
 

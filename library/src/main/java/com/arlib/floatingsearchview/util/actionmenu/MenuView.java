@@ -69,10 +69,10 @@ public class MenuView extends LinearLayout {
 
     private boolean mHasOverflow = false;
 
-    private OnViewItemsTransXChangedListener mOnViewItemsTransXChangedListener;
+    private OnVisibleWidthChanged mOnVisibleWidthChanged;
 
-    public interface OnViewItemsTransXChangedListener{
-        void onTranslationXChanged(int dx);
+    public interface OnVisibleWidthChanged{
+        void onVisibleWidthChanged(int newVisibleWidth);
     }
 
     public MenuView(Context context) {
@@ -220,6 +220,9 @@ public class MenuView extends LinearLayout {
             mMenuBuilder.removeItem(id);
 
         actionMenuItems.clear();
+
+        if(mOnVisibleWidthChanged!=null)
+            mOnVisibleWidthChanged.onVisibleWidthChanged(((int)ACTION_DIMENSION_PX * getChildCount())- (mHasOverflow ? Util.dpToPx(8) : 0));
     }
 
     private ImageView getActionHolder(){
@@ -267,8 +270,8 @@ public class MenuView extends LinearLayout {
             @Override
             public void onAnimationEnd(Animator animation) {
 
-                if(mOnViewItemsTransXChangedListener!=null)
-                    mOnViewItemsTransXChangedListener.onTranslationXChanged(-preAnimTranslationX);
+                if(mOnVisibleWidthChanged!=null)
+                    mOnVisibleWidthChanged.onVisibleWidthChanged((getChildCount() * (int) ACTION_DIMENSION_PX)- (mHasOverflow ? Util.dpToPx(8) : 0));
             }
         });
         animSet.start();
@@ -325,6 +328,7 @@ public class MenuView extends LinearLayout {
             anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).alpha(0.0f).get());
         }
 
+        final int actinItemsCount = actionItemIndex;
         if(!anims.isEmpty()){
 
             AnimatorSet animSet = new AnimatorSet();
@@ -334,8 +338,8 @@ public class MenuView extends LinearLayout {
                 @Override
                 public void onAnimationEnd(Animator animation) {
 
-                    if (mOnViewItemsTransXChangedListener != null)
-                        mOnViewItemsTransXChangedListener.onTranslationXChanged((int)getChildAt(0).getTranslationX());
+                    if(mOnVisibleWidthChanged!=null)
+                        mOnVisibleWidthChanged.onVisibleWidthChanged(((int)ACTION_DIMENSION_PX * actinItemsCount));
                 }
             });
             animSet.start();
@@ -371,7 +375,7 @@ public class MenuView extends LinearLayout {
         return icon;
     }
 
-    public void setOnViewItemsTransXChangedListener(OnViewItemsTransXChangedListener listener){
-        this.mOnViewItemsTransXChangedListener = listener;
+    public void setOnVisibleWidthChanged(OnVisibleWidthChanged listener){
+        this.mOnVisibleWidthChanged = listener;
     }
 }
