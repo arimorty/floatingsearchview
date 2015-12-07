@@ -103,7 +103,7 @@ public class MenuView extends LinearLayout {
         this.mMenuCallback = menuCallback;
     }
 
-    public void setupActionItems(int availWidth){
+    public void reset(int availWidth){
 
         this.mAvailWidth = availWidth;
 
@@ -138,7 +138,6 @@ public class MenuView extends LinearLayout {
         if(((menuItems.size()<holdAllItemsCount) || availItemRoom<menuItems.size())){
             addOverflowAtTheEnd = true;
             availItemRoom--;
-            mHasOverflow = true;
         }
 
         ArrayList<Integer> actionMenuItems = new ArrayList<>();
@@ -189,6 +188,8 @@ public class MenuView extends LinearLayout {
             });
 
             mMenuBuilder.setCallback(mMenuCallback);
+
+            mHasOverflow = true;
         }
 
         for(int id: actionMenuItems)

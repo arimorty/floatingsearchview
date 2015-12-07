@@ -500,7 +500,7 @@ public class FloatingSearchView extends FrameLayout {
                     mQuerySection.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
 
-                mMenuView.setupActionItems(actionMenuAvailWidth());
+                mMenuView.reset(actionMenuAvailWidth());
             }
         });
 
@@ -1430,7 +1430,7 @@ public class FloatingSearchView extends FrameLayout {
                     mSuggestionSecHeightListener = null;
 
                     //todo refactor
-                    mMenuView.setupActionItems(actionMenuAvailWidth());
+                    mMenuView.reset(actionMenuAvailWidth());
                 }
             };
 
