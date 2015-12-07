@@ -87,8 +87,7 @@
             android:padding="@dimen/square_button_padding"
             android:clickable="true"
             android:layout_centerInParent="true"
-            android:background="@drawable/oval_btn_selector"
-            android:src="@drawable/ic_history_black_24dp"/>
+            android:background="@drawable/oval_btn_selector"/>
 
         <com.arlib.floatingsearchview.util.actionmenu.MenuView
             android:layout_alignParentRight="true"
