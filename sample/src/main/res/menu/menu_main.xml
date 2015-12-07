@@ -4,12 +4,12 @@
     <item android:id="@+id/action_voice_rec"
         android:title="@string/action_voice_rec"
         android:orderInCategory="1"
-        app:showAsAction="ifRoom"
+        app:showAsAction="always"
         android:icon="@drawable/ic_keyboard_voice_black_24dp"/>
     <item android:id="@+id/action_location"
         android:title="@string/action_location"
         android:orderInCategory="2"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:icon="@drawable/ic_my_location_black_24dp"/>
     <item android:id="@+id/action_taxi"
         android:title="@string/action_taxi"

@@ -282,7 +282,8 @@ public class MenuView extends LinearLayout {
 
             Interpolator interpolator = new DecelerateInterpolator();
 
-            if(i<mActionShowAlwaysItems.size())
+            //todo check logic
+            if(i>mActionShowAlwaysItems.size()-1)
                 interpolator = new LinearInterpolator();
 
             currentView.setClickable(true);

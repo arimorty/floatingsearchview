@@ -40,8 +40,7 @@
             app:floatingSearch_showSearchKey="false"
             app:floatingSearch_dismissOnOutsideTouch="true"
             app:floatingSearch_leftAction="showHamburger"
-            app:floatingSearch_menu="@menu/menu_main"
-            app:floatingSearch_searchSuggestionTextSize="18sp"/>
+            app:floatingSearch_menu="@menu/menu_main"/>
 
     </RelativeLayout>
 
