@@ -719,9 +719,10 @@ public class FloatingSearchView extends FrameLayout {
         mMenuView.resetMenuResource(menuId);
 
         //todo check for unnecessary calls
-        mMenuView.reset(actionMenuAvailWidth());
-        if(mIsFocused)
-            mMenuView.hideIfRoomItems(false);
+        //throws exception child view null
+       // mMenuView.reset(actionMenuAvailWidth());
+        //if(mIsFocused)
+          //  mMenuView.hideIfRoomItems(false);
     }
 
     private int actionMenuAvailWidth(){
@@ -1629,6 +1630,7 @@ public class FloatingSearchView extends FrameLayout {
         super.onDetachedFromWindow();
 
         //remove any ongoing animations to prevent leaks
+        //todo investigate if correct
         ViewCompat.animate(mSuggestionListContainer).cancel();
     }
 }
