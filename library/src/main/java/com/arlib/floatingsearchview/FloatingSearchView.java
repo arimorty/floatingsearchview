@@ -556,19 +556,11 @@ public class FloatingSearchView extends FrameLayout {
                     mSkipTextChangeEvent = false;
                 } else {
 
-                    if(mSearchInput.getText().toString().length() == 0){
-                        ViewCompat.animate(mClearButton).setListener(new ViewPropertyAnimatorListenerAdapter(){
-                            @Override
-                            public void onAnimationEnd(View view) {
-                                mClearButton.setVisibility(View.INVISIBLE);
-                                mClearButton.setAlpha(1.0f);
-                            }
-                        }).alpha(0.0f).setDuration(500).start();
-                    }else{
-
+                    if(mSearchInput.getText().toString().length() != 0 && mClearButton.getVisibility() == View.INVISIBLE){
+                        mClearButton.setAlpha(0.0f);
                         mClearButton.setVisibility(View.VISIBLE);
                         ViewCompat.animate(mClearButton).alpha(1.0f).setDuration(500).start();
-                    }
+                    }else  mClearButton.setVisibility(View.INVISIBLE);
 
                     if (mQueryListener != null && mIsFocused)
                         mQueryListener.onSearchTextChanged(mOldQuery, mSearchInput.getText().toString());
