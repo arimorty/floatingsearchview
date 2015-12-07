@@ -50,6 +50,31 @@ Usage
               }
           });
 ```
+<br/>
+
+<b>Left action modes:</b>
+
+In your xml, add menu resource
+```xml
+   app:floatingSearch_leftAction=""
+```
+
+<table>
+    <tr>
+        <td>showSearch</td>
+        <td>![Alt text](/images/device-2015-12-06-215814.png)</td>
+    </tr>
+    <tr>
+       <td>showSearch</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>showSearch</td>
+        <td></td>
+    </tr>
+</table>
+
+
 
 <br/>
 <b>Configure <i>overflow</i> menu:</b>

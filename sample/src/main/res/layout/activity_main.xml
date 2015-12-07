@@ -44,7 +44,7 @@
             app:floatingSearch_hideOverflowMenuWhenFocused="true"
             app:floatingSearch_showSearchKey="false"
             app:floatingSearch_dismissOnOutsideTouch="true"
-            app:floatingSearch_leftAction="showHamburger"
+            app:floatingSearch_leftAction="showSearch"
             app:floatingSearch_menu="@menu/menu_main"/>
 
     </RelativeLayout>
