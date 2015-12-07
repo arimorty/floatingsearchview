@@ -108,14 +108,14 @@ public class FloatingSearchView extends FrameLayout {
     public final static int LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL = 1;
     public final static int LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL = 2;
     public final static int LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL = 3;
-    public final static int LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL = 4;
+    public final static int LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL = 4;
 
     @IntDef({LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL, LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL,LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL
-            ,LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL})
+            ,LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LeftActionMode {}
 
-    @LeftActionMode private final int ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT = LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL;
+    @LeftActionMode private final int ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT = LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL;
 
     private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = false;
 
@@ -302,7 +302,7 @@ public class FloatingSearchView extends FrameLayout {
 
     public FloatingSearchView(Context context, AttributeSet attrs){
         super(context, attrs);
-        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(250);//Util.dpToPx(150+4+48+20);
+        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(175);//Util.dpToPx(150+4+48+20);
         init(attrs);
     }
 
@@ -467,7 +467,7 @@ public class FloatingSearchView extends FrameLayout {
 
             setSuggestionItemTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize, Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
 
-            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftAction, LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL));
+            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftAction, LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL));
 
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
                 inflateOverflowMenu(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
@@ -508,6 +508,9 @@ public class FloatingSearchView extends FrameLayout {
                 }
 
                 mMenuView.reset(actionMenuAvailWidth());
+
+                if(mIsFocused)
+                    mMenuView.hideIfRoomItems();
             }
         });
 
@@ -605,7 +608,7 @@ public class FloatingSearchView extends FrameLayout {
             }
         });
 
-        if(mLeftActionMode == LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL)
+        if(mLeftActionMode == LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL)
             mSearchInputParent.setTranslationX(-Util.dpToPx(48+20-16));
 
         refreshLeftIcon();
@@ -631,7 +634,7 @@ public class FloatingSearchView extends FrameLayout {
                             if(mOnHomeActionClickListener!=null)
                                 mOnHomeActionClickListener.onHomeClicked();
                         }break;
-                        case LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL:{
+                        case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:{
                             //do nothing
                         }
                     }
@@ -700,7 +703,7 @@ public class FloatingSearchView extends FrameLayout {
                 mLeftAction.setImageDrawable(mMenuBtnDrawable);
                 mMenuBtnDrawable.setProgress(1.0f);
             }break;
-            case LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL:{
+            case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:{
                 mLeftAction.setVisibility(View.INVISIBLE);
             }
         }
@@ -1155,7 +1158,7 @@ public class FloatingSearchView extends FrameLayout {
 
             mLeftAction.setVisibility(View.VISIBLE);
 
-            animFocusTransitionIn();
+            transitionInLeftSection(true);
 
             if(mMenuOpen)
                 closeMenu(false, true, true);
@@ -1175,7 +1178,7 @@ public class FloatingSearchView extends FrameLayout {
                 mFocusChangeListener.onFocus();
         }else{
 
-            animFocusTransitionOut();
+            transitionOutLeftSection(true);
 
             clearSuggestions(new OnSuggestionsClearListener() {
                 @Override
@@ -1216,97 +1219,111 @@ public class FloatingSearchView extends FrameLayout {
         }
     }
 
-    private void animFocusTransitionIn(){
+    private void transitionInLeftSection(boolean withAnim){
 
         switch (mLeftActionMode){
 
             case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:{
-                openMenuDrawable(mMenuBtnDrawable, true);
+                openMenuDrawable(mMenuBtnDrawable, withAnim);
                 if(!mMenuOpen)
                     break;
             }break;
             case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
-                mLeftAction.setRotation(45);
+
                 mLeftAction.setImageDrawable(mIconBackArrow);
-                mLeftAction.setAlpha(0.0f);
-                ObjectAnimator rotateAnim = ViewPropertyObjectAnimator.animate(mLeftAction).rotation(0).get();
-                ObjectAnimator fadeAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(1.0f).get();
-                AnimatorSet animSet = new AnimatorSet();
-                animSet.setDuration(500);
-                animSet.playTogether(rotateAnim,fadeAnim);
-                animSet.start();
+
+                if(withAnim){
+                    mLeftAction.setRotation(45);
+                    mLeftAction.setAlpha(0.0f);
+                    ObjectAnimator rotateAnim = ViewPropertyObjectAnimator.animate(mLeftAction).rotation(0).get();
+                    ObjectAnimator fadeAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(1.0f).get();
+                    AnimatorSet animSet = new AnimatorSet();
+                    animSet.setDuration(500);
+                    animSet.playTogether(rotateAnim,fadeAnim);
+                    animSet.start();
+                }
             }break;
             case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:{
                 //do nothing
             }break;
-            case LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL:{
-
-                ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent).translationX(0).get();
+            case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:{
 
                 mLeftAction.setImageDrawable(mIconBackArrow);
-                mLeftAction.setScaleX(0.5f);
-                mLeftAction.setScaleY(0.5f);
-                mLeftAction.setAlpha(0.0f);
-                mLeftAction.setTranslationX(Util.dpToPx(8));
-                ObjectAnimator transXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).translationX(1.0f).get();
-                ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(1.0f).get();
-                ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(1.0f).get();
-                ObjectAnimator fadeArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(1.0f).get();
-                transXArrowAnim.setStartDelay(150);
-                scaleXArrowAnim.setStartDelay(150);
-                scaleYArrowAnim.setStartDelay(150);
-                fadeArrowAnim.setStartDelay(150);
 
-                AnimatorSet animSet = new AnimatorSet();
-                animSet.setDuration(500);
-                animSet.playTogether(searchInputTransXAnim,transXArrowAnim, scaleXArrowAnim,scaleYArrowAnim,fadeArrowAnim);
-                animSet.start();
+                if(withAnim){
+
+                    ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent).translationX(0).get();
+
+                    mLeftAction.setScaleX(0.5f);
+                    mLeftAction.setScaleY(0.5f);
+                    mLeftAction.setAlpha(0.0f);
+                    mLeftAction.setTranslationX(Util.dpToPx(8));
+                    ObjectAnimator transXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).translationX(1.0f).get();
+                    ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(1.0f).get();
+                    ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(1.0f).get();
+                    ObjectAnimator fadeArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(1.0f).get();
+                    transXArrowAnim.setStartDelay(150);
+                    scaleXArrowAnim.setStartDelay(150);
+                    scaleYArrowAnim.setStartDelay(150);
+                    fadeArrowAnim.setStartDelay(150);
+
+                    AnimatorSet animSet = new AnimatorSet();
+                    animSet.setDuration(500);
+                    animSet.playTogether(searchInputTransXAnim,transXArrowAnim, scaleXArrowAnim,scaleYArrowAnim,fadeArrowAnim);
+                    animSet.start();
+                }
             }
         }
     }
 
-    private void animFocusTransitionOut(){
+    private void transitionOutLeftSection(boolean withAnim){
 
         switch (mLeftActionMode){
 
             case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:{
-                closeMenuDrawable(mMenuBtnDrawable, true);
+                closeMenuDrawable(mMenuBtnDrawable, withAnim);
             }break;
             case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
-                changeIcon(mLeftAction, mIconSearch, true);
+                changeIcon(mLeftAction, mIconSearch, withAnim);
             }break;
+
             case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:{
                 //do nothing
             }break;
-            case LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL:{
-
-                ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent)
-                        .translationX(-Util.dpToPx(48 + 20 - 16)).get();
+            case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:{
 
                 mLeftAction.setImageDrawable(mIconBackArrow);
 
-                ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(0.5f).get();
-                ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(0.5f).get();
-                ObjectAnimator fadeArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(0.5f).get();
-                scaleXArrowAnim.setDuration(300);
-                scaleYArrowAnim.setDuration(300);
-                fadeArrowAnim.setDuration(300);
-                scaleXArrowAnim.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
+                if(withAnim){
+                    ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent)
+                            .translationX(-Util.dpToPx(48 + 20 - 16)).get();
 
-                        //restore normal state
-                        mLeftAction.setScaleX(1.0f);
-                        mLeftAction.setScaleY(1.0f);
-                        mLeftAction.setAlpha(1.0f);
-                        mLeftAction.setVisibility(View.INVISIBLE);
-                    }
-                });
+                    ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(0.5f).get();
+                    ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(0.5f).get();
+                    ObjectAnimator fadeArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(0.5f).get();
+                    scaleXArrowAnim.setDuration(300);
+                    scaleYArrowAnim.setDuration(300);
+                    fadeArrowAnim.setDuration(300);
+                    scaleXArrowAnim.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
 
-                AnimatorSet animSet = new AnimatorSet();
-                animSet.setDuration(350);
-                animSet.playTogether(scaleXArrowAnim, scaleYArrowAnim, fadeArrowAnim,searchInputTransXAnim);
-                animSet.start();
+                            //restore normal state
+                            mLeftAction.setScaleX(1.0f);
+                            mLeftAction.setScaleY(1.0f);
+                            mLeftAction.setAlpha(1.0f);
+                            mLeftAction.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+                    AnimatorSet animSet = new AnimatorSet();
+                    animSet.setDuration(350);
+                    animSet.playTogether(scaleXArrowAnim, scaleYArrowAnim, fadeArrowAnim, searchInputTransXAnim);
+                    animSet.start();
+                }else{
+
+                    mLeftAction.setVisibility(View.INVISIBLE);
+                }
             }
         }
     }
@@ -1527,7 +1544,7 @@ public class FloatingSearchView extends FrameLayout {
                     mSuggestionSecHeightListener = null;
 
                     //todo refactor
-                    mMenuView.reset(actionMenuAvailWidth());
+                    transitionInLeftSection(false);
                 }
             };
 
@@ -1554,11 +1571,8 @@ public class FloatingSearchView extends FrameLayout {
         private String query;
         private int suggestionTextSize;
         private String searchHint;
-        private String voiceSearchHint;
         private boolean dismissOnOutsideClick;
-        private boolean showOverFlowMenu;
         private boolean showSearchKey;
-        private boolean showVoiceInput;
         private boolean showHintWhenNotFocused;
         private int leftMode;
 
@@ -1575,11 +1589,8 @@ public class FloatingSearchView extends FrameLayout {
             query = in.readString();
             suggestionTextSize = in.readInt();
             searchHint = in.readString();
-            voiceSearchHint = in.readString();
             dismissOnOutsideClick = (in.readInt() != 0);
-            showOverFlowMenu = (in.readInt() != 0);
             showSearchKey = (in.readInt() != 0);
-            showVoiceInput = (in.readInt() != 0);
             showHintWhenNotFocused = (in.readInt() != 0);
             leftMode = in.readInt();
         }
@@ -1592,11 +1603,8 @@ public class FloatingSearchView extends FrameLayout {
             out.writeString(query);
             out.writeInt(suggestionTextSize);
             out.writeString(searchHint);
-            out.writeString(voiceSearchHint);
             out.writeInt(dismissOnOutsideClick ? 1 : 0);
-            out.writeInt(showOverFlowMenu ? 1 : 0);
             out.writeInt(showSearchKey ? 1 : 0);
-            out.writeInt(showVoiceInput ? 1 : 0);
             out.writeInt(showHintWhenNotFocused ? 1 : 0);
             out.writeInt(leftMode);
         }
