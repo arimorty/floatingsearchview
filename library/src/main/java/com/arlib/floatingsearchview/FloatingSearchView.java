@@ -146,6 +146,7 @@ public class FloatingSearchView extends FrameLayout {
     private OnFocusChangeListener mFocusChangeListener;
     private TextView mSearchBarTitle;
     private EditText mSearchInput;
+    private View mSearchInputParent;
     private String mOldQuery = "";
     private OnQueryChangeListener mQueryListener;
     private ImageView mLeftAction;
@@ -318,6 +319,7 @@ public class FloatingSearchView extends FrameLayout {
         mQuerySection = findViewById(R.id.search_query_section);
         mClearButton = (ImageView)findViewById(R.id.clear_btn);
         mSearchInput = (EditText)findViewById(R.id.search_bar_text);
+        mSearchInputParent = findViewById(R.id.search_input_parent);
         mSearchBarTitle = (TextView)findViewById(R.id.search_bar_title);
         mLeftAction = (ImageView)findViewById(R.id.left_action);
         mSearchProgress = (ProgressBar)findViewById(R.id.search_bar_search_progress);
@@ -531,7 +533,7 @@ public class FloatingSearchView extends FrameLayout {
             public void onVisibleWidthChanged(int newVisibleWidth) {
 
                 mClearButton.setTranslationX(-newVisibleWidth);
-                mSearchInput.setPadding(0, 0, newVisibleWidth+Util.dpToPx(48), 0);
+                mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48), 0);
             }
         });
 
@@ -539,7 +541,7 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onClick(View v) {
 
-                    mSearchInput.setText("");
+                mSearchInput.setText("");
 
             }
         });
@@ -556,11 +558,12 @@ public class FloatingSearchView extends FrameLayout {
                     mSkipTextChangeEvent = false;
                 } else {
 
-                    if(mSearchInput.getText().toString().length() != 0 && mClearButton.getVisibility() == View.INVISIBLE){
+                    if (mSearchInput.getText().toString().length() != 0 && mClearButton.getVisibility() == View.INVISIBLE) {
                         mClearButton.setAlpha(0.0f);
                         mClearButton.setVisibility(View.VISIBLE);
                         ViewCompat.animate(mClearButton).alpha(1.0f).setDuration(500).start();
-                    }else if(mSearchInput.getText().toString().length() == 0) mClearButton.setVisibility(View.INVISIBLE);
+                    } else if (mSearchInput.getText().toString().length() == 0)
+                        mClearButton.setVisibility(View.INVISIBLE);
 
                     if (mQueryListener != null && mIsFocused)
                         mQueryListener.onSearchTextChanged(mOldQuery, mSearchInput.getText().toString());
@@ -575,9 +578,9 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
 
-                if(mSkipQueryFocusChangeEvent){
+                if (mSkipQueryFocusChangeEvent) {
                     mSkipQueryFocusChangeEvent = false;
-                }else {
+                } else {
 
                     if (hasFocus != mIsFocused)
                         setSearchFocusedInternal(hasFocus);
@@ -601,6 +604,9 @@ public class FloatingSearchView extends FrameLayout {
                 return false;
             }
         });
+
+        if(mLeftActionMode == LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL)
+            mSearchInputParent.setTranslationX(-Util.dpToPx(48+20-16));
 
         refreshLeftIcon();
 
@@ -1234,7 +1240,27 @@ public class FloatingSearchView extends FrameLayout {
                 //do nothing
             }break;
             case LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL:{
+
+                ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent).translationX(0).get();
+
                 mLeftAction.setImageDrawable(mIconBackArrow);
+                mLeftAction.setScaleX(0.5f);
+                mLeftAction.setScaleY(0.5f);
+                mLeftAction.setAlpha(0.0f);
+                mLeftAction.setTranslationX(Util.dpToPx(8));
+                ObjectAnimator transXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).translationX(1.0f).get();
+                ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(1.0f).get();
+                ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(1.0f).get();
+                ObjectAnimator fadeArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(1.0f).get();
+                transXArrowAnim.setStartDelay(150);
+                scaleXArrowAnim.setStartDelay(150);
+                scaleYArrowAnim.setStartDelay(150);
+                fadeArrowAnim.setStartDelay(150);
+
+                AnimatorSet animSet = new AnimatorSet();
+                animSet.setDuration(500);
+                animSet.playTogether(searchInputTransXAnim,transXArrowAnim, scaleXArrowAnim,scaleYArrowAnim,fadeArrowAnim);
+                animSet.start();
             }
         }
     }
@@ -1253,7 +1279,34 @@ public class FloatingSearchView extends FrameLayout {
                 //do nothing
             }break;
             case LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL:{
-                mLeftAction.setVisibility(INVISIBLE);
+
+                ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent)
+                        .translationX(-Util.dpToPx(48 + 20 - 16)).get();
+
+                mLeftAction.setImageDrawable(mIconBackArrow);
+
+                ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(0.5f).get();
+                ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(0.5f).get();
+                ObjectAnimator fadeArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(0.5f).get();
+                scaleXArrowAnim.setDuration(300);
+                scaleYArrowAnim.setDuration(300);
+                fadeArrowAnim.setDuration(300);
+                scaleXArrowAnim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+
+                        //restore normal state
+                        mLeftAction.setScaleX(1.0f);
+                        mLeftAction.setScaleY(1.0f);
+                        mLeftAction.setAlpha(1.0f);
+                        mLeftAction.setVisibility(View.INVISIBLE);
+                    }
+                });
+
+                AnimatorSet animSet = new AnimatorSet();
+                animSet.setDuration(350);
+                animSet.playTogether(scaleXArrowAnim, scaleYArrowAnim, fadeArrowAnim,searchInputTransXAnim);
+                animSet.start();
             }
         }
     }
