@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         //in a regular activity
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
             @Override
-            public void onMenuItemSelected(MenuItem item) {
+            public void onActionMenuItemSelected(MenuItem item) {
 
                 Toast.makeText(getApplicationContext(), item.getTitle(),
                         Toast.LENGTH_SHORT).show();

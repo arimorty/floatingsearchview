@@ -118,8 +118,6 @@ public class FloatingSearchView extends FrameLayout {
 
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_HINT_NOT_FOCUSED_DEFAULT = true;
 
-    private final boolean ATTRS_HIDE_OVERFLOW_MENU_FOCUSED_DEFAULT = true;
-
     private final int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
 
     private final int SUGGEST_LIST_COLLAPSE_ANIM_DURATION = 200;
@@ -138,34 +136,31 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mDismissOnOutsideTouch = true;
 
     private View mQuerySection;
-    private EditText mSearchInput;
-    private boolean mShowSearchKey;
+    private OnSearchListener mSearchListener;
     private boolean mIsFocused;
+    private OnFocusChangeListener mFocusChangeListener;
     private TextView mSearchBarTitle;
+    private EditText mSearchInput;
+    private String mOldQuery = "";
     private OnQueryChangeListener mQueryListener;
-    private ProgressBar mSearchProgress;
     private ImageView mLeftAction;
     private OnLeftMenuClickListener mOnMenuClickListener;
     private OnHomeActionClickListener mOnHomeActionClickListener;
+    private ProgressBar mSearchProgress;
     private DrawerArrowDrawable mMenuBtnDrawable;
-    private Drawable mIconClear;
     private Drawable mIconBackArrow;
     private Drawable mIconSearch;
-    private OnFocusChangeListener mFocusChangeListener;
     @LeftActionMode int mLeftActionMode;
-    private String mOldQuery = "";
-    private OnSearchListener mSearchListener;
     private boolean mShowHintNotFocused;
     private String mSearchHint;
+    private boolean mShowSearchKey;
     private boolean mMenuOpen = false;
-    private boolean mIsActiveOnClick;
-    private OnMenuItemClickListener mOnOverflowMenuItemListener;
-    private boolean mHideOverflowMenuFocused;
-    private boolean mSearchEnabled;
+    private MenuView mMenuView;
+    private OnMenuItemClickListener mActionMenuItemListener;
+    private ImageView mClearButton;
+    private Drawable mIconClear;
     private boolean mSkipQueryFocusChangeEvent;
     private boolean mSkipTextChangeEvent;
-    private MenuView mMenuView;
-    private ImageView mClearButton;
 
     private View mDivider;
 
@@ -245,7 +240,8 @@ public class FloatingSearchView extends FrameLayout {
 
     /**
      * Interface for implementing a listener to listen
-     * when a menu in the overflow menu has been selected.
+     * when an item in the action (the item can be presented as an action
+     * ,or as a menu item in the overflow menu) menu has been selected.
      */
     public interface OnMenuItemClickListener{
 
@@ -255,7 +251,7 @@ public class FloatingSearchView extends FrameLayout {
          *
          * @param item the selected menu item.
          */
-        void onMenuItemSelected(MenuItem item);
+        void onActionMenuItemSelected(MenuItem item);
     }
 
     /**
@@ -458,19 +454,17 @@ public class FloatingSearchView extends FrameLayout {
 
             setShowHintWhenNotFocused(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchHintWhenNotFocused, ATTRS_SEARCH_BAR_SHOW_SEARCH_HINT_NOT_FOCUSED_DEFAULT));
 
-            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftAction, LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL));
-
             setShowSearchKey(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchKey, ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT));
 
             setDismissOnOutsideClick(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dismissOnOutsideTouch, ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT));
 
             setSuggestionItemTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize, Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
 
+            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftAction, LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL));
+
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
                 inflateOverflowMenu(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
             }
-
-            setHideOverflowMenuWhenFocused(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_hideOverflowMenuWhenFocused, ATTRS_HIDE_OVERFLOW_MENU_FOCUSED_DEFAULT));
 
         } finally {
 
@@ -514,8 +508,8 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
 
-                if (mOnOverflowMenuItemListener != null)
-                    mOnOverflowMenuItemListener.onMenuItemSelected(item);
+                if (mActionMenuItemListener != null)
+                    mActionMenuItemListener.onActionMenuItemSelected(item);
 
                 //todo check if we should care about this return or not
                 return false;
@@ -647,89 +641,6 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
-     * Set if search is enabled.
-     *
-     * <p>When enabled, the search
-     * input will gain focus when clicking on it and action
-     * items that are associated with search only will become
-     * visible.</p>
-     *
-     * @param enabled True to enable search
-     */
-    public void setSearchEnabled(boolean enabled){
-
-        //todo avoid unnecessary work
-
-        if(enabled)
-            showSearchDependentActions();
-        else
-            hideSearchDependentActions();
-
-        this.mSearchEnabled = enabled;
-        mSearchInput.setEnabled(enabled);
-    }
-
-    private void showSearchDependentActions(){
-
-        ViewCompat.animate(mSearchBarTitle).alpha(0.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationStart(View view) {
-                mSearchBarTitle.setVisibility(INVISIBLE);
-            }
-
-        }).start();
-
-        ViewCompat.animate(mSearchInput).alpha(1.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationStart(View view) {
-                mSearchInput.setVisibility(VISIBLE);
-            }
-
-        }).start();
-
-        ViewCompat.animate(mClearButton).alpha(1.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationEnd(View view) {
-                mClearButton.setVisibility(VISIBLE);
-            }
-
-        }).start();
-    }
-
-    private void hideSearchDependentActions(){
-
-        ViewCompat.animate(mSearchBarTitle).alpha(1.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationStart(View view) {
-                mSearchBarTitle.setVisibility(VISIBLE);
-            }
-
-        }).start();
-
-        ViewCompat.animate(mSearchInput).alpha(0.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationStart(View view) {
-                mSearchInput.setVisibility(INVISIBLE);
-            }
-
-        }).start();
-
-        ViewCompat.animate(mClearButton).alpha(0.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationEnd(View view) {
-                mClearButton.setVisibility(INVISIBLE);
-            }
-
-        }).start();
-    }
-
-    /**
      * Mimics a menu click that opens the menu. Useful when for navigation
      * drawers when they open as a result of dragging.
      */
@@ -781,18 +692,6 @@ public class FloatingSearchView extends FrameLayout {
                 mLeftAction.setVisibility(View.INVISIBLE);
             }
         }
-    }
-
-    /**
-     * Sets whether the overflow menu icon
-     * will slide off the search bar when search
-     * gains focus.
-     *
-     * @param hide
-     */
-    public void setHideOverflowMenuWhenFocused(boolean hide){
-
-        this.mHideOverflowMenuFocused = hide;
     }
 
     /**
@@ -1381,7 +1280,8 @@ public class FloatingSearchView extends FrameLayout {
      * @param listener listener to listen to menu item clicks
      */
     public void setOnMenuItemClickListener(OnMenuItemClickListener listener){
-        this.mOnOverflowMenuItemListener = listener;
+        this.mActionMenuItemListener = listener;
+        //todo reset menu view listener
     }
 
     private void openMenuDrawable(final DrawerArrowDrawable drawerArrowDrawable, boolean withAnim){

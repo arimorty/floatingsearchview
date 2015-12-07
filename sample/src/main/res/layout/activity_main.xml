@@ -35,17 +35,13 @@
             app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
             app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
             app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
-            app:floatingSearch_showMenuAction="true"
             app:floatingSearch_searchHint="Search..."
-            app:floatingSearch_voiceRecHint="Say something..."
             app:floatingSearch_showSearchHintWhenNotFocused="true"
-            app:floatingSearch_showVoiceInput="true"
-            app:floatingSearch_showOverFlowMenu="true"
-            app:floatingSearch_hideOverflowMenuWhenFocused="true"
             app:floatingSearch_showSearchKey="false"
             app:floatingSearch_dismissOnOutsideTouch="true"
             app:floatingSearch_leftAction="showSearch"
-            app:floatingSearch_menu="@menu/menu_main"/>
+            app:floatingSearch_menu="@menu/menu_main"
+            app:floatingSearch_searchSuggestionTextSize="18sp"/>
 
     </RelativeLayout>
 
