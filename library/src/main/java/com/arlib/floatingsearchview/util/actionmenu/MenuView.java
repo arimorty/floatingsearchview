@@ -52,15 +52,11 @@ public class MenuView extends LinearLayout {
     private SupportMenuInflater mMenuInflater;
     private MenuPopupHelper mMenuPopupHelper;
 
-    private int mWidth = -1;
-
     private MenuBuilder.Callback mMenuCallback;
 
     private int mIconColor;
 
     private HashMap<MenuItemImpl, Integer> mViewPosMap = new HashMap<>();
-
-    private int mAvailWidth;
 
     private List<MenuItemImpl> mMenuItems;
     private List<MenuItemImpl> mActionItems = new ArrayList<>();
@@ -103,9 +99,20 @@ public class MenuView extends LinearLayout {
         this.mMenuCallback = menuCallback;
     }
 
+    /**
+     * Resets the the view to fir into a new
+     * available width.
+     *
+     * <p>This clears and then re-inflates the menu items
+     * , removes all of its associated action views, and recreates
+     * the menu and action items to fit in the new width.</p>
+     *
+     * @param availWidth the width available for the menu to use. If
+     *                   there is room, menu items that are flagged with
+     *                   android:showAsAction="ifRoom" or android:showAsAction="always"
+     *                   will show as actions.
+     */
     public void reset(int availWidth){
-
-        this.mAvailWidth = availWidth;
 
         removeAllViews();
 
