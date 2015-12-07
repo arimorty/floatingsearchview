@@ -52,6 +52,9 @@ import java.util.List;
  */
 public class MenuView extends LinearLayout {
 
+    private final int HIDE_IF_ROOM_ITEMS_ANIM_DURATION = 300;
+    private final int SHOW_IF_ROOM_ITEMS_ANIM_DURATION = 350;
+
     private final float ACTION_DIMENSION_PX;
 
     private int mMenu;
@@ -68,6 +71,8 @@ public class MenuView extends LinearLayout {
 
     //items that are currently presented as actions
     private List<MenuItemImpl> mActionItems = new ArrayList<>();
+
+    private List<MenuItemImpl> mActionShowAlwaysItems = new ArrayList<>();
 
     private boolean mHasOverflow = false;
 
@@ -264,6 +269,16 @@ public class MenuView extends LinearLayout {
                 });
             }
 
+            //todo go over logic
+            int animDuration = withAnim ?
+                    SHOW_IF_ROOM_ITEMS_ANIM_DURATION+(SHOW_IF_ROOM_ITEMS_ANIM_DURATION/2)/(mActionItems.size()-mActionShowAlwaysItems.size())
+                    : 0;
+
+            //todo go over logic
+            if((i<mActionItems.size() && !mActionShowAlwaysItems.contains(mActionItems.get(i))) ||
+                    i==getChildCount()-1 && mHasOverflow)
+                animDuration = withAnim ? SHOW_IF_ROOM_ITEMS_ANIM_DURATION * 2 : 0;
+
             currentView.setClickable(true);
             anims.add(ViewPropertyObjectAnimator.animate(currentView)
                     .addListener(new AnimatorListenerAdapter() {
@@ -272,7 +287,9 @@ public class MenuView extends LinearLayout {
 
                             currentView.setTranslationX(0);
                         }
-                    }).translationX(0).get());
+                    })
+                    .setDuration(animDuration)
+                    .translationX(0).get());
             anims.add(ViewPropertyObjectAnimator.animate(currentView)
                     .addListener(new AnimatorListenerAdapter() {
                         @Override
@@ -281,6 +298,7 @@ public class MenuView extends LinearLayout {
                             currentView.setScaleX(1.0f);
                         }
                     })
+                    .setDuration(animDuration)
                     .scaleX(1.0f).get());
             anims.add(ViewPropertyObjectAnimator.animate(currentView)
                     .addListener(new AnimatorListenerAdapter() {
@@ -290,6 +308,7 @@ public class MenuView extends LinearLayout {
                             currentView.setScaleY(1.0f);
                         }
                     })
+                    .setDuration(animDuration)
                     .scaleY(1.0f).get());
             anims.add(ViewPropertyObjectAnimator.animate(currentView)
                     .addListener(new AnimatorListenerAdapter() {
@@ -299,14 +318,15 @@ public class MenuView extends LinearLayout {
                             currentView.setAlpha(1.0f);
                         }
                     })
+                    .setDuration(animDuration)
                     .alpha(1.0f).get());
         }
 
         AnimatorSet animSet = new AnimatorSet();
 
         //temporary, from laziness
-        animSet.setDuration(withAnim?500:0);
-
+        if(!withAnim)
+            animSet.setDuration(0);
         animSet.playTogether(anims.toArray(new ObjectAnimator[anims.size()]));
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -322,6 +342,7 @@ public class MenuView extends LinearLayout {
 
     public void hideIfRoomItems(boolean withAnim){
 
+        mActionShowAlwaysItems.clear();
         cancelChildAnimListAndClear();
 
         List<MenuItemImpl> showAlwaysActionItems = filter(mMenuItems,new MenuItemImplPredicate() {
@@ -336,21 +357,25 @@ public class MenuView extends LinearLayout {
             actionItemIndex<mActionItems.size() && actionItemIndex<showAlwaysActionItems.size();
             actionItemIndex++){
 
+            final MenuItemImpl actionItem = showAlwaysActionItems.get(actionItemIndex);
+
             if(mActionItems.get(actionItemIndex).getItemId()!=showAlwaysActionItems.get(actionItemIndex).getItemId()){
 
                 ImageView action = (ImageView)getChildAt(actionItemIndex);
-                final MenuItemImpl actionItem = showAlwaysActionItems.get(actionItemIndex);
                 action.setImageDrawable(setIconColor(actionItem.getIcon(), mIconColor));
 
                 action.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
 
-                        if(mMenuCallback!=null)
+                        if (mMenuCallback != null)
                             mMenuCallback.onMenuItemSelected(mMenuBuilder, actionItem);
                     }
                 });
+
             }
+
+            mActionShowAlwaysItems.add(actionItem);
         }
 
         final int diff = mActionItems.size()-actionItemIndex+(mHasOverflow?1:0);
@@ -361,7 +386,7 @@ public class MenuView extends LinearLayout {
             final View currentChild = getChildAt(i);
             final float destTransX = ACTION_DIMENSION_PX * diff - (mHasOverflow ? Util.dpToPx(8) : 0);
             anims.add(ViewPropertyObjectAnimator.animate(currentChild)
-                    .setDuration(withAnim ? 500 * (diff - 1) : 0)
+                    .setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION * (diff - 1) : 0)
                     .addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
@@ -379,7 +404,7 @@ public class MenuView extends LinearLayout {
             currentView.setClickable(false);
 
             if(i!=getChildCount()-1)
-                anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? 500 : 0)
+                anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
                         .addListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
@@ -388,7 +413,7 @@ public class MenuView extends LinearLayout {
                             }
                         }).translationXBy(ACTION_DIMENSION_PX).get());
 
-            anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? 500 : 0)
+            anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
                     .addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
@@ -396,7 +421,7 @@ public class MenuView extends LinearLayout {
                             currentView.setScaleX(0.5f);
                         }
                     }).scaleX(.5f).get());
-            anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? 500 : 0)
+            anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
                     .addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
@@ -404,7 +429,7 @@ public class MenuView extends LinearLayout {
                             currentView.setScaleY(0.5f);
                         }
                     }).scaleY(.5f).get());
-            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).setDuration(withAnim ? 500 : 0)
+            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
                     .addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
