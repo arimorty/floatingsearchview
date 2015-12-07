@@ -9,7 +9,7 @@
     android:clickable="true"
     android:background="@color/light_gray">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/square_button_size"
         android:orientation="horizontal"
@@ -43,13 +43,14 @@
         </FrameLayout>
 
         <FrameLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:id="@+id/search_input_parent"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_toEndOf="@+id/search_bar_left_action_container"
             android:layout_toRightOf="@+id/search_bar_left_action_container"
             android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp">
+            android:layout_marginLeft="20dp"
+            android:layout_centerInParent="true">
 
             <EditText
                 android:id="@+id/search_bar_text"
@@ -77,25 +78,28 @@
         </FrameLayout>
 
         <ImageView
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:alpha="1"
             android:id="@+id/clear_btn"
             android:layout_width="@dimen/square_button_size"
             android:layout_height="@dimen/square_button_size"
             android:padding="@dimen/square_button_padding"
             android:clickable="true"
-            android:layout_alignParentLeft="true"
             android:layout_centerInParent="true"
             android:background="@drawable/oval_btn_selector"
             android:src="@drawable/ic_history_black_24dp"/>
 
         <com.arlib.floatingsearchview.util.actionmenu.MenuView
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
             android:id="@+id/menu_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"
-            android:gravity="center|right"
+            android:layout_centerInParent="true"
             android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"/>
 
-    </LinearLayout>
+    </RelativeLayout>
 
 </android.support.v7.widget.CardView>
