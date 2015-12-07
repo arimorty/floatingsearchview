@@ -560,7 +560,7 @@ public class FloatingSearchView extends FrameLayout {
                         mClearButton.setAlpha(0.0f);
                         mClearButton.setVisibility(View.VISIBLE);
                         ViewCompat.animate(mClearButton).alpha(1.0f).setDuration(500).start();
-                    }else  mClearButton.setVisibility(View.INVISIBLE);
+                    }else if(mSearchInput.getText().toString().length() == 0) mClearButton.setVisibility(View.INVISIBLE);
 
                     if (mQueryListener != null && mIsFocused)
                         mQueryListener.onSearchTextChanged(mOldQuery, mSearchInput.getText().toString());
