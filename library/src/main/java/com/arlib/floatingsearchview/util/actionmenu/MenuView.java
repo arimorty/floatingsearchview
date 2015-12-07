@@ -233,7 +233,7 @@ public class MenuView extends LinearLayout {
         return (ImageView)LayoutInflater.from(getContext()).inflate(R.layout.overflow_action_item_layout, this, false);
     }
 
-    public void showIfRoomItems(){
+    public void showIfRoomItems(boolean withAnim){
 
         final int preAnimTranslationX = (int)getChildAt(0).getTranslationX();
 
@@ -264,7 +264,10 @@ public class MenuView extends LinearLayout {
         }
 
         AnimatorSet animSet = new AnimatorSet();
-        animSet.setDuration(500);
+
+        //temporary, from laziness
+        animSet.setDuration(withAnim?500:0);
+
         animSet.playTogether(anims.toArray(new ObjectAnimator[anims.size()]));
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
@@ -277,7 +280,7 @@ public class MenuView extends LinearLayout {
         animSet.start();
     }
 
-    public void hideIfRoomItems(){
+    public void hideIfRoomItems(boolean withAnim){
 
         List<MenuItemImpl> showAlwaysActionItems = filter(mMenuItems,new MenuItemImplPredicate() {
             @Override
@@ -332,7 +335,7 @@ public class MenuView extends LinearLayout {
         if(!anims.isEmpty()){
 
             AnimatorSet animSet = new AnimatorSet();
-            animSet.setDuration(500);
+            animSet.setDuration(withAnim?500:0);
             animSet.playTogether(anims.toArray(new ObjectAnimator[anims.size()]));
             animSet.addListener(new AnimatorListenerAdapter() {
                 @Override
