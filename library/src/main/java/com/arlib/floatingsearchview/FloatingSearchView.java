@@ -681,10 +681,11 @@ public class FloatingSearchView extends FrameLayout {
      *
      * @param mode
      */
-    public void setLeftActionMode(int mode){
+    private void setLeftActionMode(int mode){
 
+        //todo implement dynamic leftActionMode setting and expose method
         mLeftActionMode = mode;
-        refreshLeftIcon();
+        //refreshLeftIcon();
     }
 
     private void refreshLeftIcon(){
@@ -1275,6 +1276,9 @@ public class FloatingSearchView extends FrameLayout {
                     animSet.setDuration(500);
                     animSet.playTogether(searchInputTransXAnim,transXArrowAnim, scaleXArrowAnim,scaleYArrowAnim,fadeArrowAnim);
                     animSet.start();
+                }else{
+
+                    mSearchInputParent.setTranslationX(0);
                 }
             }
         }
@@ -1514,7 +1518,7 @@ public class FloatingSearchView extends FrameLayout {
         savedState.dismissOnOutsideClick = this.mDismissOnOutsideTouch;
         savedState.showSearchKey = this.mShowSearchKey;
         savedState.showHintWhenNotFocused = this.mShowHintNotFocused;
-        savedState.leftMode = this.mLeftActionMode;
+        //savedState.leftMode = this.mLeftActionMode;
         return savedState;
     }
 
@@ -1529,7 +1533,7 @@ public class FloatingSearchView extends FrameLayout {
         setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
         setShowSearchKey(savedState.showSearchKey);
         setShowHintWhenNotFocused(savedState.showHintWhenNotFocused);
-        setLeftActionMode(savedState.leftMode);
+        //setLeftActionMode(savedState.leftMode);
         setSearchHint(savedState.searchHint);
 
         if(this.mIsFocused) {
@@ -1547,7 +1551,7 @@ public class FloatingSearchView extends FrameLayout {
                     swapSuggestions(savedState.suggestions, false);
                     mSuggestionSecHeightListener = null;
 
-                    //todo refactor
+                    //todo refactor move to a better location
                     transitionInLeftSection(false);
                 }
             };
@@ -1555,12 +1559,6 @@ public class FloatingSearchView extends FrameLayout {
             mClearButton.setVisibility((savedState.query.length() == 0) ? View.INVISIBLE : View.VISIBLE);
 
             mLeftAction.setVisibility(View.VISIBLE);
-
-            if(mLeftActionMode==LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL && !mMenuOpen)
-                openMenuDrawable(mMenuBtnDrawable, false);
-            else if(mLeftActionMode!=LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL
-                    && mLeftActionMode!=LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL)
-                changeIcon(mLeftAction, mIconBackArrow, false);
 
             Util.showSoftKeyboard(getContext(), mSearchInput);
         }
@@ -1578,7 +1576,7 @@ public class FloatingSearchView extends FrameLayout {
         private boolean dismissOnOutsideClick;
         private boolean showSearchKey;
         private boolean showHintWhenNotFocused;
-        private int leftMode;
+        //private int leftMode;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1596,7 +1594,7 @@ public class FloatingSearchView extends FrameLayout {
             dismissOnOutsideClick = (in.readInt() != 0);
             showSearchKey = (in.readInt() != 0);
             showHintWhenNotFocused = (in.readInt() != 0);
-            leftMode = in.readInt();
+            //leftMode = in.readInt();
         }
 
         @Override
@@ -1610,7 +1608,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(dismissOnOutsideClick ? 1 : 0);
             out.writeInt(showSearchKey ? 1 : 0);
             out.writeInt(showHintWhenNotFocused ? 1 : 0);
-            out.writeInt(leftMode);
+            //out.writeInt(leftMode);
         }
 
         public static final Creator<SavedState> CREATOR
