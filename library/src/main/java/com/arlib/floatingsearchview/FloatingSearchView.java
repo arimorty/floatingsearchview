@@ -16,6 +16,9 @@
 
 package com.arlib.floatingsearchview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
@@ -68,6 +71,7 @@ import com.arlib.floatingsearchview.util.actionmenu.MenuView;
 import com.arlib.floatingsearchview.util.adapter.GestureDetectorListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.OnItemTouchListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.TextWatcherAdapter;
+import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -1147,7 +1151,7 @@ public class FloatingSearchView extends FrameLayout {
                 openMenuDrawable(mMenuBtnDrawable, true);
             else if(mLeftActionMode!=LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL
                     && mLeftActionMode!=LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL)
-                changeIcon(mLeftAction, mIconBackArrow, true);
+                animIconSearchToBackArrow(mLeftAction);
 
             if(mMenuOpen)
                 closeMenu(false, true, true);
@@ -1212,6 +1216,19 @@ public class FloatingSearchView extends FrameLayout {
         }else{
             imageView.setAlpha(1.0f);
         }
+    }
+
+    private void animIconSearchToBackArrow(ImageView imageView) {
+
+        imageView.setRotation(45);
+        imageView.setImageDrawable(mIconBackArrow);
+        imageView.setAlpha(0.0f);
+        ObjectAnimator rotateAnim = ViewPropertyObjectAnimator.animate(imageView).rotation(0).get();
+        ObjectAnimator fadeAnim = ViewPropertyObjectAnimator.animate(imageView).alpha(1.0f).get();
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.setDuration(500);
+        animSet.playTogether(rotateAnim,fadeAnim);
+        animSet.start();
     }
 
     /**
