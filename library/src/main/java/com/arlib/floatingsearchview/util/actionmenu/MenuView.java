@@ -1,5 +1,7 @@
 package com.arlib.floatingsearchview.util.actionmenu;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
@@ -31,7 +33,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.Inflater;
 
 /**
@@ -52,6 +57,25 @@ public class MenuView extends LinearLayout {
     private MenuBuilder.Callback mMenuCallback;
 
     private int mIconColor;
+
+    private HashMap<MenuItemImpl, Integer> mViewPosMap = new HashMap<>();
+
+    private int mAvailWidth;
+
+    private List<MenuItemImpl> mMenuItems;
+    private List<MenuItemImpl> mActionItems = new ArrayList<>();
+
+    private boolean mHasOverflow = false;
+
+    public interface OnViewItemsTransXChangedListener{
+        void onTranslationXChanged(int dx);
+    }
+
+    private OnViewItemsTransXChangedListener mOnViewItemsTransXChangedListener;
+
+    public void setOnViewItemsTransXChangedListener(OnViewItemsTransXChangedListener listener){
+        this.mOnViewItemsTransXChangedListener = listener;
+    }
 
     public MenuView(Context context) {
         this(context, null);
@@ -79,7 +103,9 @@ public class MenuView extends LinearLayout {
         this.mMenuCallback = menuCallback;
     }
 
-    private void showItems(int availWidth, MenuItemImplPredicate menuItemImplPredicate, boolean showOverflowMenu){
+    public void setupActionItems(int availWidth){
+
+        this.mAvailWidth = availWidth;
 
         removeAllViews();
 
@@ -88,37 +114,47 @@ public class MenuView extends LinearLayout {
 
         int holdAllItemsCount;
 
-        List<MenuItemImpl> menuItems =  mMenuBuilder.getActionItems();
-        menuItems.addAll(mMenuBuilder.getNonActionItems());
+        mMenuItems =  mMenuBuilder.getActionItems();
+        mMenuItems.addAll(mMenuBuilder.getNonActionItems());
 
-        holdAllItemsCount = menuItems.size();
+        holdAllItemsCount = mMenuItems.size();
 
-        Collections.sort(menuItems, new Comparator<MenuItemImpl>() {
+        Collections.sort(mMenuItems, new Comparator<MenuItemImpl>() {
             @Override
             public int compare(MenuItemImpl lhs, MenuItemImpl rhs) {
                 return ((Integer) lhs.getOrder()).compareTo(rhs.getOrder());
             }
         });
 
-        menuItems = filter(menuItems, menuItemImplPredicate);
+        List<MenuItemImpl> menuItems = filter(mMenuItems, new MenuItemImplPredicate() {
+            @Override
+            public boolean apply(MenuItemImpl menuItem) {
+                return menuItem.requiresActionButton() || menuItem.requestsActionButton();
+            }
+        });
 
         int availItemRoom = availWidth/(int)ACTION_DIMENSION_PX;
         boolean addOverflowAtTheEnd = false;
-        if(((menuItems.size()<holdAllItemsCount) || availItemRoom<menuItems.size()) && showOverflowMenu){
+        if(((menuItems.size()<holdAllItemsCount) || availItemRoom<menuItems.size())){
             addOverflowAtTheEnd = true;
             availItemRoom--;
+            mHasOverflow = true;
         }
 
         ArrayList<Integer> actionMenuItems = new ArrayList<>();
 
         if(availItemRoom>0)
-            for(final MenuItemImpl menuItem: menuItems){
+            for(int i=0; i<menuItems.size(); i++){
+
+                final MenuItemImpl menuItem = menuItems.get(i);
 
                 if(menuItem.getIcon()!=null){
 
                     ImageView action = getActionHolder();
                     action.setImageDrawable(setIconColor(menuItem.getIcon(), mIconColor));
                     addView(action);
+                    mViewPosMap.put(menuItem, i);
+                    mActionItems.add(menuItem);
 
                     action.setOnClickListener(new OnClickListener() {
                         @Override
@@ -169,37 +205,117 @@ public class MenuView extends LinearLayout {
         return (ImageView)LayoutInflater.from(getContext()).inflate(R.layout.overflow_action_item_layout, this, false);
     }
 
-    private MenuInflater getMenuInflater() {
-        if (mMenuInflater == null) {
-            mMenuInflater = new SupportMenuInflater(getContext());
+    public void showIfRoomItems(){
+
+        final int preAnimTranslationX = (int)getChildAt(0).getTranslationX();
+
+        final List<ObjectAnimator> anims = new ArrayList<>();
+
+        for(int i=0; i<getChildCount(); i++){
+
+            if(i<mActionItems.size()){
+                ImageView action = (ImageView)getChildAt(i);
+                final MenuItem actionItem = mActionItems.get(i);
+                action.setImageDrawable(setIconColor(actionItem.getIcon(), mIconColor));
+
+                action.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        if(mMenuCallback!=null)
+                            mMenuCallback.onMenuItemSelected(mMenuBuilder, actionItem);
+                    }
+                });
+            }
+
+            getChildAt(i).setClickable(true);
+            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).translationX(0).get());
+            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).scaleX(1.0f).get());
+            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).scaleY(1.0f).get());
+            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).alpha(1.0f).get());
         }
-        return mMenuInflater;
+
+        AnimatorSet animSet = new AnimatorSet();
+        animSet.setDuration(500);
+        animSet.playTogether(anims.toArray(new ObjectAnimator[anims.size()]));
+        animSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+                if(mOnViewItemsTransXChangedListener!=null)
+                    mOnViewItemsTransXChangedListener.onTranslationXChanged(-preAnimTranslationX);
+            }
+        });
+        animSet.start();
     }
 
-    private Drawable setIconColor(Drawable icon, int color){
-        DrawableCompat.wrap(icon);
-        DrawableCompat.setTint(icon, color);
-        return icon;
-    }
+    public void hideIfRoomItems(){
 
-    public void showAlwaysIfRoomItems(int availWidth){
-
-        showItems(availWidth, new MenuItemImplPredicate() {
+        List<MenuItemImpl> showAlwaysActionItems = filter(mMenuItems,new MenuItemImplPredicate() {
             @Override
             public boolean apply(MenuItemImpl menuItem) {
                 return menuItem.requiresActionButton();
             }
-        }, false);
-    }
+        });
 
-    public void showIfRoomItems(int availWidth, boolean withAnim){
+        int actionItemIndex;
+        for(actionItemIndex=0;
+            actionItemIndex<mActionItems.size() && actionItemIndex<showAlwaysActionItems.size();
+            actionItemIndex++){
 
-        showItems(availWidth, new MenuItemImplPredicate() {
-            @Override
-            public boolean apply(MenuItemImpl menuItem) {
-                return menuItem.requestsActionButton() || menuItem.requiresActionButton();
+            if(mActionItems.get(actionItemIndex).getItemId()!=showAlwaysActionItems.get(actionItemIndex).getItemId()){
+
+                ImageView action = (ImageView)getChildAt(actionItemIndex);
+                final MenuItemImpl actionItem = showAlwaysActionItems.get(actionItemIndex);
+                action.setImageDrawable(setIconColor(actionItem.getIcon(), mIconColor));
+
+                action.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        if(mMenuCallback!=null)
+                            mMenuCallback.onMenuItemSelected(mMenuBuilder, actionItem);
+                    }
+                });
             }
-        }, true);
+        }
+
+        final int diff = mActionItems.size()-actionItemIndex+(mHasOverflow?1:0);
+
+        final List<ObjectAnimator> anims = new ArrayList<>();
+
+        for(int i=0; i<actionItemIndex; i++)
+            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i))
+                    .translationXBy(ACTION_DIMENSION_PX * diff - (mHasOverflow?Util.dpToPx(8):0)).get());
+
+        for(int i=actionItemIndex; i<diff+actionItemIndex; i++){
+
+            getChildAt(i).setClickable(false);
+
+            if(i!=getChildCount()-1)
+                anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).translationXBy(ACTION_DIMENSION_PX).get());
+
+            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).scaleX(.5f).get());
+            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).scaleY(.5f).get());
+            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).alpha(0.0f).get());
+        }
+
+        if(!anims.isEmpty()){
+
+            AnimatorSet animSet = new AnimatorSet();
+            animSet.setDuration(500);
+            animSet.playTogether(anims.toArray(new ObjectAnimator[anims.size()]));
+            animSet.addListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+
+                    if (mOnViewItemsTransXChangedListener != null)
+                        mOnViewItemsTransXChangedListener.onTranslationXChanged((int)getChildAt(0).getTranslationX());
+                }
+            });
+            animSet.start();
+        }
+
     }
 
     private interface MenuItemImplPredicate{
@@ -215,5 +331,18 @@ public class MenuView extends LinearLayout {
             }
         }
         return result;
+    }
+
+    private MenuInflater getMenuInflater() {
+        if (mMenuInflater == null) {
+            mMenuInflater = new SupportMenuInflater(getContext());
+        }
+        return mMenuInflater;
+    }
+
+    private Drawable setIconColor(Drawable icon, int color){
+        DrawableCompat.wrap(icon);
+        DrawableCompat.setTint(icon, color);
+        return icon;
     }
 }

@@ -300,7 +300,7 @@ public class FloatingSearchView extends FrameLayout {
 
     public FloatingSearchView(Context context, AttributeSet attrs){
         super(context, attrs);
-        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(200);//Util.dpToPx(150+4+48+20);
+        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(250);//Util.dpToPx(150+4+48+20);
         init(attrs);
     }
 
@@ -506,7 +506,7 @@ public class FloatingSearchView extends FrameLayout {
                     mQuerySection.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                 }
 
-                mMenuView.showIfRoomItems(actionMenuAvailWidth(), false);
+                mMenuView.setupActionItems(actionMenuAvailWidth());
             }
         });
 
@@ -525,6 +525,14 @@ public class FloatingSearchView extends FrameLayout {
             public void onMenuModeChange(MenuBuilder menu) {
             }
 
+        });
+
+        mMenuView.setOnViewItemsTransXChangedListener(new MenuView.OnViewItemsTransXChangedListener() {
+            @Override
+            public void onTranslationXChanged(int dx) {
+
+                ViewCompat.animate(mClearButton).translationXBy(dx).setDuration(0).start();
+            }
         });
 
         mClearButton.setOnClickListener(new OnClickListener() {
@@ -548,7 +556,19 @@ public class FloatingSearchView extends FrameLayout {
                     mSkipTextChangeEvent = false;
                 } else {
 
-                    mClearButton.setVisibility(( mSearchInput.getText().toString().length() == 0) ? View.INVISIBLE : View.VISIBLE);
+                    if(mSearchInput.getText().toString().length() == 0){
+                        ViewCompat.animate(mClearButton).setListener(new ViewPropertyAnimatorListenerAdapter(){
+                            @Override
+                            public void onAnimationEnd(View view) {
+                                mClearButton.setVisibility(View.INVISIBLE);
+                                mClearButton.setAlpha(1.0f);
+                            }
+                        }).alpha(0.0f).setDuration(500).start();
+                    }else{
+
+                        mClearButton.setVisibility(View.VISIBLE);
+                        ViewCompat.animate(mClearButton).alpha(1.0f).setDuration(500).start();
+                    }
 
                     if (mQueryListener != null && mIsFocused)
                         mQueryListener.onSearchTextChanged(mOldQuery, mSearchInput.getText().toString());
@@ -1248,7 +1268,7 @@ public class FloatingSearchView extends FrameLayout {
 
             mSearchInput.requestFocus();
 
-            mMenuView.showAlwaysIfRoomItems(actionMenuAvailWidth());
+            mMenuView.hideIfRoomItems();
 
             Util.showSoftKeyboard(getContext(), mSearchInput);
 
@@ -1279,7 +1299,7 @@ public class FloatingSearchView extends FrameLayout {
             if(mHostActivity!=null)
                 Util.closeSoftKeyboard(mHostActivity);
 
-            mMenuView.showIfRoomItems(actionMenuAvailWidth(), true);
+            mMenuView.showIfRoomItems();
 
             mClearButton.setVisibility(View.INVISIBLE);
 
@@ -1518,8 +1538,7 @@ public class FloatingSearchView extends FrameLayout {
                     mSuggestionSecHeightListener = null;
 
                     //todo refactor
-                    mMenuView.showAlwaysIfRoomItems(actionMenuAvailWidth());
-
+                    mMenuView.setupActionItems(actionMenuAvailWidth());
                 }
             };
 

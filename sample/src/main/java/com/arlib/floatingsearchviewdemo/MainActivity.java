@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
@@ -123,20 +124,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMenuItemSelected(MenuItem item) {
 
-                switch (item.getItemId()) {
-                    case R.id.action_show_menu:
-                        mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL);
-                        break;
-                    case R.id.action_show_search:
-                        mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL);
-                        break;
-                    case R.id.action_show_home:
-                        mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL);
-                        break;
-                    case R.id.action_show_nothing:
-                        mSearchView.setLeftActionMode(FloatingSearchView.LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL);
-                        break;
-                }
+                Toast.makeText(getApplicationContext(), item.getTitle(),
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
