@@ -470,7 +470,7 @@ public class FloatingSearchView extends FrameLayout {
             setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftAction, LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL));
 
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
-                inflateOverflowMenu(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
+                mMenuView.resetMenuResource(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
             }
 
         } finally {
@@ -716,13 +716,13 @@ public class FloatingSearchView extends FrameLayout {
      * @param menuId a menu xml resource reference
      */
     public void inflateOverflowMenu(int menuId){
-        mMenuView.resetMenuResource(menuId);
+       mMenuView.resetMenuResource(menuId);
 
-        //todo check for unnecessary calls
-        //throws exception child view null
-       // mMenuView.reset(actionMenuAvailWidth());
-        //if(mIsFocused)
-          //  mMenuView.hideIfRoomItems(false);
+        //todo check fo synchronizatioin problems in MenuView
+        //when calling it this way
+       mMenuView.reset(actionMenuAvailWidth());
+       if(mIsFocused)
+            mMenuView.hideIfRoomItems(false);
     }
 
     private int actionMenuAvailWidth(){

@@ -245,6 +245,7 @@ public class MenuView extends LinearLayout {
     public void showIfRoomItems(boolean withAnim){
 
         cancelChildAnimListAndClear();
+        mActionShowAlwaysItems.clear();
 
         final int preAnimTranslationX = (int)getChildAt(0).getTranslationX();
 
