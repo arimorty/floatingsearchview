@@ -1,3 +1,6 @@
+<b>NOTE<b/>: this README file is for release 1.1.0 which is was released yet. 
+
+
 Floating Search View [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Floating%20Search%20View-green.svg?style=true)](https://android-arsenal.com/details/1/2842)
 =============
 
