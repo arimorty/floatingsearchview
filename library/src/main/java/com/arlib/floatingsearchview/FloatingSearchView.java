@@ -718,7 +718,10 @@ public class FloatingSearchView extends FrameLayout {
     public void inflateOverflowMenu(int menuId){
         mMenuView.resetMenuResource(menuId);
 
-        //call mMenuView.showIfRoomItems() when getAvailWidthIsValid;
+        //todo check for unnecessary calls
+        mMenuView.reset(actionMenuAvailWidth());
+        if(mIsFocused)
+            mMenuView.hideIfRoomItems(false);
     }
 
     private int actionMenuAvailWidth(){
