@@ -62,7 +62,7 @@ In your xml, add menu resource
 <table>
     <tr>
         <td>showSearch</td>
-        <td>![Alt text](/images/device-2015-12-06-215814.png)</td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/actionmenufeature/images/device-2015-12-06-215814.png"/></td>
     </tr>
     <tr>
        <td>showSearch</td>
