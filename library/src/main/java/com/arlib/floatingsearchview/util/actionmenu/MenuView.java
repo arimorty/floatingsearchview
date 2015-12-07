@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2015 Arlib
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.arlib.floatingsearchview.util.actionmenu;
 
 import android.animation.Animator;
@@ -5,22 +21,16 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.ViewPropertyAnimatorCompat;
 import android.support.v7.view.SupportMenuInflater;
-import android.support.v7.view.ViewPropertyAnimatorCompatSet;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewPropertyAnimator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -30,24 +40,19 @@ import com.arlib.floatingsearchview.util.Util;
 import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.zip.Inflater;
 
 /**
- * Created by ari on 12/5/2015.
+ * A view that shows menu items as actions or
+ * as items in a overflow popup.
  */
 public class MenuView extends LinearLayout {
 
     private final float ACTION_DIMENSION_PX;
 
-    private int mMenuId;
-
+    private int mMenu;
     private MenuBuilder mMenuBuilder;
     private SupportMenuInflater mMenuInflater;
     private MenuPopupHelper mMenuPopupHelper;
@@ -56,21 +61,18 @@ public class MenuView extends LinearLayout {
 
     private int mIconColor;
 
-    private HashMap<MenuItemImpl, Integer> mViewPosMap = new HashMap<>();
-
+    //all menu items
     private List<MenuItemImpl> mMenuItems;
+
+    //items that are currently presented as actions
     private List<MenuItemImpl> mActionItems = new ArrayList<>();
 
     private boolean mHasOverflow = false;
 
-    public interface OnViewItemsTransXChangedListener{
-        void onTranslationXChanged(int dx);
-    }
-
     private OnViewItemsTransXChangedListener mOnViewItemsTransXChangedListener;
 
-    public void setOnViewItemsTransXChangedListener(OnViewItemsTransXChangedListener listener){
-        this.mOnViewItemsTransXChangedListener = listener;
+    public interface OnViewItemsTransXChangedListener{
+        void onTranslationXChanged(int dx);
     }
 
     public MenuView(Context context) {
@@ -90,12 +92,26 @@ public class MenuView extends LinearLayout {
         mIconColor = getResources().getColor(R.color.gray_active_icon);
     }
 
-    public void resetMenuResource(int menuId){
+    /**
+     * Sets the resource reference to the
+     * menu defined in xml that will be used
+     * in subsequent calls to {@link #reset(int availWidth) reset}
+     *
+     * @param menu a reference to a menu defined in
+     *             resources.
+     */
+    public void resetMenuResource(int menu){
 
-        this.mMenuId = menuId;
+        this.mMenu = menu;
     }
 
-    public void setMenuCallback( MenuBuilder.Callback menuCallback){
+    /**
+     * Set the callback that will be called when menu
+     * items a selected.
+     *
+     * @param menuCallback
+     */
+    public void setMenuCallback(MenuBuilder.Callback menuCallback){
         this.mMenuCallback = menuCallback;
     }
 
@@ -114,10 +130,12 @@ public class MenuView extends LinearLayout {
      */
     public void reset(int availWidth){
 
+        //clean view first
         removeAllViews();
 
+        //reset menu
         mMenuBuilder.clearAll();
-        getMenuInflater().inflate(mMenuId, mMenuBuilder);
+        getMenuInflater().inflate(mMenu, mMenuBuilder);
 
         int holdAllItemsCount;
 
@@ -159,7 +177,6 @@ public class MenuView extends LinearLayout {
                     ImageView action = getActionHolder();
                     action.setImageDrawable(setIconColor(menuItem.getIcon(), mIconColor));
                     addView(action);
-                    mViewPosMap.put(menuItem, i);
                     mActionItems.add(menuItem);
 
                     action.setOnClickListener(new OnClickListener() {
@@ -352,5 +369,9 @@ public class MenuView extends LinearLayout {
         DrawableCompat.wrap(icon);
         DrawableCompat.setTint(icon, color);
         return icon;
+    }
+
+    public void setOnViewItemsTransXChangedListener(OnViewItemsTransXChangedListener listener){
+        this.mOnViewItemsTransXChangedListener = listener;
     }
 }
