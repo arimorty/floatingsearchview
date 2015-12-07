@@ -33,6 +33,11 @@ import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -52,8 +57,8 @@ import java.util.List;
  */
 public class MenuView extends LinearLayout {
 
-    private final int HIDE_IF_ROOM_ITEMS_ANIM_DURATION = 300;
-    private final int SHOW_IF_ROOM_ITEMS_ANIM_DURATION = 350;
+    private final int HIDE_IF_ROOM_ITEMS_ANIM_DURATION = 400;
+    private final int SHOW_IF_ROOM_ITEMS_ANIM_DURATION = 450;
 
     private final float ACTION_DIMENSION_PX;
 
@@ -141,6 +146,7 @@ public class MenuView extends LinearLayout {
 
         //clean view first
         removeAllViews();
+        mActionItems.clear();
 
         //reset menu
         mMenuBuilder.clearAll();
@@ -245,7 +251,6 @@ public class MenuView extends LinearLayout {
     public void showIfRoomItems(boolean withAnim){
 
         cancelChildAnimListAndClear();
-        mActionShowAlwaysItems.clear();
 
         final int preAnimTranslationX = (int)getChildAt(0).getTranslationX();
 
@@ -272,13 +277,17 @@ public class MenuView extends LinearLayout {
 
             //todo go over logic
             int animDuration = withAnim ?
-                    SHOW_IF_ROOM_ITEMS_ANIM_DURATION+(SHOW_IF_ROOM_ITEMS_ANIM_DURATION/2)/(mActionItems.size()-mActionShowAlwaysItems.size())
+                    SHOW_IF_ROOM_ITEMS_ANIM_DURATION
                     : 0;
+
+            Interpolator interpolator = new DecelerateInterpolator();
 
             //todo go over logic
             if((i<mActionItems.size() && !mActionShowAlwaysItems.contains(mActionItems.get(i))) ||
-                    i==getChildCount()-1 && mHasOverflow)
-                animDuration = withAnim ? SHOW_IF_ROOM_ITEMS_ANIM_DURATION * 2 : 0;
+                    (i==getChildCount()-1 && mHasOverflow)) {
+
+                interpolator = new LinearInterpolator();
+            }
 
             currentView.setClickable(true);
             anims.add(ViewPropertyObjectAnimator.animate(currentView)
@@ -289,6 +298,7 @@ public class MenuView extends LinearLayout {
                             currentView.setTranslationX(0);
                         }
                     })
+                    .setInterpolator(interpolator)
                     .setDuration(animDuration)
                     .translationX(0).get());
             anims.add(ViewPropertyObjectAnimator.animate(currentView)
@@ -299,6 +309,7 @@ public class MenuView extends LinearLayout {
                             currentView.setScaleX(1.0f);
                         }
                     })
+                    .setInterpolator(interpolator)
                     .setDuration(animDuration)
                     .scaleX(1.0f).get());
             anims.add(ViewPropertyObjectAnimator.animate(currentView)
@@ -309,6 +320,7 @@ public class MenuView extends LinearLayout {
                             currentView.setScaleY(1.0f);
                         }
                     })
+                    .setInterpolator(interpolator)
                     .setDuration(animDuration)
                     .scaleY(1.0f).get());
             anims.add(ViewPropertyObjectAnimator.animate(currentView)
@@ -319,6 +331,7 @@ public class MenuView extends LinearLayout {
                             currentView.setAlpha(1.0f);
                         }
                     })
+                    .setInterpolator(interpolator)
                     .setDuration(animDuration)
                     .alpha(1.0f).get());
         }
@@ -387,7 +400,8 @@ public class MenuView extends LinearLayout {
             final View currentChild = getChildAt(i);
             final float destTransX = ACTION_DIMENSION_PX * diff - (mHasOverflow ? Util.dpToPx(8) : 0);
             anims.add(ViewPropertyObjectAnimator.animate(currentChild)
-                    .setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION * (diff - 1) : 0)
+                    .setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
+                    .setInterpolator(new AccelerateInterpolator())
                     .addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
