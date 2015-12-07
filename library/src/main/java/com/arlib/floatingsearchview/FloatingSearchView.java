@@ -510,7 +510,7 @@ public class FloatingSearchView extends FrameLayout {
                 mMenuView.reset(actionMenuAvailWidth());
 
                 if(mIsFocused)
-                    mMenuView.hideIfRoomItems();
+                    mMenuView.hideIfRoomItems(false);
             }
         });
 
@@ -1170,7 +1170,7 @@ public class FloatingSearchView extends FrameLayout {
 
             mSearchInput.requestFocus();
 
-            mMenuView.hideIfRoomItems();
+            mMenuView.hideIfRoomItems(true);
 
             Util.showSoftKeyboard(getContext(), mSearchInput);
 
@@ -1195,7 +1195,7 @@ public class FloatingSearchView extends FrameLayout {
             if(mHostActivity!=null)
                 Util.closeSoftKeyboard(mHostActivity);
 
-            mMenuView.showIfRoomItems();
+            mMenuView.showIfRoomItems(true);
 
             mClearButton.setVisibility(View.INVISIBLE);
 
