@@ -1147,11 +1147,7 @@ public class FloatingSearchView extends FrameLayout {
 
             mLeftAction.setVisibility(View.VISIBLE);
 
-            if(mLeftActionMode==LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL && !mMenuOpen)
-                openMenuDrawable(mMenuBtnDrawable, true);
-            else if(mLeftActionMode!=LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL
-                    && mLeftActionMode!=LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL)
-                animIconSearchToBackArrow(mLeftAction);
+            animFocusTransitionIn();
 
             if(mMenuOpen)
                 closeMenu(false, true, true);
@@ -1171,13 +1167,7 @@ public class FloatingSearchView extends FrameLayout {
                 mFocusChangeListener.onFocus();
         }else{
 
-            if(mLeftActionMode==LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL )
-                closeMenuDrawable(mMenuBtnDrawable, true);
-            else if(mLeftActionMode!=LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL
-                    && mLeftActionMode!=LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL)
-                changeIcon(mLeftAction, mIconSearch, true);
-            else if(mLeftActionMode==LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL)
-                mLeftAction.setVisibility(INVISIBLE);
+            animFocusTransitionOut();
 
             clearSuggestions(new OnSuggestionsClearListener() {
                 @Override
@@ -1218,17 +1208,52 @@ public class FloatingSearchView extends FrameLayout {
         }
     }
 
-    private void animIconSearchToBackArrow(ImageView imageView) {
+    private void animFocusTransitionIn(){
 
-        imageView.setRotation(45);
-        imageView.setImageDrawable(mIconBackArrow);
-        imageView.setAlpha(0.0f);
-        ObjectAnimator rotateAnim = ViewPropertyObjectAnimator.animate(imageView).rotation(0).get();
-        ObjectAnimator fadeAnim = ViewPropertyObjectAnimator.animate(imageView).alpha(1.0f).get();
-        AnimatorSet animSet = new AnimatorSet();
-        animSet.setDuration(500);
-        animSet.playTogether(rotateAnim,fadeAnim);
-        animSet.start();
+        switch (mLeftActionMode){
+
+            case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:{
+                openMenuDrawable(mMenuBtnDrawable, true);
+                if(!mMenuOpen)
+                    break;
+            }break;
+            case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
+                mLeftAction.setRotation(45);
+                mLeftAction.setImageDrawable(mIconBackArrow);
+                mLeftAction.setAlpha(0.0f);
+                ObjectAnimator rotateAnim = ViewPropertyObjectAnimator.animate(mLeftAction).rotation(0).get();
+                ObjectAnimator fadeAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(1.0f).get();
+                AnimatorSet animSet = new AnimatorSet();
+                animSet.setDuration(500);
+                animSet.playTogether(rotateAnim,fadeAnim);
+                animSet.start();
+            }break;
+            case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:{
+                //do nothing
+            }break;
+            case LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL:{
+                mLeftAction.setImageDrawable(mIconBackArrow);
+            }
+        }
+    }
+
+    private void animFocusTransitionOut(){
+
+        switch (mLeftActionMode){
+
+            case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:{
+                closeMenuDrawable(mMenuBtnDrawable, true);
+            }break;
+            case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
+                changeIcon(mLeftAction, mIconSearch, true);
+            }break;
+            case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:{
+                //do nothing
+            }break;
+            case LEFT_ACTION_MODE_SHOW_NOTHING_ENUM_VAL:{
+                mLeftAction.setVisibility(INVISIBLE);
+            }
+        }
     }
 
     /**
