@@ -60,37 +60,32 @@ Add
 <table>
     <tr>
         <td>showHamburger</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2oi.gif"/></td>
-        <td>          
-           mSearchView.setOnLeftMenuClickListener(
-           new FloatingSearchView.OnLeftMenuClickListener() { ...} );         
-        </td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2oi.gif"/></td>       
     </tr>
     <tr>
     <td>          
         mSearchView.setOnLeftMenuClickListener(
         new FloatingSearchView.OnLeftMenuClickListener() { ...} );          
     </td>
+    <td></td> 
     </tr>
     <tr>
        <td>showSearch</td>
-       <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf91i.gif"/></td>  
-       <td></td>
+       <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf91i.gif"/></td>        
     <tr>
         <td>showHome</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf9cp.gif"/></td>
-       
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf9cp.gif"/></td>       
     </tr>
     <tr>
     <td>          
         mSearchView.setOnHomeActionClickListener(
         new FloatingSearchView.OnHomeActionClickListener() { ... });         
     </td>
+    <td></td> 
     </tr>
     <tr>
         <td>noLeftAction</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2ii.gif"/></td>
-        <td></td>   
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2ii.gif"/></td>       
     </tr>
 </table>
 
@@ -119,8 +114,7 @@ In the menu resource, set items' ```app:showAsAction="[insert one of the options
     </tr>
     <tr>
         <td>always</td>
-        <td>Shows an action icon for the menu if there is room if regardless of whether the search is focused or not.
-        </td>
+        <td>Shows an action icon for the menu if there is room if regardless of whether the search is focused or not.</td>
     </tr>   
 </table>
 
