@@ -52,19 +52,35 @@ Usage
 
 The left action can be configured as follows:
 
-In your xml, add 
+Add 
 ```xml
-   app:floatingSearch_leftActionMode="[insert one of the options described in the table below]"
+   app:floatingSearch_leftActionMode="[insert one of the options from table below]"
 ```
 
 <table>
     <tr>
         <td>showHamburger</td>
         <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2oi.gif"/></td>
+        <td>
+        Listen for clicks:
+         ```  
+                 mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
+                           @Override
+                           public void onMenuOpened() {
+                                                         
+                           }
+               
+                           @Override
+                           public void onMenuClosed() {
+                               
+                           }
+                       });
+         ```
+         </td>
     </tr>
     <tr>
        <td>showSearch</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf91i.gif"/></td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf91i.gif"/></td>        
     </tr>
     <tr>
         <td>showHome</td>
@@ -85,11 +101,7 @@ Add a menu resource
     app:floatingSearch_menu="@menu/menu_main"
 ```
 
-
-**NOTE**:
-The menu resource's ```app:showAsAction=""```
-behaves as follows:
-
+In the menu resource, set items' ```app:showAsAction="[insert one of the options described in the table below]"```
 
 <table>
     <tr>
@@ -146,6 +158,7 @@ Set a callback for when a given suggestion is bound to the suggestion list.
 
 **Styling:**
 
+<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/device-2015-12-08-123103.png"/>
 
 
 Available styling:
