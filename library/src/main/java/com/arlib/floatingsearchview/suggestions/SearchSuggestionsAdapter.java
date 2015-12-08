@@ -17,9 +17,11 @@
 package com.arlib.floatingsearchview.suggestions;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,10 +31,14 @@ import android.widget.TextView;
 
 import com.arlib.floatingsearchview.R;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.Util;
+import com.arlib.floatingsearchview.util.view.BodyTextView;
+import com.arlib.floatingsearchview.util.view.IconImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
+//todo add description
 public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = "";
@@ -49,6 +55,17 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private int mBodyTextSizePx;
 
+    private int mTextColor = -1;
+
+    private int mRightIconColor = -1;
+
+    public interface OnBindSuggestionCallback{
+
+        void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition);
+    }
+
+    private OnBindSuggestionCallback mOnBindSuggestionCallback;
+
     public interface Listener{
 
         void onItemSelected(SearchSuggestion item);
@@ -56,15 +73,43 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
         void onMoveItemToSearchClicked(SearchSuggestion item);
     }
 
+    public void setOnBindSuggestionCallback(OnBindSuggestionCallback callback){
+        this.mOnBindSuggestionCallback = callback;
+    }
+
+    public void setTextColor(int color){
+
+        boolean notify = false;
+        if(this.mTextColor!=color)
+            notify = true;
+
+        this.mTextColor = color;
+
+        if(notify)
+            notifyDataSetChanged();
+    }
+
+    public void setRightIconColor(int color){
+
+        boolean notify = false;
+        if(this.mRightIconColor!=color)
+            notify = true;
+
+        this.mRightIconColor = color;
+
+        if(notify)
+            notifyDataSetChanged();
+    }
+
     public static class SearchSuggestionViewHolder extends RecyclerView.ViewHolder{
 
         private static final String TAG = "";
 
-        public TextView body;
+        public BodyTextView body;
 
-        public ImageView leftIcon;
+        public IconImageView leftIcon;
 
-        public ImageView rightIcon;
+        public IconImageView rightIcon;
 
         private Listener mListener;
 
@@ -79,9 +124,9 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
             super (v);
 
             mListener = listener;
-            body = (TextView) v.findViewById(R.id.body);
-            leftIcon = (ImageView) v.findViewById(R.id.left_icon);
-            rightIcon = (ImageView) v.findViewById(R.id.right_icon);
+            body = (BodyTextView) v.findViewById(R.id.body);
+            leftIcon = (IconImageView) v.findViewById(R.id.left_icon);
+            rightIcon = (IconImageView) v.findViewById(R.id.right_icon);
 
             rightIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -89,7 +134,6 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
                     if(mListener!=null)
                         mListener.onMoveItemToSearchClicked(getAdapterPosition());
-
                 }
             });
 
@@ -168,10 +212,24 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         viewHolder.body.setText(item.getBody());
 
-        item.setBodyText(viewHolder.body);
-        if(item.setLeftIcon(viewHolder.leftIcon))
-            viewHolder.leftIcon.setVisibility(View.VISIBLE);
-        else viewHolder.leftIcon.setVisibility(View.INVISIBLE);
+        viewHolder.leftIcon.setImageDrawable(null);
+
+        if(mTextColor!=-1)
+            viewHolder.body.setTextColor(mTextColor);
+
+        if(mRightIconColor!=-1)
+            Util.setIconColor(viewHolder.rightIcon.getDrawable(), mRightIconColor);
+
+        if(mOnBindSuggestionCallback!=null) {
+
+            //we need to employ a locking technique in order to prevent client from
+            //setting properties on the icon and text that are to be set by the library only
+            viewHolder.body.lock();
+            viewHolder.leftIcon.lock();
+            mOnBindSuggestionCallback.onBindSuggestion(viewHolder.leftIcon, viewHolder.body, item, position);
+            viewHolder.body.unlock();
+            viewHolder.leftIcon.unlock();
+        }
     }
 
     @Override

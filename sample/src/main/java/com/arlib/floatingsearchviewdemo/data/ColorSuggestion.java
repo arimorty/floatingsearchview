@@ -43,26 +43,11 @@ public  class ColorSuggestion implements SearchSuggestion {
         this.mIsHistory = isHistory;
     }
 
+    public boolean getIsHistory(){return this.mIsHistory;}
+
     @Override
     public String getBody() {
         return mColor.getName();
-    }
-
-    @Override
-    public void setBodyText(TextView textView) {
-
-    }
-
-    @Override
-    public boolean setLeftIcon(ImageView imageView) {
-
-        if(mIsHistory) {
-            imageView.setImageDrawable(imageView.getResources().getDrawable(R.drawable.ic_history_black_24dp));
-            imageView.setAlpha(.36f);
-        }else
-            imageView.setImageDrawable(new ColorDrawable(Color.parseColor(mColor.getHex())));
-
-        return true;
     }
 
     @Override

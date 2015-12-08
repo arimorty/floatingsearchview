@@ -49,6 +49,7 @@ public class DataHelper {
                         @Override
                         protected FilterResults performFiltering(CharSequence constraint) {
 
+
                                 List<ColorSuggestion> suggestionList = new ArrayList<>();
 
                                 if (!(constraint == null || constraint.length() == 0)) {

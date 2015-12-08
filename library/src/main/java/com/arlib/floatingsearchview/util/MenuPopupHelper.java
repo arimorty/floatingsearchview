@@ -46,7 +46,7 @@ import java.util.ArrayList;
 /**
  * Presents a menu as a small, simple popup anchored to another view.
  *
- * @hide
+ *
  */
 public class MenuPopupHelper implements AdapterView.OnItemClickListener, View.OnKeyListener,
         ViewTreeObserver.OnGlobalLayoutListener, PopupWindow.OnDismissListener,

@@ -1,3 +1,6 @@
+<b>NOTE<b/>: this README file is for release 1.1.0 which is was not released yet. 
+
+
 Floating Search View [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Floating%20Search%20View-green.svg?style=true)](https://android-arsenal.com/details/1/2842)
 =============
 
@@ -50,6 +53,31 @@ Usage
               }
           });
 ```
+<br/>
+
+<b>Left action modes:</b>
+
+In your xml, add menu resource
+```xml
+   app:floatingSearch_leftAction=""
+```
+
+<table>
+    <tr>
+        <td>showSearch</td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/actionmenufeature/images/device-2015-12-06-215814.png"/></td>
+    </tr>
+    <tr>
+       <td>showSearch</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>showSearch</td>
+        <td></td>
+    </tr>
+</table>
+
+
 
 <br/>
 <b>Configure <i>overflow</i> menu:</b>
