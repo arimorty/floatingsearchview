@@ -272,6 +272,11 @@ public class MenuView extends LinearLayout {
         return (ImageView)LayoutInflater.from(getContext()).inflate(R.layout.overflow_action_item_layout, this, false);
     }
 
+    /**
+     * Hides all the menu items flagged with "ifRoom"
+     *
+     * @param withAnim
+     */
     public void hideIfRoomItems(boolean withAnim){
 
         mActionShowAlwaysItems.clear();
@@ -392,6 +397,11 @@ public class MenuView extends LinearLayout {
 
     }
 
+    /**
+     * Shows all the menu items that were hidden by hideIfRoomItems(boolean withAnim)
+     *
+     * @param withAnim
+     */
     public void showIfRoomItems(boolean withAnim){
 
         cancelChildAnimListAndClear();
