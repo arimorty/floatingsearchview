@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.view.BodyTextView;
+import com.arlib.floatingsearchview.util.view.IconImageView;
 import com.arlib.floatingsearchviewdemo.data.ColorSuggestion;
 import com.arlib.floatingsearchviewdemo.data.DataHelper;
 
@@ -182,10 +184,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
-            public void onBindSuggestion(ImageView leftIcon, TextView bodyText, SearchSuggestion item, int itemPosition) {
+            public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
 
                 ColorSuggestion colorSuggestion = (ColorSuggestion)item;
 
@@ -195,6 +196,7 @@ public class MainActivity extends AppCompatActivity {
                 }else
                     leftIcon.setImageDrawable(new ColorDrawable(Color.parseColor(colorSuggestion.getColor().getHex())));
             }
+
         });
 
        // mSearchView.setLeftActionIconColor(Color.RED);

@@ -29,6 +29,8 @@ import android.widget.TextView;
 
 import com.arlib.floatingsearchview.R;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.view.BodyTextView;
+import com.arlib.floatingsearchview.util.view.IconImageView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +53,7 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     public interface OnBindSuggestionCallback{
 
-        void onBindSuggestion(ImageView leftIcon, TextView bodyText, SearchSuggestion item, int itemPosition);
+        void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition);
     }
 
     private OnBindSuggestionCallback mOnBindSuggestionCallback;
@@ -71,11 +73,11 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         private static final String TAG = "";
 
-        public TextView body;
+        public BodyTextView body;
 
-        public ImageView leftIcon;
+        public IconImageView leftIcon;
 
-        public ImageView rightIcon;
+        public IconImageView rightIcon;
 
         private Listener mListener;
 
@@ -90,9 +92,9 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
             super (v);
 
             mListener = listener;
-            body = (TextView) v.findViewById(R.id.body);
-            leftIcon = (ImageView) v.findViewById(R.id.left_icon);
-            rightIcon = (ImageView) v.findViewById(R.id.right_icon);
+            body = (BodyTextView) v.findViewById(R.id.body);
+            leftIcon = (IconImageView) v.findViewById(R.id.left_icon);
+            rightIcon = (IconImageView) v.findViewById(R.id.right_icon);
 
             rightIcon.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -180,8 +182,16 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         viewHolder.leftIcon.setImageDrawable(null);
 
-        if(mOnBindSuggestionCallback!=null)
+        if(mOnBindSuggestionCallback!=null) {
+
+            //we need to employ a locking technique in order to prevent client from
+            //setting properties on the icon and text that are to be set by the library only
+            viewHolder.body.lock();
+            viewHolder.leftIcon.lock();
             mOnBindSuggestionCallback.onBindSuggestion(viewHolder.leftIcon, viewHolder.body, item, position);
+            viewHolder.body.unlock();
+            viewHolder.leftIcon.lock();
+        }
     }
 
     @Override

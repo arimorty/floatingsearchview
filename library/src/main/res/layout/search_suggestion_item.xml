@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/suggestion_item_background">
 
-    <ImageView
+    <com.arlib.floatingsearchview.util.view.IconImageView
         android:visibility="visible"
         android:alpha="1"
         android:id="@+id/left_icon"
@@ -15,7 +15,7 @@
         android:layout_gravity="center"
         android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin"/>
 
-    <TextView
+    <com.arlib.floatingsearchview.util.view.BodyTextView
         android:id="@+id/body"
         android:layout_gravity="center"
         android:layout_width="0dp"
@@ -29,7 +29,7 @@
         android:textSize="@dimen/suggestion_body_text_size"
         android:text="body"/>
 
-    <ImageView
+    <com.arlib.floatingsearchview.util.view.IconImageView
         android:alpha="1"
         android:visibility="visible"
         android:id="@+id/right_icon"
