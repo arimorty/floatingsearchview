@@ -659,17 +659,6 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
-     * Sets the action menu icons' color.
-     *
-     * @param color the color to be applied to the
-     *              action menu items.
-     */
-    public void setActionMenuColor(int color){
-
-
-    }
-
-    /**
      * Sets the clear button's color.
      *
      * @param color the color to be applied to the
@@ -678,6 +667,31 @@ public class FloatingSearchView extends FrameLayout {
     public void setClearBtnColor(int color){
         DrawableCompat.setTint(mIconClear, color);
     }
+
+    /**
+     * Sets the action menu icons' color.
+     *
+     * @param color the color to be applied to the
+     *              action menu items.
+     */
+    public void setActionMenuColor(int color){
+
+        if(mMenuView!=null)
+            mMenuView.setActionIconColor(color);
+    }
+
+    /**
+     * Sets the action menu overflow icon's color.
+     *
+     * @param color the color to be applied to the
+     *              overflow icon.
+     */
+    public void setActionMenuOverflowColor(int color){
+
+        if(mMenuView!=null)
+            mMenuView.setOverflowColor(color);
+    }
+
 
     /**
      * Mimics a menu click that opens the menu. Useful when for navigation
