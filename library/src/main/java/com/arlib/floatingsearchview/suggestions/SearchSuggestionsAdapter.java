@@ -17,6 +17,7 @@
 package com.arlib.floatingsearchview.suggestions;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
@@ -37,6 +38,7 @@ import com.arlib.floatingsearchview.util.view.IconImageView;
 import java.util.ArrayList;
 import java.util.List;
 
+//todo add description
 public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final String TAG = "";

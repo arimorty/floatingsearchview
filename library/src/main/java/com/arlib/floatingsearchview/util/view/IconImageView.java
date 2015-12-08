@@ -25,11 +25,32 @@ public class IconImageView extends ImageView {
     }
 
     @Override
+    public void setPadding(int left, int top, int right, int bottom) {
+
+        if(!mIsLocked)
+            super.setPadding(left, top, right, bottom);
+    }
+
+    @Override
+    public void setScaleX(float scaleX) {
+
+        if(!mIsLocked)
+            super.setScaleX(scaleX);
+    }
+
+    @Override
+    public void setScaleY(float scaleY) {
+
+        if(!mIsLocked)
+            super.setScaleY(scaleY);
+    }
+
+    @Override
     public ViewGroup.LayoutParams getLayoutParams() {
 
         if(!mIsLocked)
             return super.getLayoutParams();
-        else return new ViewGroup.LayoutParams(0,0);
+        else return null;
     }
 
     public void lock(){

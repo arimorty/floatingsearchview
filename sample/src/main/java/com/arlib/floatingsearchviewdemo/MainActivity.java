@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocus() {
 
+                //show suggestions when search bar gains focus (typically history suggestions)
                 mSearchView.swapSuggestions(DataHelper.getHistory(MainActivity.this, 3));
 
                 Log.d(TAG, "onFocus()");
@@ -129,11 +130,30 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onActionMenuItemSelected(MenuItem item) {
 
-                Toast.makeText(getApplicationContext(), item.getTitle(),
-                        Toast.LENGTH_SHORT).show();
+                if (item.getItemId() == R.id.action_change_colors) {
+
+                    //demonstrate setting colors for items
+                    mSearchView.setBackgroundColor(Color.parseColor("#ECE7D5"));
+                    mSearchView.setViewTextColor(Color.parseColor("#657A81"));
+                    mSearchView.setHintTextColor(Color.parseColor("#596D73"));
+                    mSearchView.setActionMenuOverflowColor(Color.parseColor("#B58900"));
+                    mSearchView.setMenuItemIconColor(Color.parseColor("#2AA198"));
+                    mSearchView.setLeftActionIconColor(Color.parseColor("#657A81"));
+                    mSearchView.setClearBtnColor(Color.parseColor("#D30102"));
+                    mSearchView.setSuggestionRightIconColor(Color.parseColor("#BCADAD"));
+                    mSearchView.setDividerColor(Color.parseColor("#dfd7b9"));
+
+                } else {
+
+                    //just print action
+                    Toast.makeText(getApplicationContext(), item.getTitle(),
+                            Toast.LENGTH_SHORT).show();
+                }
+
             }
         });
 
+        //use this listener to listen to menu clicks when app:floatingSearch_leftAction="showHamburger"
         mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
             @Override
             public void onMenuOpened() {
@@ -144,46 +164,33 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onMenuClosed() {
-
                 Log.d(TAG, "onMenuClosed()");
 
                 mDrawerLayout.closeDrawer(GravityCompat.START);
             }
         });
 
+        //use this listener to listen to menu clicks when app:floatingSearch_leftAction="showHome"
         mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
             @Override
             public void onHomeClicked() {
 
                 Log.d(TAG, "onHomeClicked()");
-
             }
         });
 
-        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-                //since the drawer might have opened as a results of
-                //a click on the left menu, we need to make sure
-                //to close it right after the drawer opens, so that
-                //it is closed when the drawer is  closed.
-                mSearchView.closeMenu(false);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
-
+        /*
+         * Here you have access to the left icon and the text of a given suggestion
+         * item when as it is bound to the suggestion list. You can utilize this
+         * callback to change some properties of the left icon and the text. For example, you
+         * can load left icon images using your favorite image loading library, or change text color.
+         *
+         * Some restrictions:
+         * 1. You can modify the height, eidth, margin, or padding of the text and left icon.
+         * 2. You can't modify the text's size.
+         *
+         * Modifications to these properties will be ignored silently.
+         */
         mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
             public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
@@ -199,14 +206,26 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
-        mSearchView.setLeftActionIconColor(Color.RED);
-        mSearchView.setMenuItemIconColor(Color.BLUE);
-        mSearchView.setActionMenuOverflowColor(Color.GREEN);
-        mSearchView.setClearBtnColor(Color.YELLOW);
-        mSearchView.setBackgroundColor(Color.BLACK);
-        mSearchView.setDividerColor(Color.RED);
-        mSearchView.setViewTextColor(Color.WHITE);
-        mSearchView.setHintTextColor(Color.WHITE);
+        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) { }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+                //since the drawer might have opened as a results of
+                //a click on the left menu, we need to make sure
+                //to close it right after the drawer opens, so that
+                //it is closed when the drawer is  closed.
+                mSearchView.closeMenu(false);
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) { }
+
+            @Override
+            public void onDrawerStateChanged(int newState) { }
+        });
     }
 
     private void refreshBackgroundColor(String colorName, String colorValue){

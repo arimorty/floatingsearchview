@@ -88,7 +88,7 @@
             android:layout_centerInParent="true"
             android:background="@drawable/oval_btn_selector"/>
 
-        <com.arlib.floatingsearchview.util.actionmenu.MenuView
+        <com.arlib.floatingsearchview.util.view.MenuView
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
             android:id="@+id/menu_view"

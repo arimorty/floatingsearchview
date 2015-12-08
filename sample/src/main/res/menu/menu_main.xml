@@ -16,9 +16,9 @@
         android:orderInCategory="3"
         app:showAsAction="ifRoom"
         android:icon="@drawable/ic_local_taxi_black_24dp"/>
-    <item android:id="@+id/action_restaurant"
-        android:title="@string/action_restaurant"
+    <item android:id="@+id/action_change_colors"
+        android:title="@string/action_change_colors"
         android:orderInCategory="4"
         app:showAsAction="ifRoom"
-        android:icon="@drawable/ic_restaurant_menu_black_24dp"/>
+        android:icon="@drawable/ic_invert_colors_black_24dp"/>
 </menu>

@@ -34,7 +34,6 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
-import android.support.annotation.StringDef;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
@@ -69,7 +68,7 @@ import android.widget.TextView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.arlib.floatingsearchview.util.Util;
-import com.arlib.floatingsearchview.util.actionmenu.MenuView;
+import com.arlib.floatingsearchview.util.view.MenuView;
 import com.arlib.floatingsearchview.util.adapter.GestureDetectorListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.OnItemTouchListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.TextWatcherAdapter;
@@ -482,7 +481,7 @@ public class FloatingSearchView extends FrameLayout {
             setClearBtnColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_clearBtnColor, getResources().getColor(R.color.clear_btn_color)));
             setViewTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_viewTextColor, getResources().getColor(android.R.color.primary_text_dark)));
             setHintTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_hintTextColor, getResources().getColor(R.color.hint_color)));
-            setSuggestionRightIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_suggestionRightIconColor, getResources().getColor(R.color.light_gray_inactive_icon)));
+            setSuggestionRightIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_suggestionRightIconColor, getResources().getColor(R.color.gray_active_icon)));
 
         } finally {
 
@@ -745,6 +744,7 @@ public class FloatingSearchView extends FrameLayout {
         this.mSuggestionTextColor = color;
 
         if(mSearchInput!=null && mSearchBarTitle!=null && mSuggestionsAdapter!=null){
+            Log.d("dfsdfsdf","setting text color to: "+color);
             mSearchInput.setTextColor(color);
             mSuggestionsAdapter.setTextColor(color);
             mSearchBarTitle.setTextColor(color);

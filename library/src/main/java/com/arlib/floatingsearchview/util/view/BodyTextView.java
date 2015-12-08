@@ -40,6 +40,53 @@ public class BodyTextView extends TextView {
     }
 
     @Override
+    public void setTextSize(float size) {
+        if(!mIsLocked)
+           super.setTextSize(size);
+    }
+
+    @Override
+    public void setTextSize(int unit, float size) {
+        if(!mIsLocked)
+          super.setTextSize(unit, size);
+    }
+
+    @Override
+    public void setPadding(int left, int top, int right, int bottom) {
+
+        if(!mIsLocked)
+           super.setPadding(left, top, right, bottom);
+    }
+
+    @Override
+    public void setText(CharSequence text, BufferType type) {
+
+        if(!mIsLocked)
+           super.setText(text, type);
+    }
+
+    @Override
+    public void setTextScaleX(float size) {
+
+        if(!mIsLocked)
+           super.setTextScaleX(size);
+    }
+
+    @Override
+    public void setScaleX(float scaleX) {
+
+        if(!mIsLocked)
+           super.setScaleX(scaleX);
+    }
+
+    @Override
+    public void setScaleY(float scaleY) {
+
+        if(!mIsLocked)
+            super.setScaleY(scaleY);
+    }
+
+    @Override
     public ViewGroup.LayoutParams getLayoutParams() {
 
         if(!mIsLocked)

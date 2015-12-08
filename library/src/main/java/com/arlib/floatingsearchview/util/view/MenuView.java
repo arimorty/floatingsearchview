@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.arlib.floatingsearchview.util.actionmenu;
+package com.arlib.floatingsearchview.util.view;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -110,6 +110,7 @@ public class MenuView extends LinearLayout {
 
     public void setActionIconColor(int actionColor){
         this.mActionIconColor = actionColor;
+        refreshColors();
     }
 
     public void setOverflowColor(int overflowColor){
