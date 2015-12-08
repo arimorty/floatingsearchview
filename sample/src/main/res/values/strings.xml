@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">FloatingSearchView</string>
-    <string name="action_show_menu">Show menu</string>
-    <string name="action_hide_menu">Hide menu</string>
+    <string name="action_voice_rec">action voice rec</string>
+    <string name="action_location">action location</string>
+    <string name="action_taxi">action taxi</string>
+    <string name="action_change_colors">change style</string>
 </resources>

@@ -36,30 +36,6 @@ public interface SearchSuggestion extends Parcelable{
     String getBody();
 
     /**
-     * Sets the TextView that holds the suggestion text.
-     *
-     * <p>This allows for applying special properties to the
-     * TextView based on the client's needs.</p>
-     *
-     * @param textView
-     */
-    void setBodyText(TextView textView);
-
-    /**
-     * Sets the ImageView that will holds the icon that will
-     * be displayed to the left/start of the suggestion text.
-     *
-     * <p>This gives clients the freedom to choose their desired
-     * image loading library and customize the way the icons look</p>
-     *
-     * @param imageView The imageView that holds the icon
-     * @return true, if the ImageView was set and the icon should
-     *         be displayed. Returning false will cause the icon to
-     *         be invisible.
-     */
-    boolean setLeftIcon(ImageView imageView);
-
-    /**
      * Returns a creator object that will be used
      * for saving state.
      *

@@ -24,7 +24,7 @@
             android:visibility="gone"
             android:layout_gravity="bottom"
             android:layout_marginBottom="5dp"
-            android:background="@drawable/divider_background"/>
+            android:background="@color/divider_color"/>
     </FrameLayout>
 
 
