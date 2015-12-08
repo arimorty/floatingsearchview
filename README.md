@@ -62,23 +62,26 @@ Add
         <td>showHamburger</td>
         <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2oi.gif"/></td>
         <td>          
-           mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() { ... );         
+           mSearchView.setOnLeftMenuClickListener(
+           new FloatingSearchView.OnLeftMenuClickListener() { ...} );         
         </td>
     </tr>
     <tr>
        <td>showSearch</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf91i.gif"/></td>        
-    </tr>
+       <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf91i.gif"/></td>  
+       <td></td>
     <tr>
         <td>showHome</td>
         <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf9cp.gif"/></td>
         <td>          
-             mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() { ... );         
+             mSearchView.setOnHomeActionClickListener(
+             new FloatingSearchView.OnHomeActionClickListener() { ... });         
         </td>
     </tr>
     <tr>
         <td>noLeftAction</td>
         <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2ii.gif"/></td>
+        <td></td>   
     </tr>
 </table>
 
