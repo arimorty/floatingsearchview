@@ -302,7 +302,7 @@ public class FloatingSearchView extends FrameLayout {
 
     public FloatingSearchView(Context context, AttributeSet attrs){
         super(context, attrs);
-        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(270);
+        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(200);
         init(attrs);
     }
 
