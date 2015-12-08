@@ -101,7 +101,7 @@ public class FloatingSearchView extends FrameLayout {
     /*
      * The ideal min width that the left icon plus the query EditText
      * should have. It applies only when determining how to render
-     * the action menu, it doesn't set the views' min attributes.
+     * the action items, it doesn't set the views' min attributes.
      */
     public final int SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
 
@@ -467,7 +467,7 @@ public class FloatingSearchView extends FrameLayout {
 
             setSuggestionItemTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize, Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
 
-            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftAction, LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL));
+            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftActionMode, LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL));
 
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
                 mMenuView.resetMenuResource(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
@@ -508,6 +508,10 @@ public class FloatingSearchView extends FrameLayout {
 
         if(!isInEditMode() && mHostActivity!=null)
             mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+
+        if(isInEditMode())
+            mMenuView.reset(actionMenuAvailWidth());
+
 
         ViewTreeObserver vto = mQuerySection.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -852,6 +856,8 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private int actionMenuAvailWidth(){
+        if(isInEditMode())
+            return Util.dpToPx(360) - SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
         return mQuerySection.getWidth() - SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
     }
 
