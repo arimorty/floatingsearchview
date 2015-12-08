@@ -137,7 +137,8 @@ First, implement [SearchSuggestion](https://github.com/arimorty/floatingsearchvi
 
 Set a callback for when a given suggestion is bound to the suggestion list.
 
-```mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+``` 
+   mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
             public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
 
