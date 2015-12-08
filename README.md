@@ -75,7 +75,7 @@ Add
     </tr>
 </table>
 
-Listen to <i><hamburger</i> button clicks:
+Listen to *hamburger* button clicks:
 ```
  mSearchView.setOnLeftMenuClickListener(
         new FloatingSearchView.OnLeftMenuClickListener() { ...} );          
@@ -133,7 +133,7 @@ Listen for item selections
 
 First, implement [SearchSuggestion](https://github.com/arimorty/floatingsearchview/blob/master/library/src/main/java/com/arlib/floatingsearchview/suggestions/model/SearchSuggestion.java) 
 
-<i>Optional</i>:
+*Optional*:
 
 Set a callback for when a given suggestion is bound to the suggestion list.
 
