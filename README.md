@@ -61,33 +61,31 @@ Add
     <tr>
         <td>showHamburger</td>
         <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2oi.gif"/></td>       
-    </tr>
-    <tr>
-    <td>          
-        mSearchView.setOnLeftMenuClickListener(
-        new FloatingSearchView.OnLeftMenuClickListener() { ...} );          
-    </td>
-   
-    </tr>
+    </tr>    
     <tr>
        <td>showSearch</td>
        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf91i.gif"/></td>        
     <tr>
         <td>showHome</td>
         <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf9cp.gif"/></td>       
-    </tr>
-    <tr>
-    <td>          
-        mSearchView.setOnHomeActionClickListener(
-        new FloatingSearchView.OnHomeActionClickListener() { ... });         
-    </td>
-    
-    </tr>
+    </tr>   
     <tr>
         <td>noLeftAction</td>
         <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2ii.gif"/></td>       
     </tr>
 </table>
+
+Listen to <i><hamburger</i> button clicks:
+```
+ mSearchView.setOnLeftMenuClickListener(
+        new FloatingSearchView.OnLeftMenuClickListener() { ...} );          
+```
+
+Listen to home (back arrow) button clicks:
+```
+  mSearchView.setOnHomeActionClickListener(
+         new FloatingSearchView.OnHomeActionClickListener() { ... });       
+```
 
 <br/>
 
