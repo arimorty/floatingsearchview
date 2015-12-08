@@ -67,7 +67,7 @@ Add
         mSearchView.setOnLeftMenuClickListener(
         new FloatingSearchView.OnLeftMenuClickListener() { ...} );          
     </td>
-    <td></td> 
+   
     </tr>
     <tr>
        <td>showSearch</td>
@@ -81,7 +81,7 @@ Add
         mSearchView.setOnHomeActionClickListener(
         new FloatingSearchView.OnHomeActionClickListener() { ... });         
     </td>
-    <td></td> 
+    
     </tr>
     <tr>
         <td>noLeftAction</td>
