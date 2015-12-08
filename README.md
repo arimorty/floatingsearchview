@@ -165,9 +165,9 @@ Available styling:
            <item name="floatingSearch_hintTextColor"></item>
            <item name="floatingSearch_dividerColor"></item>
            <item name="floatingSearch_clearBtnColor"></item>
-           <item name="floatingSearch_suggestionRightIconColor"></item>
            <item name="floatingSearch_leftActionColor"></item>
            <item name="floatingSearch_menuItemIconColor"></item>
+           <item name="floatingSearch_suggestionRightIconColor"></item>
            <item name="floatingSearch_actionMenuOverflowColor"></item>
     </style>
 ```
