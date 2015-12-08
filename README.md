@@ -61,22 +61,9 @@ Add
     <tr>
         <td>showHamburger</td>
         <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2oi.gif"/></td>
-        <td>
-        Listen for clicks:
-         ```  
-                 mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
-                           @Override
-                           public void onMenuOpened() {
-                                                         
-                           }
-               
-                           @Override
-                           public void onMenuClosed() {
-                               
-                           }
-                       });
-         ```
-         </td>
+        <td>          
+           mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() { ... );         
+        </td>
     </tr>
     <tr>
        <td>showSearch</td>
@@ -85,6 +72,9 @@ Add
     <tr>
         <td>showHome</td>
         <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf9cp.gif"/></td>
+        <td>          
+             mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() { ... );         
+        </td>
     </tr>
     <tr>
         <td>noLeftAction</td>
