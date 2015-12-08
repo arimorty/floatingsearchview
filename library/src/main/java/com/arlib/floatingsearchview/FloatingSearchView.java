@@ -479,7 +479,7 @@ public class FloatingSearchView extends FrameLayout {
             setMenuItemIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_menuItemIconColor, getResources().getColor(R.color.menu_icon_color)));
             setDividerColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_dividerColor, getResources().getColor(R.color.divider)));
             setClearBtnColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_clearBtnColor, getResources().getColor(R.color.clear_btn_color)));
-            setViewTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_viewTextColor, getResources().getColor(android.R.color.primary_text_dark)));
+            setViewTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_viewTextColor, getResources().getColor(R.color.dark_gray)));
             setHintTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_hintTextColor, getResources().getColor(R.color.hint_color)));
             setSuggestionRightIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_suggestionRightIconColor, getResources().getColor(R.color.gray_active_icon)));
 
