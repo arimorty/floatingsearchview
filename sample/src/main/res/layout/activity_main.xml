@@ -39,7 +39,7 @@
             app:floatingSearch_showSearchHintWhenNotFocused="true"
             app:floatingSearch_showSearchKey="false"
             app:floatingSearch_dismissOnOutsideTouch="true"
-            app:floatingSearch_leftActionMode="showHamburger"
+            app:floatingSearch_leftActionMode="showHome"
             app:floatingSearch_menu="@menu/menu_main"/>
 
     </RelativeLayout>

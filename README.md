@@ -16,7 +16,7 @@ Usage
    up the full width and height of the screen   
 3. Listen to query changes and provide suggestion items that implement SearchSuggestion
 
-<b>Example</b>:
+**Example:**
 
 ```xml
        <com.arlib.floatingsearchview.FloatingSearchView
@@ -48,13 +48,13 @@ Usage
 ```
 <br/>
 
-<b>Left action mode:</b>
+**Left action mode:**
 
 The left action can be configured as follows:
 
 In your xml, add 
 ```xml
-   app:floatingSearch_leftActionMode=""
+   app:floatingSearch_leftActionMode="[insert one of the options described in the table below]"
 ```
 
 <table>
@@ -64,11 +64,11 @@ In your xml, add
     </tr>
     <tr>
        <td>showSearch</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2lz.gif"/></td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf91i.gif"/></td>
     </tr>
     <tr>
         <td>showHome</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2c2.gif"/></td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf9cp.gif"/></td>
     </tr>
     <tr>
         <td>noLeftAction</td>
@@ -78,16 +78,18 @@ In your xml, add
 
 <br/>
 
-<b>Configure menu items:</b>
+**Configure menu items:**
 
 Add a menu resource
 ```xml
     app:floatingSearch_menu="@menu/menu_main"
 ```
 
+
 **NOTE**:
 The menu resource's ```app:showAsAction=""```
 behaves as follows:
+
 
 <table>
     <tr>
@@ -121,7 +123,7 @@ Listen for item selections
 <br/>
 
 
-<b>Configure suggestion item:</b>
+**Configure suggestion item:**
 
 First, implement [SearchSuggestion](https://github.com/arimorty/floatingsearchview/blob/master/library/src/main/java/com/arlib/floatingsearchview/suggestions/model/SearchSuggestion.java) 
 
@@ -129,7 +131,7 @@ First, implement [SearchSuggestion](https://github.com/arimorty/floatingsearchvi
 
 Set a callback for when a given suggestion is bound to the suggestion list.
 
- ```mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+```mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
             public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
 
@@ -137,11 +139,14 @@ Set a callback for when a given suggestion is bound to the suggestion list.
                        //you can choose your favorite image-loading library for setting the left icon's image. 
             }
 
-        });``` 
+        });
+``` 
 
 <br/>
 
-<i>Styling</i>:
+**Styling:**
+
+
 
 Available styling:
 
