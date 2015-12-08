@@ -226,8 +226,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDrawerStateChanged(int newState) { }
         });
-
-        mSearchView.setSearchFocused(true);
     }
 
     private void refreshBackgroundColor(String colorName, String colorValue){
