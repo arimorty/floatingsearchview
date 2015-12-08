@@ -302,7 +302,7 @@ public class FloatingSearchView extends FrameLayout {
 
     public FloatingSearchView(Context context, AttributeSet attrs){
         super(context, attrs);
-        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(175);//Util.dpToPx(150+4+48+20);
+        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(270);
         init(attrs);
     }
 
@@ -652,6 +652,7 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void setLeftMenuIconColor(int color){
 
+        //todo go over
         mMenuBtnDrawable.setColor(color);
     }
 
@@ -661,6 +662,7 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void openMenu(boolean withAnim) {
 
+        //todo go over
         openMenu(true, withAnim, false);
     }
 
@@ -673,6 +675,7 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void closeMenu(boolean withAnim) {
 
+        //todo go over
         closeMenu(true, withAnim, false);
     }
 
@@ -760,6 +763,8 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
+     * todo go over
+     *
      * Enables clients to directly manipulate
      * the menu icon's progress.
      *
