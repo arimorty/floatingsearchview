@@ -72,7 +72,7 @@ Add
        <td></td>
     <tr>
         <td>showHome</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf9cp.gif"  height="200px"/></td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf9cp.gif"  width="100%" height="100%"/></td>
         <td>          
              mSearchView.setOnHomeActionClickListener(
              new FloatingSearchView.OnHomeActionClickListener() { ... });         
