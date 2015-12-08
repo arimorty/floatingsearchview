@@ -101,18 +101,18 @@ In the menu resource, set items' ```app:showAsAction="[insert one of the options
 <table>
     <tr>
         <td>never</td>
-        <td>Puts the menu item in the overflow menu</td>
+        <td>Puts the menu item in the overflow options popup</td>
     </tr>
     <tr>
        <td>ifRoom</td>
        <td>Shows an action icon for the menu if the following conditions are met:
-       1. The search is focused.
-       2. There is enough room fo it.
+       1. The search is not focused.
+       2. There is enough room for it.
        </td>
     </tr>
     <tr>
         <td>always</td>
-        <td>Shows an action icon for the menu if there is room if regardless of whether the search is focused or not.</td>
+        <td>Shows an action icon for the menu if there is room, regardless of whether the search is focused or not.</td>
     </tr>   
 </table>
 
