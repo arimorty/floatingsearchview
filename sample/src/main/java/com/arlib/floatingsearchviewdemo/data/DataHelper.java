@@ -49,11 +49,6 @@ public class DataHelper {
                         @Override
                         protected FilterResults performFiltering(CharSequence constraint) {
 
-                                try {
-                                        Thread.sleep(3000);
-                                } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                }
 
                                 List<ColorSuggestion> suggestionList = new ArrayList<>();
 
