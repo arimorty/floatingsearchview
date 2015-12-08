@@ -467,7 +467,7 @@ public class FloatingSearchView extends FrameLayout {
 
             setSuggestionItemTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize, Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
 
-            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftAction, LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL));
+            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftActionMode, LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL));
 
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
                 mMenuView.resetMenuResource(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));

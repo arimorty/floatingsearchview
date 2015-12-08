@@ -13,7 +13,7 @@ Usage
 
 1. In your dependencies, add
     ```
-         compile 'com.github.arimorty:floatingsearchview:1.0.2'
+         compile 'com.github.arimorty:floatingsearchview:1.1.0'
     ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen   
@@ -22,23 +22,19 @@ Usage
 <b>Example</b>:
 
 ```xml
-    <com.arlib.floatingsearchview.FloatingSearchView
-               android:id="@+id/floating_search_view"
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
-               app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
-               app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
-               app:floatingSearch_showMenuAction="true"
-               app:floatingSearch_searchHint="Search..."
-               app:floatingSearch_voiceRecHint="Say something..."
-               app:floatingSearch_showSearchHintWhenNotFocused="true"
-               app:floatingSearch_showVoiceInput="true"
-               app:floatingSearch_showOverFlowMenu="true"
-               app:floatingSearch_hideOverflowMenuWhenFocused="true"
-               app:floatingSearch_showSearchKey="false"
-               app:floatingSearch_dismissOnOutsideTouch="true"
-               app:floatingSearch_menu="@menu/menu_main"/>
+       <com.arlib.floatingsearchview.FloatingSearchView
+                android:id="@+id/floating_search_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
+                app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
+                app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
+                app:floatingSearch_searchHint="Search..."
+                app:floatingSearch_showSearchHintWhenNotFocused="true"
+                app:floatingSearch_showSearchKey="false"
+                app:floatingSearch_dismissOnOutsideTouch="true"
+                app:floatingSearch_leftActionMode="showHamburger"
+                app:floatingSearch_menu="@menu/menu_main"/>
 ```
 
 ```
