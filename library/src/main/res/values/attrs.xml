@@ -23,4 +23,7 @@
         <attr name="floatingSearch_showOverFlowMenu" format="boolean"/>
         <attr name="floatingSearch_menu" format="reference"/>
     </declare-styleable>
+    <declare-styleable name="CustomTheme">
+        <attr name="floatingSearch_style" format="reference"/>
+    </declare-styleable>
 </resources>
