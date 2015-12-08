@@ -16,44 +16,38 @@
 
 package com.arlib.floatingsearchview;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.speech.RecognizerIntent;
+import android.support.annotation.IntDef;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
-import android.support.v7.view.SupportMenuInflater;
-import android.support.v7.view.ViewPropertyAnimatorCompatSet;
 import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
-import android.text.StaticLayout;
-import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -73,12 +67,15 @@ import android.widget.TextView;
 
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.arlib.floatingsearchview.util.MenuPopupHelper;
 import com.arlib.floatingsearchview.util.Util;
+import com.arlib.floatingsearchview.util.view.MenuView;
 import com.arlib.floatingsearchview.util.adapter.GestureDetectorListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.OnItemTouchListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.TextWatcherAdapter;
+import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -101,19 +98,30 @@ public class FloatingSearchView extends FrameLayout {
 
     private final int ATTRS_SEARCH_BAR_MARGIN_DEFAULT = 0;
 
-    private final boolean ATTRS_SEARCH_BAR_SHOW_MENU_ACTION_DEFAULT = true;
+    /*
+     * The ideal min width that the left icon plus the query EditText
+     * should have. It applies only when determining how to render
+     * the action items, it doesn't set the views' min attributes.
+     */
+    public final int SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
+
+    public final static int LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL = 1;
+    public final static int LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL = 2;
+    public final static int LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL = 3;
+    public final static int LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL = 4;
+
+    @IntDef({LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL, LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL,LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL
+            ,LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface LeftActionMode {}
+
+    @LeftActionMode private final int ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT = LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL;
 
     private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = false;
-
-    private final boolean ATTRS_SEARCH_BAR_SHOW_VOICE_ACTION_DEFAULT = false;
 
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
 
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_HINT_NOT_FOCUSED_DEFAULT = true;
-
-    private final boolean ATTRS_HIDE_OVERFLOW_MENU_FOCUSED_DEFAULT = true;
-
-    private final boolean ATTRS_SHOW_OVERFLOW_MENU_DEFAULT = true;
 
     private final int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
 
@@ -125,52 +133,42 @@ public class FloatingSearchView extends FrameLayout {
 
     private final Interpolator SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR = new LinearInterpolator();
 
-    private final int VOICE_REC_DEFAULT_REQUEST_CODE = 1024;
-
     private final int SUGGESTION_ITEM_ANIM_DURATION = 120;
-
-    private final int OVERFLOW_ICON_WIDTH_DP = 36;
 
     private Activity mHostActivity;
 
     private Drawable mBackgroundDrawable;
     private boolean mDismissOnOutsideTouch = true;
 
-    private View mQuerySection;
-    private ImageView mVoiceInputOrClearButton;
-    private EditText mSearchInput;
-    private boolean mShowSearchKey;
+    private CardView mQuerySection;
+    private OnSearchListener mSearchListener;
     private boolean mIsFocused;
+    private OnFocusChangeListener mFocusChangeListener;
     private TextView mSearchBarTitle;
+    private EditText mSearchInput;
+    private int mSearchInputTextColor = -1;
+    private int mSearchInputHintColor = -1;
+    private View mSearchInputParent;
+    private String mOldQuery = "";
     private OnQueryChangeListener mQueryListener;
-    private ProgressBar mSearchProgress;
-    private ImageView mMenuSearchOrExitButton;
+    private ImageView mLeftAction;
     private OnLeftMenuClickListener mOnMenuClickListener;
+    private OnHomeActionClickListener mOnHomeActionClickListener;
+    private ProgressBar mSearchProgress;
     private DrawerArrowDrawable mMenuBtnDrawable;
-    private Drawable mIconClear;
-    private Drawable mIconMic;
-    private Drawable mIconOverflowMenu;
     private Drawable mIconBackArrow;
     private Drawable mIconSearch;
-    private OnFocusChangeListener mFocusChangeListener;
-    private boolean mShowMenuAction;
-    private String mOldQuery = "";
-    private OnSearchListener mSearchListener;
-    private int mVoiceRecRequestCode = VOICE_REC_DEFAULT_REQUEST_CODE;
-    private String mVoiceRecHint;
-    private boolean mShowVoiceInput;
+    @LeftActionMode int mLeftActionMode;
     private boolean mShowHintNotFocused;
     private String mSearchHint;
+    private boolean mShowSearchKey;
     private boolean mMenuOpen = false;
-    private boolean mIsActiveOnClick;
-    private ImageView mOverflowMenu;
-    private MenuBuilder mMenuBuilder;
-    private MenuPopupHelper mMenuPopupHelper;
-    private SupportMenuInflater mMenuInflater;
-    private OnMenuItemClickListener mOnOverflowMenuItemListener;
-    private boolean mHideOverflowMenuFocused;
-    private boolean mShowOverFlowMenu;
-    private boolean mSearchEnabled;
+    private MenuView mMenuView;
+    private int mActionMenuItemColor;
+    private int mOverflowIconColor;
+    private OnMenuItemClickListener mActionMenuItemListener;
+    private ImageView mClearButton;
+    private Drawable mIconClear;
     private boolean mSkipQueryFocusChangeEvent;
     private boolean mSkipTextChangeEvent;
 
@@ -179,9 +177,21 @@ public class FloatingSearchView extends FrameLayout {
     private RelativeLayout mSuggestionsSection;
     private View mSuggestionListContainer;
     private RecyclerView mSuggestionsList;
+    private int mSuggestionTextColor = -1;
+    private int mSuggestionRightIconColor;
     private SearchSuggestionsAdapter mSuggestionsAdapter;
+    private SearchSuggestionsAdapter.OnBindSuggestionCallback mOnBindSuggestionCallback;
     private boolean mIsCollapsing = false;
     private int mSuggestionsTextSizePx;
+    private boolean mIsInitialLayout = true;
+    private boolean mIsSuggestionsSecHeightSet;
+
+    //An interface for implementing a listener that will get notified when the suggestions
+    //section's height is set. This is to be used internally only.
+    private interface OnSuggestionSecHeightSetListener{
+        void onSuggestionSecHeightSet();
+    }
+    private OnSuggestionSecHeightSetListener mSuggestionSecHeightListener;
 
     /**
      * Interface for implementing a callback to be
@@ -201,6 +211,23 @@ public class FloatingSearchView extends FrameLayout {
          * clicked and the menu's state is now closed.
          */
         void onMenuClosed();
+    }
+
+    /**
+     * Interface for implementing a callback to be
+     * invoked when the home action button (the back arrow)
+     * is clicked.
+     *
+     * <p>Note: This is only relevant when leftActionMode is
+     * set to {@value #LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL}</p>
+     */
+    public interface OnHomeActionClickListener{
+
+        /**
+         * Called when the home button was
+         * clicked.
+         */
+        void onHomeClicked();
     }
 
     /**
@@ -226,7 +253,8 @@ public class FloatingSearchView extends FrameLayout {
 
     /**
      * Interface for implementing a listener to listen
-     * when a menu in the overflow menu has been selected.
+     * when an item in the action (the item can be presented as an action
+     * ,or as a menu item in the overflow menu) menu has been selected.
      */
     public interface OnMenuItemClickListener{
 
@@ -236,7 +264,7 @@ public class FloatingSearchView extends FrameLayout {
          *
          * @param item the selected menu item.
          */
-        void onMenuItemSelected(MenuItem item);
+        void onActionMenuItemSelected(MenuItem item);
     }
 
     /**
@@ -281,6 +309,7 @@ public class FloatingSearchView extends FrameLayout {
 
     public FloatingSearchView(Context context, AttributeSet attrs){
         super(context, attrs);
+        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(225);
         init(attrs);
     }
 
@@ -294,19 +323,16 @@ public class FloatingSearchView extends FrameLayout {
 
         mBackgroundDrawable = new ColorDrawable(Color.BLACK);
 
-        mQuerySection = findViewById(R.id.search_query_section);
-        mVoiceInputOrClearButton = (ImageView)findViewById(R.id.search_bar_mic_or_ex);
+        mQuerySection = (CardView)findViewById(R.id.search_query_section);
+        mClearButton = (ImageView)findViewById(R.id.clear_btn);
         mSearchInput = (EditText)findViewById(R.id.search_bar_text);
+        mSearchInputParent = findViewById(R.id.search_input_parent);
         mSearchBarTitle = (TextView)findViewById(R.id.search_bar_title);
-        mMenuSearchOrExitButton = (ImageView)findViewById(R.id.search_bar_exit);
+        mLeftAction = (ImageView)findViewById(R.id.left_action);
         mSearchProgress = (ProgressBar)findViewById(R.id.search_bar_search_progress);
-        mShowMenuAction = true;
-        mOverflowMenu = (ImageView)findViewById(R.id.search_bar_overflow_menu);
-        mMenuBuilder = new MenuBuilder(getContext());
-        mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, mOverflowMenu);
         initDrawables();
-        mVoiceInputOrClearButton.setImageDrawable(mIconMic);
-        mOverflowMenu.setImageDrawable(mIconOverflowMenu);
+        mClearButton.setImageDrawable(mIconClear);
+        mMenuView = (MenuView)findViewById(R.id.menu_view);
 
         mDivider = findViewById(R.id.divider);
 
@@ -324,54 +350,56 @@ public class FloatingSearchView extends FrameLayout {
         mIconClear = getResources().getDrawable(R.drawable.ic_clear_black_24dp);
         mIconClear = DrawableCompat.wrap(mIconClear);
 
-        mIconMic = getResources().getDrawable(R.drawable.ic_mic_black_24dp);
-        mIconMic = DrawableCompat.wrap(mIconMic);
-
-        mIconOverflowMenu = getResources().getDrawable(R.drawable.ic_more_vert_black_24dp);
-        mIconOverflowMenu = DrawableCompat.wrap(mIconOverflowMenu);
-
         mIconBackArrow = getResources().getDrawable(R.drawable.ic_arrow_back_black_24dp);
         mIconBackArrow = DrawableCompat.wrap(mIconBackArrow);
 
         mIconSearch = getResources().getDrawable(R.drawable.ic_search_black_24dp);
         mIconSearch = DrawableCompat.wrap(mIconSearch);
-
-        setIconsColor(getResources().getColor(R.color.gray_active_icon));
     }
 
-    private void setIconsColor(int color){
-
-        mMenuBtnDrawable.setColor(color);
-        DrawableCompat.setTint(mIconClear, color);
-        DrawableCompat.setTint(mIconMic, color);
-        DrawableCompat.setTint(mIconOverflowMenu, color);
-        DrawableCompat.setTint(mIconBackArrow, color);
-        DrawableCompat.setTint(mIconSearch, color);
-    }
-
-    private boolean mIsInitialLayout = true;
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
 
         if(mIsInitialLayout) {
 
-
             int addedHeight = Util.dpToPx(5*3);
+            final int finalHeight = mSuggestionsSection.getMeasuredHeight()+addedHeight;
 
             //we need to add 5dp to the mSuggestionsSection because we are
-            //going to move it up by 5dp in order o cover the search bar's
+            //going to move it up by 5dp in order to cover the search bar's
             //rounded corners. We also need to add an additional 10dp to
             //mSuggestionsSection in order to hide mSuggestionListContainer
             //rounded corners and top/bottom padding.
-            mSuggestionsSection.getLayoutParams().height = mSuggestionsSection.getMeasuredHeight()
-                  +addedHeight;
+            mSuggestionsSection.getLayoutParams().height = finalHeight;
+            mSuggestionsSection.requestLayout();
+
+            ViewTreeObserver vto = mSuggestionListContainer.getViewTreeObserver();
+            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+
+                    if (mSuggestionsSection.getHeight() == finalHeight) {
+
+                        if (Build.VERSION.SDK_INT < 16) {
+                            mSuggestionListContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+                        } else {
+                            mSuggestionListContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                        }
+
+                        if (mSuggestionSecHeightListener != null)
+                            mSuggestionSecHeightListener.onSuggestionSecHeightSet();
+
+                        mIsSuggestionsSecHeightSet = true;
+                    }
+                }
+
+            });
 
             mIsInitialLayout = false;
-        }
 
-        //todo check if this is safe here
-        adjustSearchInputPadding();
+        }
 
         //pass on the layout
         super.onLayout(changed, l, t, r, b);
@@ -394,7 +422,7 @@ public class FloatingSearchView extends FrameLayout {
         setupQueryBar();
 
         if(!isInEditMode())
-           setupSuggestionSection();
+            setupSuggestionSection();
     }
 
     private void applyXmlAttributes(AttributeSet attrs){
@@ -419,8 +447,10 @@ public class FloatingSearchView extends FrameLayout {
             LayoutParams dividerLP = (LayoutParams)mDivider.getLayoutParams();
             LinearLayout.LayoutParams suggestListSectionLP = (LinearLayout.LayoutParams)mSuggestionsSection.getLayoutParams();
 
+            int cardPadding = Util.dpToPx(3);
+
             querySectionLP.setMargins(searchBarLeftMargin, searchBarTopMargin, searchBarRightMargin, 0);
-            dividerLP.setMargins(searchBarLeftMargin, 0, searchBarRightMargin, ((MarginLayoutParams) mDivider.getLayoutParams()).bottomMargin);
+            dividerLP.setMargins(searchBarLeftMargin + cardPadding, 0, searchBarRightMargin + cardPadding, ((MarginLayoutParams) mDivider.getLayoutParams()).bottomMargin);
             suggestListSectionLP.setMargins(searchBarLeftMargin, 0, searchBarRightMargin, 0);
 
             mQuerySection.setLayoutParams(querySectionLP);
@@ -431,25 +461,27 @@ public class FloatingSearchView extends FrameLayout {
 
             setShowHintWhenNotFocused(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchHintWhenNotFocused, ATTRS_SEARCH_BAR_SHOW_SEARCH_HINT_NOT_FOCUSED_DEFAULT));
 
-            setLeftShowMenu(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showMenuAction, ATTRS_SEARCH_BAR_SHOW_MENU_ACTION_DEFAULT));
-
-            setShowVoiceInput(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showVoiceInput, ATTRS_SEARCH_BAR_SHOW_VOICE_ACTION_DEFAULT));
-
             setShowSearchKey(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchKey, ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT));
-
-            setVoiceSearchHint(a.getString(R.styleable.FloatingSearchView_floatingSearch_voiceRecHint));
 
             setDismissOnOutsideClick(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dismissOnOutsideTouch, ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT));
 
-            setShowOverflowMenu(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showOverFlowMenu, ATTRS_SHOW_OVERFLOW_MENU_DEFAULT));
-
             setSuggestionItemTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize, Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
 
+            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftActionMode, LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL));
+
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
-                inflateOverflowMenu(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
+                mMenuView.resetMenuResource(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
             }
 
-            setHideOverflowMenuWhenFocused(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_hideOverflowMenuWhenFocused, ATTRS_HIDE_OVERFLOW_MENU_FOCUSED_DEFAULT));
+            setBackgroundColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_backgroundColor,getResources().getColor(R.color.background)));
+            setLeftActionIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_leftActionColor, getResources().getColor(R.color.left_action_icon)));
+            setActionMenuOverflowColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_actionMenuOverflowColor, getResources().getColor(R.color.overflow_icon_color)));
+            setMenuItemIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_menuItemIconColor, getResources().getColor(R.color.menu_icon_color)));
+            setDividerColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_dividerColor, getResources().getColor(R.color.divider)));
+            setClearBtnColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_clearBtnColor, getResources().getColor(R.color.clear_btn_color)));
+            setViewTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_viewTextColor, getResources().getColor(R.color.dark_gray)));
+            setHintTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_hintTextColor, getResources().getColor(R.color.hint_color)));
+            setSuggestionRightIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_suggestionRightIconColor, getResources().getColor(R.color.gray_active_icon)));
 
         } finally {
 
@@ -470,24 +502,42 @@ public class FloatingSearchView extends FrameLayout {
 
     private void setupQueryBar(){
 
+        mSearchInput.setTextColor(this.mSearchInputTextColor);
+        mSearchInput.setHintTextColor(this.mSearchInputHintColor);
+        mSearchBarTitle.setTextColor(this.mSearchInputTextColor);
+
         if(!isInEditMode() && mHostActivity!=null)
             mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
-        mOverflowMenu.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        if(isInEditMode())
+            mMenuView.reset(actionMenuAvailWidth());
 
-                mMenuPopupHelper.show();
+
+        ViewTreeObserver vto = mQuerySection.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+
+                if (Build.VERSION.SDK_INT < 16) {
+                    mQuerySection.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+
+                } else {
+                    mQuerySection.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                }
+
+                mMenuView.reset(actionMenuAvailWidth());
+
+                if (mIsFocused)
+                    mMenuView.hideIfRoomItems(false);
             }
         });
 
-        mMenuBuilder.setCallback(new MenuBuilder.Callback() {
+        mMenuView.setMenuCallback(new MenuBuilder.Callback() {
             @Override
             public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
 
-
-                if (mOnOverflowMenuItemListener != null)
-                    mOnOverflowMenuItemListener.onMenuItemSelected(item);
+                if (mActionMenuItemListener != null)
+                    mActionMenuItemListener.onActionMenuItemSelected(item);
 
                 //todo check if we should care about this return or not
                 return false;
@@ -499,24 +549,35 @@ public class FloatingSearchView extends FrameLayout {
 
         });
 
-        mVoiceInputOrClearButton.setVisibility(mShowVoiceInput ? View.VISIBLE : View.INVISIBLE);
-        mVoiceInputOrClearButton.setOnClickListener(new OnClickListener() {
+        mMenuView.setOnVisibleWidthChanged(new MenuView.OnVisibleWidthChanged() {
             @Override
-            public void onClick(View v) {
+            public void onVisibleWidthChanged(int newVisibleWidth) {
 
-                if (mSearchInput.getText().length() == 0) {
-
-                    startVoiceInput();
+                //todo avaoid magic numbers
+                if (newVisibleWidth == 0) {
+                    mClearButton.setTranslationX(-Util.dpToPx(4));
+                    mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48) + Util.dpToPx(4), 0);
                 } else {
-
-                    mSearchInput.setText("");
+                    mClearButton.setTranslationX(-newVisibleWidth);
+                    mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48), 0);
                 }
             }
         });
 
-        mSearchBarTitle.setVisibility(GONE);
-        mSearchBarTitle.setTextColor(getResources().getColor(R.color.gray_active_icon));
+        mMenuView.setActionIconColor(this.mActionMenuItemColor);
+        mMenuView.setOverflowColor(this.mOverflowIconColor);
 
+        mClearButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                mSearchInput.setText("");
+            }
+        });
+
+        mSearchBarTitle.setVisibility(GONE);
+
+        mClearButton.setVisibility(View.INVISIBLE);
         mSearchInput.addTextChangedListener(new TextWatcherAdapter() {
 
             public void onTextChanged(final CharSequence s, int start, int before, int count) {
@@ -525,26 +586,19 @@ public class FloatingSearchView extends FrameLayout {
                     mSkipTextChangeEvent = false;
                 } else {
 
-                    if (mSearchInput.getText().length() == 0) {
-
-                        if (mShowVoiceInput)
-                            changeIcon(mVoiceInputOrClearButton, mIconMic, true);
-                        else
-                            mVoiceInputOrClearButton.setVisibility(View.INVISIBLE);
-
-                    } else if (mOldQuery.length() == 0) {
-                        changeIcon(mVoiceInputOrClearButton, mIconClear, true);
-                        mVoiceInputOrClearButton.setVisibility(View.VISIBLE);
-                    }
+                    if (mSearchInput.getText().toString().length() != 0 && mClearButton.getVisibility() == View.INVISIBLE) {
+                        mClearButton.setAlpha(0.0f);
+                        mClearButton.setVisibility(View.VISIBLE);
+                        ViewCompat.animate(mClearButton).alpha(1.0f).setDuration(500).start();
+                    } else if (mSearchInput.getText().toString().length() == 0)
+                        mClearButton.setVisibility(View.INVISIBLE);
 
                     if (mQueryListener != null && mIsFocused)
                         mQueryListener.onSearchTextChanged(mOldQuery, mSearchInput.getText().toString());
 
                     mOldQuery = mSearchInput.getText().toString();
                 }
-
             }
-
 
         });
 
@@ -552,12 +606,12 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
 
-                if(mSkipQueryFocusChangeEvent){
+                if (mSkipQueryFocusChangeEvent) {
                     mSkipQueryFocusChangeEvent = false;
-                }else {
+                } else {
 
                     if (hasFocus != mIsFocused)
-                        setSearchFocused(hasFocus);
+                        setSearchFocusedInternal(hasFocus);
                 }
             }
         });
@@ -568,7 +622,7 @@ public class FloatingSearchView extends FrameLayout {
 
                 if (mShowSearchKey && keyCode == KeyEvent.KEYCODE_ENTER) {
 
-                    setSearchFocused(false);
+                    setSearchFocusedInternal(false);
 
                     if (mSearchListener != null)
                         mSearchListener.onSearchAction();
@@ -579,35 +633,40 @@ public class FloatingSearchView extends FrameLayout {
             }
         });
 
+        if(mLeftActionMode == LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL)
+            mSearchInputParent.setTranslationX(-Util.dpToPx(48+20-16));
+
         refreshLeftIcon();
 
-        mMenuSearchOrExitButton.setOnClickListener(new OnClickListener() {
+        mLeftAction.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 if (mSearchInput.isFocused()) {
 
-                    setSearchFocused(false);
+                    setSearchFocusedInternal(false);
                 } else {
 
-                    if (mShowMenuAction) {
+                    switch (mLeftActionMode){
 
-                        toggleMenu();
-                    } else {
-
-                        setSearchFocused(true);
+                        case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:{
+                            toggleLeftMenu();
+                        }break;
+                        case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
+                            setSearchFocusedInternal(true);
+                        }break;
+                        case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:{
+                            if(mOnHomeActionClickListener!=null)
+                                mOnHomeActionClickListener.onHomeClicked();
+                        }break;
+                        case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:{
+                            //do nothing
+                        }
                     }
                 }
 
             }
         });
-    }
-
-    private void refreshLeftIcon(){
-        if(mShowMenuAction)
-            mMenuSearchOrExitButton.setImageDrawable(mMenuBtnDrawable);
-        else
-            mMenuSearchOrExitButton.setImageDrawable(mIconSearch);
     }
 
     /**
@@ -616,113 +675,111 @@ public class FloatingSearchView extends FrameLayout {
      * @param color the color to be applied to the
      *              left menu button.
      */
-    public void setLeftMenuIconColor(int color){
+    public void setLeftActionIconColor(int color){
 
         mMenuBtnDrawable.setColor(color);
+        DrawableCompat.setTint(mIconBackArrow, color);
+        DrawableCompat.setTint(mIconSearch, color);
     }
 
     /**
-     * Set if search is enabled.
+     * Sets the clear button's color.
      *
-     * <p>When enabled, the search
-     * input will gain focus when clicking on it and action
-     * items that are associated with search only will become
-     * visible.</p>
+     * @param color the color to be applied to the
+     *              clear button.
+     */
+    public void setClearBtnColor(int color){
+        DrawableCompat.setTint(mIconClear, color);
+    }
+
+    /**
+     * Sets the action menu icons' color.
      *
-     * @param enabled True to enable search
+     * @param color the color to be applied to the
+     *              action menu items.
      */
-    public void setSearchEnabled(boolean enabled){
+    public void setMenuItemIconColor(int color){
 
-        //todo avoid unnecessary work
+        this.mActionMenuItemColor = color;
 
-        if(enabled)
-            showSearchDependentActions();
-        else
-            hideSearchDependentActions();
-
-        this.mSearchEnabled = enabled;
-        mSearchInput.setEnabled(enabled);
+        if(mMenuView!=null)
+            mMenuView.setActionIconColor(this.mActionMenuItemColor);
     }
 
-    private void showSearchDependentActions(){
-
-        ViewCompat.animate(mSearchBarTitle).alpha(0.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationStart(View view) {
-                mSearchBarTitle.setVisibility(INVISIBLE);
-            }
-
-        }).start();
-
-        ViewCompat.animate(mSearchInput).alpha(1.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationStart(View view) {
-                mSearchInput.setVisibility(VISIBLE);
-            }
-
-        }).start();
-
-        ViewCompat.animate(mVoiceInputOrClearButton).alpha(1.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationEnd(View view) {
-                mVoiceInputOrClearButton.setVisibility(VISIBLE);
-            }
-
-        }).start();
-    }
-
-    private void hideSearchDependentActions(){
-
-        ViewCompat.animate(mSearchBarTitle).alpha(1.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationStart(View view) {
-                mSearchBarTitle.setVisibility(VISIBLE);
-            }
-
-        }).start();
-
-        ViewCompat.animate(mSearchInput).alpha(0.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationStart(View view) {
-                mSearchInput.setVisibility(INVISIBLE);
-            }
-
-        }).start();
-
-        ViewCompat.animate(mVoiceInputOrClearButton).alpha(0.0f).setListener(new ViewPropertyAnimatorListenerAdapter() {
-
-            @Override
-            public void onAnimationEnd(View view) {
-                mVoiceInputOrClearButton.setVisibility(INVISIBLE);
-            }
-
-        }).start();
-    }
-
-    /*
-     * Sets the padding for the search input TextView. This
-     * will set the available space for text before the TextView
-     * needs to scroll to make space for the text.
+    /**
+     * Sets the action menu overflow icon's color.
+     *
+     * @param color the color to be applied to the
+     *              overflow icon.
      */
-    private void adjustSearchInputPadding(){
+    public void setActionMenuOverflowColor(int color){
 
-        int newPaddingEnd = 0;
+        this.mOverflowIconColor = color;
 
-        newPaddingEnd += mVoiceInputOrClearButton.getWidth();
+        if(mMenuView!=null)
+            mMenuView.setOverflowColor(this.mOverflowIconColor);
+    }
 
-        if(mShowOverFlowMenu) {
+    /**
+     * Sets the background color of the search
+     * view.
+     *
+     * @param color the color to be applied to the search bar and
+     *              the suggestion section background.
+     */
+    public void setBackgroundColor(int color){
 
-            if(!(mHideOverflowMenuFocused && mSearchInput.isFocused()))
-                newPaddingEnd += mOverflowMenu.getWidth();
+        if(mQuerySection!=null && mSuggestionsList!=null){
+            mQuerySection.setCardBackgroundColor(color);
+            mSuggestionsList.setBackgroundColor(color);
         }
+    }
 
-        mSearchInput.setPadding(0, 0, newPaddingEnd, 0);
-        mSearchBarTitle.setPadding(0, 0, newPaddingEnd, 0);
+    /**
+     * Sets the text color of the search
+     * and suggestion text.
+     *
+     * @param color the color to be applied to the search and suggestion
+     *              text.
+     */
+    public void setViewTextColor(int color){
+
+        this.mSearchInputTextColor = color;
+        this.mSuggestionTextColor = color;
+
+        if(mSearchInput!=null && mSearchBarTitle!=null && mSuggestionsAdapter!=null){
+            Log.d("dfsdfsdf","setting text color to: "+color);
+            mSearchInput.setTextColor(color);
+            mSuggestionsAdapter.setTextColor(color);
+            mSearchBarTitle.setTextColor(color);
+        }
+    }
+
+    /**
+     * Sets the text color of the search
+     * hint.
+     *
+     * @param color the color to be applied to the search hint.
+     */
+    public void setHintTextColor(int color){
+
+        this.mSearchInputHintColor = color;
+
+        if(mSearchInput!=null){
+            mSearchInput.setHintTextColor(color);
+        }
+    }
+
+    /**
+     * Sets the color of the search divider that
+     * divides the search section from the suggestions.
+     *
+     * @param color the color to be applied the divider.
+     */
+    public void setDividerColor(int color){
+
+        if(mDivider!=null)
+            mDivider.setBackgroundColor(color);
     }
 
     /**
@@ -731,6 +788,7 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void openMenu(boolean withAnim) {
 
+        //todo go over
         openMenu(true, withAnim, false);
     }
 
@@ -743,85 +801,41 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void closeMenu(boolean withAnim) {
 
+        //todo go over
         closeMenu(true, withAnim, false);
     }
 
     /**
-     * Set the visibility of the menu action
-     * button.
+     * Set the mode for the left action button.
      *
-     * @param show true to make the menu button visible, false
-     *             to make it invisible and place a search icon
-     *             instead.
+     * @param mode
      */
-    public void setLeftShowMenu(boolean show){
+    private void setLeftActionMode(int mode){
 
-        mShowMenuAction = show;
-        refreshLeftIcon();
+        //todo implement dynamic leftActionMode setting and expose method
+        mLeftActionMode = mode;
+        //refreshLeftIcon();
     }
 
-    /**
-     * Sets whether the overflow menu icon
-     * will slide off the search bar when search
-     * gains focus.
-     *
-     * @param hide
-     */
-    public void setHideOverflowMenuWhenFocused(boolean hide){
+    private void refreshLeftIcon(){
 
-        this.mHideOverflowMenuFocused = hide;
-    }
+        mLeftAction.setVisibility(VISIBLE);
 
-    /**
-     * Control whether the overflow menu is
-     * present or not.
-     *
-     * @param show
-     */
-    public void setShowOverflowMenu(boolean show){
+        switch (mLeftActionMode){
 
-        this.mShowOverFlowMenu = show;
-
-        if(mShowVoiceInput)
-            if(show)showOverflowMenuWithAnim(false);
-        else hideOverflowMenu(false);
-    }
-
-    private void showOverflowMenuWithAnim(boolean withAnim){
-
-        mOverflowMenu.setClickable(true);
-
-        if(withAnim) {
-            ViewPropertyAnimatorCompatSet hidAnimSet = new ViewPropertyAnimatorCompatSet();
-            hidAnimSet.playSequentially(ViewCompat.animate(mVoiceInputOrClearButton).translationX(0),
-                    ViewCompat.animate(mOverflowMenu).alpha(1.0f)).setDuration(150).start();
-        } else{
-
-            mOverflowMenu.setAlpha(1.0f);
-            mVoiceInputOrClearButton.setTranslationX(0);
-        }
-    }
-
-    private void hideOverflowMenu(boolean withAnim){
-
-        //this is needed because we're going to move
-        //mVoiceInputOrClearButton right into the position of
-        //mOverflowMenu, and we don't want to receive click events
-        //from mOverflowMenu.
-        mOverflowMenu.setClickable(false);
-
-        //accounts for anim direction based on the language direction
-        int deltaX = isRTL() ? -Util.dpToPx(OVERFLOW_ICON_WIDTH_DP)
-                 : Util.dpToPx(OVERFLOW_ICON_WIDTH_DP);
-
-        if(withAnim) {
-            ViewPropertyAnimatorCompatSet hidAnimSet = new ViewPropertyAnimatorCompatSet();
-            hidAnimSet.playSequentially(ViewCompat.animate(mOverflowMenu).alpha(0.0f),
-                    ViewCompat.animate(mVoiceInputOrClearButton).translationXBy(deltaX)).setDuration(150).start();
-        }else {
-
-            mOverflowMenu.setAlpha(0.0f);
-            mVoiceInputOrClearButton.setTranslationX(deltaX);
+            case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:{
+                mLeftAction.setImageDrawable(mMenuBtnDrawable);
+            }break;
+            case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
+                mLeftAction.setImageDrawable(mIconSearch);
+            }break;
+            case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:{
+                mLeftAction.setImageDrawable(mMenuBtnDrawable);
+                mMenuBtnDrawable.setProgress(1.0f);
+            }break;
+            case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:{
+                mLeftAction.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -832,18 +846,22 @@ public class FloatingSearchView extends FrameLayout {
      * @param menuId a menu xml resource reference
      */
     public void inflateOverflowMenu(int menuId){
-        mMenuBuilder.clearAll();
-        getMenuInflater().inflate(menuId, mMenuBuilder);
+       mMenuView.resetMenuResource(menuId);
+
+        //todo check fo synchronization problems in MenuView
+        //when calling it this way
+       mMenuView.reset(actionMenuAvailWidth());
+       if(mIsFocused)
+            mMenuView.hideIfRoomItems(false);
     }
 
-    private MenuInflater getMenuInflater() {
-        if (mMenuInflater == null) {
-            mMenuInflater = new SupportMenuInflater(getContext());
-        }
-        return mMenuInflater;
+    private int actionMenuAvailWidth(){
+        if(isInEditMode())
+            return Util.dpToPx(360) - SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
+        return mQuerySection.getWidth() - SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
     }
 
-    private void toggleMenu(){
+    private void toggleLeftMenu(){
 
         if(mMenuOpen){
             closeMenu(true, true, true);
@@ -873,6 +891,8 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
+     * todo go over
+     *
      * Enables clients to directly manipulate
      * the menu icon's progress.
      *
@@ -940,101 +960,6 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
-     * Set the visibility of the voice recognition action
-     * button.
-     *
-     * @param show true to make the voice button visible, false
-     *             to make it invisible.
-     */
-    public void setShowVoiceInput(boolean show){
-
-        mShowVoiceInput = show;
-        mVoiceInputOrClearButton.setVisibility(mShowVoiceInput ? View.VISIBLE : View.GONE);
-    }
-
-    /**
-     * Sets the request code with which the voice
-     * recognition intent will be fired.
-     *
-     * <p>
-     * The default request code is 1024. Clients should use
-     * this methods to provide a unique request code if the
-     * default code conflicts with one of their codes in order
-     * to avoid undesired results.
-     * </p>
-     *
-     * @param requestCode
-     */
-    public void setVoiceRecRequestCode(int requestCode){
-
-        mVoiceRecRequestCode = requestCode;
-    }
-
-    private void startVoiceInput(){
-
-        Intent voiceIntent = createVoiceRecIntent(mHostActivity, mVoiceRecHint);
-
-        if(mHostActivity!=null)
-            try {
-                mHostActivity.startActivityForResult(voiceIntent, mVoiceRecRequestCode);
-            } catch(ActivityNotFoundException e){
-
-            }
-    }
-
-    private Intent createVoiceRecIntent(Activity activity, String hint){
-
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-
-        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, hint);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
-
-        return intent;
-    }
-
-    /**
-     * Sets the hit that will appear in the
-     * voice recognition dialog.
-     *
-     * @param hint
-     */
-    public void setVoiceSearchHint(String hint){
-        mVoiceRecHint = hint != null ? hint : getResources().getString(R.string.abc_search_hint);
-    }
-
-    /**
-     * Handles voice recognition activity return.
-     *
-     * <p>In order for voice rec to work, this must be called from
-     * the client activity's onActivityResult()</p>
-     *
-     * @param requestCode  the code with which the voice recognition intent
-     *                     was started.
-     * @param resultCode
-     * @param data
-     */
-    public void onHostActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == mVoiceRecRequestCode){
-
-            if(resultCode == Activity.RESULT_OK){
-
-                ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                if (!matches.isEmpty()) {
-
-                    String newQuery = matches.get(0);
-
-                    mSearchInput.requestFocus();
-
-                    mSearchInput.setText(newQuery);
-                    mSearchInput.setSelection(mSearchInput.getText().length());
-                }
-            }
-        }
-    }
-
-    /**
      * Sets whether the the button with the search icon
      * will appear in the soft-keyboard or not.
      *
@@ -1073,7 +998,7 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void showProgress(){
 
-        mMenuSearchOrExitButton.setVisibility(View.GONE);
+        mLeftAction.setVisibility(View.GONE);
         mSearchProgress.setVisibility(View.VISIBLE);
         ObjectAnimator fadeInProgress = new ObjectAnimator().ofFloat(mSearchProgress, "alpha", 0.0f, 1.0f);
         fadeInProgress.start();
@@ -1085,16 +1010,54 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void hideProgress() {
 
-        mMenuSearchOrExitButton.setVisibility(View.VISIBLE);
+        mLeftAction.setVisibility(View.VISIBLE);
         mSearchProgress.setVisibility(View.GONE);
-        ObjectAnimator fadeInExit = new ObjectAnimator().ofFloat(mMenuSearchOrExitButton, "alpha", 0.0f, 1.0f);
+        ObjectAnimator fadeInExit = new ObjectAnimator().ofFloat(mLeftAction, "alpha", 0.0f, 1.0f);
         fadeInExit.start();
+    }
+
+    /**
+     * Sets whether the search is focused or not.
+     *
+     * @param focused true, to set the search to be active/focused.
+     */
+    public void setSearchFocused(boolean focused) {
+
+        if(!this.mIsFocused && mSuggestionSecHeightListener==null){
+
+            if(mIsSuggestionsSecHeightSet){
+                setSearchFocusedInternal(true);
+            }else{
+
+                mSuggestionSecHeightListener = new OnSuggestionSecHeightSetListener() {
+                    @Override
+                    public void onSuggestionSecHeightSet() {
+                        setSearchFocusedInternal(true);
+                        mSuggestionSecHeightListener = null;
+                    }
+                };
+            }
+        }
+    }
+
+    public void setOnBindSuggestionCallback(SearchSuggestionsAdapter.OnBindSuggestionCallback callback){
+        this.mOnBindSuggestionCallback = callback;
+
+        if(mSuggestionsAdapter!=null)
+            mSuggestionsAdapter.setOnBindSuggestionCallback(mOnBindSuggestionCallback);
+    }
+
+    public void setSuggestionRightIconColor(int color){
+        this.mSuggestionRightIconColor = color;
+
+        if(mSuggestionsAdapter!=null)
+            mSuggestionsAdapter.setRightIconColor(this.mSuggestionRightIconColor);
     }
 
     private void setSuggestionItemTextSize(int sizePx){
 
         this.mSuggestionsTextSizePx = sizePx;
-        //setup adapter
+        //setup adapter and make method public
     }
 
     private void setupSuggestionSection() {
@@ -1110,7 +1073,7 @@ public class FloatingSearchView extends FrameLayout {
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
 
                 if(mHostActivity!=null)
-                  Util.closeSoftKeyboard(mHostActivity);
+                    Util.closeSoftKeyboard(mHostActivity);
 
                 return false;
             }
@@ -1129,7 +1092,7 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onItemSelected(SearchSuggestion item) {
 
-                setSearchFocused(false);
+                setSearchFocusedInternal(false);
 
                 if(mSearchListener!=null)
                     mSearchListener.onSuggestionClicked(item);
@@ -1144,6 +1107,9 @@ public class FloatingSearchView extends FrameLayout {
                 mSearchInput.setSelection(mSearchInput.getText().length());
             }
         });
+
+        mSuggestionsAdapter.setTextColor(this.mSuggestionTextColor);
+        mSuggestionsAdapter.setRightIconColor(this.mSuggestionRightIconColor);
 
         mSuggestionsList.setAdapter(mSuggestionsAdapter);
 
@@ -1210,15 +1176,7 @@ public class FloatingSearchView extends FrameLayout {
                     }).start();
         }else{
 
-            //todo refactor
-            //the extra -3*fiveDp is because this will only
-            //get called from onRestoreSavedState(), and when it is called,
-            //the full height of mSuggestionListContainer is not known.
-            //*refactor* as soon as possible to eliminate confusion.
-             float transY = translationY<0 ?
-                     newSearchSuggestions.size()==0 ? translationY : translationY+threeDp-3*fiveDp
-                    : -fiveDp;
-            mSuggestionListContainer.setTranslationY(transY);
+            mSuggestionListContainer.setTranslationY(newTranslationY);
         }
 
         if(newSearchSuggestions.size()>0)
@@ -1340,23 +1298,22 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     public void clearSearchFocus(){
-        setSearchFocused(false);
+        setSearchFocusedInternal(false);
     }
 
     public boolean isSearchBarFocused(){
         return mIsFocused;
     }
 
-    private void setSearchFocused(boolean focused){
+    private void setSearchFocusedInternal(boolean focused){
 
         this.mIsFocused = focused;
 
         if(focused){
 
-            if(mShowMenuAction && !mMenuOpen)
-                openMenuDrawable(mMenuBtnDrawable, true);
-            else if(!mShowMenuAction)
-                changeIcon(mMenuSearchOrExitButton, mIconBackArrow, true);
+            mLeftAction.setVisibility(View.VISIBLE);
+
+            transitionInLeftSection(true);
 
             if(mMenuOpen)
                 closeMenu(false, true, true);
@@ -1368,10 +1325,7 @@ public class FloatingSearchView extends FrameLayout {
 
             mSearchInput.requestFocus();
 
-            if(mShowOverFlowMenu && mHideOverflowMenuFocused)
-                hideOverflowMenu(true);
-
-            adjustSearchInputPadding();
+            mMenuView.hideIfRoomItems(true);
 
             Util.showSoftKeyboard(getContext(), mSearchInput);
 
@@ -1379,10 +1333,7 @@ public class FloatingSearchView extends FrameLayout {
                 mFocusChangeListener.onFocus();
         }else{
 
-            if(mShowMenuAction)
-                closeMenuDrawable(mMenuBtnDrawable, true);
-            else
-                changeIcon(mMenuSearchOrExitButton, mIconSearch, true);
+            transitionOutLeftSection(true);
 
             clearSuggestions(new OnSuggestionsClearListener() {
                 @Override
@@ -1397,18 +1348,14 @@ public class FloatingSearchView extends FrameLayout {
             findViewById(R.id.search_bar).requestFocus();
 
             if(mHostActivity!=null)
-               Util.closeSoftKeyboard(mHostActivity);
+                Util.closeSoftKeyboard(mHostActivity);
 
-            if(mShowVoiceInput && !mHideOverflowMenuFocused)
-                changeIcon(mVoiceInputOrClearButton, mIconMic, true);
+            mMenuView.showIfRoomItems(true);
+
+            mClearButton.setVisibility(View.INVISIBLE);
 
             if(mSearchInput.length()!=0)
                 mSearchInput.setText("");
-
-            if(mShowOverFlowMenu && mHideOverflowMenuFocused)
-                showOverflowMenuWithAnim(true);
-
-            adjustSearchInputPadding();
 
             if(mFocusChangeListener!=null) {
                 mFocusChangeListener.onFocusCleared();
@@ -1424,6 +1371,118 @@ public class FloatingSearchView extends FrameLayout {
             fadeInVoiceInputOrClear.start();
         }else{
             imageView.setAlpha(1.0f);
+        }
+    }
+
+    private void transitionInLeftSection(boolean withAnim){
+
+        switch (mLeftActionMode){
+
+            case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:{
+                openMenuDrawable(mMenuBtnDrawable, withAnim);
+                if(!mMenuOpen)
+                    break;
+            }break;
+            case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
+
+                mLeftAction.setImageDrawable(mIconBackArrow);
+
+                if(withAnim){
+                    mLeftAction.setRotation(45);
+                    mLeftAction.setAlpha(0.0f);
+                    ObjectAnimator rotateAnim = ViewPropertyObjectAnimator.animate(mLeftAction).rotation(0).get();
+                    ObjectAnimator fadeAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(1.0f).get();
+                    AnimatorSet animSet = new AnimatorSet();
+                    animSet.setDuration(500);
+                    animSet.playTogether(rotateAnim,fadeAnim);
+                    animSet.start();
+                }
+            }break;
+            case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:{
+                //do nothing
+            }break;
+            case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:{
+
+                mLeftAction.setImageDrawable(mIconBackArrow);
+
+                if(withAnim){
+
+                    ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent).translationX(0).get();
+
+                    mLeftAction.setScaleX(0.5f);
+                    mLeftAction.setScaleY(0.5f);
+                    mLeftAction.setAlpha(0.0f);
+                    mLeftAction.setTranslationX(Util.dpToPx(8));
+                    ObjectAnimator transXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).translationX(1.0f).get();
+                    ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(1.0f).get();
+                    ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(1.0f).get();
+                    ObjectAnimator fadeArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(1.0f).get();
+                    transXArrowAnim.setStartDelay(150);
+                    scaleXArrowAnim.setStartDelay(150);
+                    scaleYArrowAnim.setStartDelay(150);
+                    fadeArrowAnim.setStartDelay(150);
+
+                    AnimatorSet animSet = new AnimatorSet();
+                    animSet.setDuration(500);
+                    animSet.playTogether(searchInputTransXAnim,transXArrowAnim, scaleXArrowAnim,scaleYArrowAnim,fadeArrowAnim);
+                    animSet.start();
+                }else{
+
+                    mSearchInputParent.setTranslationX(0);
+                }
+            }
+        }
+    }
+
+    private void transitionOutLeftSection(boolean withAnim){
+
+        switch (mLeftActionMode){
+
+            case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:{
+                closeMenuDrawable(mMenuBtnDrawable, withAnim);
+            }break;
+            case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
+                changeIcon(mLeftAction, mIconSearch, withAnim);
+            }break;
+
+            case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:{
+                //do nothing
+            }break;
+            case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:{
+
+                mLeftAction.setImageDrawable(mIconBackArrow);
+
+                if(withAnim){
+                    ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent)
+                            .translationX(-Util.dpToPx(48 + 20 - 16)).get();
+
+                    ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(0.5f).get();
+                    ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(0.5f).get();
+                    ObjectAnimator fadeArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).alpha(0.5f).get();
+                    scaleXArrowAnim.setDuration(300);
+                    scaleYArrowAnim.setDuration(300);
+                    fadeArrowAnim.setDuration(300);
+                    scaleXArrowAnim.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                            //restore normal state
+                            mLeftAction.setScaleX(1.0f);
+                            mLeftAction.setScaleY(1.0f);
+                            mLeftAction.setAlpha(1.0f);
+                            mLeftAction.setVisibility(View.INVISIBLE);
+                        }
+                    });
+
+                    AnimatorSet animSet = new AnimatorSet();
+                    animSet.setDuration(350);
+                    animSet.playTogether(scaleXArrowAnim, scaleYArrowAnim, fadeArrowAnim, searchInputTransXAnim);
+                    animSet.start();
+                }else{
+
+                    mLeftAction.setVisibility(View.INVISIBLE);
+                }
+            }
         }
     }
 
@@ -1477,13 +1536,24 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
+     * Sets the listener that will be called when the
+     * left/start home action (back arrow) is clicked.
+     *
+     * @param listener
+     */
+    public void setOnHomeActionClickListener(OnHomeActionClickListener listener){
+        this.mOnHomeActionClickListener = listener;
+    }
+
+    /**
      * Sets the listener that will be called when
      * an item in the overflow menu is clicked.
      *
      * @param listener listener to listen to menu item clicks
      */
     public void setOnMenuItemClickListener(OnMenuItemClickListener listener){
-        this.mOnOverflowMenuItemListener = listener;
+        this.mActionMenuItemListener = listener;
+        //todo reset menu view listener
     }
 
     private void openMenuDrawable(final DrawerArrowDrawable drawerArrowDrawable, boolean withAnim){
@@ -1571,7 +1641,7 @@ public class FloatingSearchView extends FrameLayout {
 
                 //todo check if this is called twice
                 if (mDismissOnOutsideTouch && mIsFocused)
-                    setSearchFocused(false);
+                    setSearchFocusedInternal(false);
 
                 return true;
             }
@@ -1587,7 +1657,19 @@ public class FloatingSearchView extends FrameLayout {
     @Override
     public Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
-        return new SavedState(superState, mIsFocused, mSuggestionsAdapter.getDataSet(), getQuery());
+        SavedState savedState = new SavedState(superState);
+        savedState.suggestions = this.mSuggestionsAdapter.getDataSet();
+        if(!this.mSuggestionsAdapter.getDataSet().isEmpty())
+            savedState.suggestObjectCreator = this.mSuggestionsAdapter.getDataSet().get(0).getCreator();
+        savedState.isFocused = this.mIsFocused;
+        savedState.query = getQuery();
+        savedState.suggestionTextSize = this.mSuggestionsTextSizePx;
+        savedState.searchHint = this.mSearchHint;
+        savedState.dismissOnOutsideClick = this.mDismissOnOutsideTouch;
+        savedState.showSearchKey = this.mShowSearchKey;
+        savedState.showHintWhenNotFocused = this.mShowHintNotFocused;
+        //savedState.leftMode = this.mLeftActionMode;
+        return savedState;
     }
 
     @Override
@@ -1595,50 +1677,38 @@ public class FloatingSearchView extends FrameLayout {
         final SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
 
-        if(savedState.isFocused) {
+        this.mIsFocused = savedState.isFocused;
+
+        setSuggestionItemTextSize(savedState.suggestionTextSize);
+        setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
+        setShowSearchKey(savedState.showSearchKey);
+        setShowHintWhenNotFocused(savedState.showHintWhenNotFocused);
+        //setLeftActionMode(savedState.leftMode);
+        setSearchHint(savedState.searchHint);
+
+        if(this.mIsFocused) {
 
             mBackgroundDrawable.setAlpha(BACKGROUND_DRAWABLE_ALPHA_SEARCH_ACTIVE);
-            mSkipTextChangeEvent = savedState.isFocused;
-            mSkipQueryFocusChangeEvent = savedState.isFocused;
-            mIsFocused = savedState.isFocused;
+            mSkipTextChangeEvent = true;
+            mSkipQueryFocusChangeEvent = true;
 
             mSuggestionsSection.setVisibility(VISIBLE);
 
-            ViewTreeObserver vto = mSuggestionListContainer.getViewTreeObserver();
-            vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            //restore suggestions list when suggestion section's height is fully set
+            mSuggestionSecHeightListener = new OnSuggestionSecHeightSetListener() {
                 @Override
-                public void onGlobalLayout() {
-                    if (Build.VERSION.SDK_INT < 16) {
-                        mSuggestionListContainer.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-                    } else {
-                        mSuggestionListContainer.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                    }
-
+                public void onSuggestionSecHeightSet() {
                     swapSuggestions(savedState.suggestions, false);
+                    mSuggestionSecHeightListener = null;
+
+                    //todo refactor move to a better location
+                    transitionInLeftSection(false);
                 }
-            });
+            };
 
-            if (savedState.mQuery.length() == 0) {
+            mClearButton.setVisibility((savedState.query.length() == 0) ? View.INVISIBLE : View.VISIBLE);
 
-                if (mShowVoiceInput)
-                    changeIcon(mVoiceInputOrClearButton, mIconMic, false);
-                else
-                    mVoiceInputOrClearButton.setVisibility(View.INVISIBLE);
-
-            } else if (mOldQuery.length() == 0) {
-                changeIcon(mVoiceInputOrClearButton, mIconClear, false);
-                mVoiceInputOrClearButton.setVisibility(View.VISIBLE);
-            }
-
-            if(mShowOverFlowMenu && mHideOverflowMenuFocused)
-                hideOverflowMenu(false);
-
-            if(mShowMenuAction && !mMenuOpen)
-                openMenuDrawable(mMenuBtnDrawable, false);
-            else if(!mShowMenuAction)
-                changeIcon(mMenuSearchOrExitButton, mIconBackArrow, false);
-
-            adjustSearchInputPadding();
+            mLeftAction.setVisibility(View.VISIBLE);
 
             Util.showSoftKeyboard(getContext(), mSearchInput);
         }
@@ -1646,40 +1716,49 @@ public class FloatingSearchView extends FrameLayout {
 
     static class SavedState extends BaseSavedState {
 
-        List<? extends SearchSuggestion> suggestions = new ArrayList<>();
-        Creator SUGGEST_CREATOR;
+        private Creator suggestObjectCreator;
 
-        boolean isFocused;
+        private List<? extends SearchSuggestion> suggestions = new ArrayList<>();
+        private boolean isFocused;
+        private String query;
+        private int suggestionTextSize;
+        private String searchHint;
+        private boolean dismissOnOutsideClick;
+        private boolean showSearchKey;
+        private boolean showHintWhenNotFocused;
+        //private int leftMode;
 
-        String mQuery;
-
-        SavedState(Parcelable superState, boolean isFocused, List<? extends SearchSuggestion> suggestions, String query){
+        SavedState(Parcelable superState) {
             super(superState);
-            this.isFocused = isFocused;
-            this.suggestions = suggestions;
-
-            if(!suggestions.isEmpty())
-               SUGGEST_CREATOR = suggestions.get(0).getCreator();
-
-            this.mQuery = query;
         }
 
         private SavedState(Parcel in) {
             super(in);
+
+            if (suggestObjectCreator != null)
+                in.readTypedList(suggestions, suggestObjectCreator);
             isFocused = (in.readInt() != 0);
-
-            if(SUGGEST_CREATOR!=null)
-               in.readTypedList(suggestions, SUGGEST_CREATOR);
-
-            mQuery = in.readString();
+            query = in.readString();
+            suggestionTextSize = in.readInt();
+            searchHint = in.readString();
+            dismissOnOutsideClick = (in.readInt() != 0);
+            showSearchKey = (in.readInt() != 0);
+            showHintWhenNotFocused = (in.readInt() != 0);
+            //leftMode = in.readInt();
         }
 
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeInt(isFocused ? 1 : 0);
             out.writeTypedList(suggestions);
-            out.writeString(mQuery);
+            out.writeInt(isFocused ? 1 : 0);
+            out.writeString(query);
+            out.writeInt(suggestionTextSize);
+            out.writeString(searchHint);
+            out.writeInt(dismissOnOutsideClick ? 1 : 0);
+            out.writeInt(showSearchKey ? 1 : 0);
+            out.writeInt(showHintWhenNotFocused ? 1 : 0);
+            //out.writeInt(leftMode);
         }
 
         public static final Creator<SavedState> CREATOR
@@ -1699,6 +1778,7 @@ public class FloatingSearchView extends FrameLayout {
         super.onDetachedFromWindow();
 
         //remove any ongoing animations to prevent leaks
+        //todo investigate if correct
         ViewCompat.animate(mSuggestionListContainer).cancel();
     }
 }
