@@ -49,6 +49,13 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private int mBodyTextSizePx;
 
+    public interface OnBindSuggestionCallback{
+
+        void onBindSuggestion(ImageView leftIcon, TextView bodyText, SearchSuggestion item, int itemPosition);
+    }
+
+    private OnBindSuggestionCallback mOnBindSuggestionCallback;
+
     public interface Listener{
 
         void onItemSelected(SearchSuggestion item);
@@ -89,7 +96,6 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
                     if(mListener!=null)
                         mListener.onMoveItemToSearchClicked(getAdapterPosition());
-
                 }
             });
 
@@ -103,6 +109,10 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
             });
         }
 
+    }
+
+    public void setOnBindSuggestionCallback(OnBindSuggestionCallback callback){
+        this.mOnBindSuggestionCallback = callback;
     }
 
     public SearchSuggestionsAdapter(Context context, int suggestionTextSize, Listener listener) {
@@ -168,10 +178,10 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         viewHolder.body.setText(item.getBody());
 
-        item.setBodyText(viewHolder.body);
-        if(item.setLeftIcon(viewHolder.leftIcon))
-            viewHolder.leftIcon.setVisibility(View.VISIBLE);
-        else viewHolder.leftIcon.setVisibility(View.INVISIBLE);
+        viewHolder.leftIcon.setImageIcon(null);
+
+        if(mOnBindSuggestionCallback!=null)
+            mOnBindSuggestionCallback.onBindSuggestion(viewHolder.leftIcon, viewHolder.body, item, position);
     }
 
     @Override
