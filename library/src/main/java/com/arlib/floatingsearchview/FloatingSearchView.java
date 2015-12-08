@@ -349,12 +349,6 @@ public class FloatingSearchView extends FrameLayout {
 
         mIconSearch = getResources().getDrawable(R.drawable.ic_search_black_24dp);
         mIconSearch = DrawableCompat.wrap(mIconSearch);
-
-        setLeftActionIconColor(getResources().getColor(R.color.gray_active_icon));
-        setClearBtnColor(getResources().getColor(R.color.gray_active_icon));
-        setMenuItemIconColor(getResources().getColor(R.color.gray_active_icon));
-        setActionMenuOverflowColor(getResources().getColor(R.color.gray_active_icon));
-        setBackgroundColor(Color.WHITE);
     }
 
 
@@ -450,7 +444,7 @@ public class FloatingSearchView extends FrameLayout {
             int cardPadding = Util.dpToPx(3);
 
             querySectionLP.setMargins(searchBarLeftMargin, searchBarTopMargin, searchBarRightMargin, 0);
-            dividerLP.setMargins(searchBarLeftMargin+cardPadding, 0, searchBarRightMargin+cardPadding, ((MarginLayoutParams) mDivider.getLayoutParams()).bottomMargin);
+            dividerLP.setMargins(searchBarLeftMargin + cardPadding, 0, searchBarRightMargin + cardPadding, ((MarginLayoutParams) mDivider.getLayoutParams()).bottomMargin);
             suggestListSectionLP.setMargins(searchBarLeftMargin, 0, searchBarRightMargin, 0);
 
             mQuerySection.setLayoutParams(querySectionLP);
@@ -472,6 +466,13 @@ public class FloatingSearchView extends FrameLayout {
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
                 mMenuView.resetMenuResource(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
             }
+
+            setBackgroundColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_backgroundColor,getResources().getColor(R.color.background)));
+            setLeftActionIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_leftActionColor, getResources().getColor(R.color.left_action_icon)));
+            setActionMenuOverflowColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_actionMenuOverflowColor, getResources().getColor(R.color.overflow_icon_color)));
+            setMenuItemIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_menuItemIconColor, getResources().getColor(R.color.menu_icon_color)));
+            setDividerColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_dividerColor, getResources().getColor(R.color.divider)));
+            setClearBtnColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_clearBtnColor, getResources().getColor(R.color.clear_btn_color)));
 
         } finally {
 
