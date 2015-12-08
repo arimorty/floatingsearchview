@@ -63,6 +63,10 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
         void onMoveItemToSearchClicked(SearchSuggestion item);
     }
 
+    public void setOnBindSuggestionCallback(OnBindSuggestionCallback callback){
+        this.mOnBindSuggestionCallback = callback;
+    }
+
     public static class SearchSuggestionViewHolder extends RecyclerView.ViewHolder{
 
         private static final String TAG = "";
@@ -109,10 +113,6 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
             });
         }
 
-    }
-
-    public void setOnBindSuggestionCallback(OnBindSuggestionCallback callback){
-        this.mOnBindSuggestionCallback = callback;
     }
 
     public SearchSuggestionsAdapter(Context context, int suggestionTextSize, Listener listener) {
@@ -178,7 +178,7 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
         viewHolder.body.setText(item.getBody());
 
-        viewHolder.leftIcon.setImageIcon(null);
+        viewHolder.leftIcon.setImageDrawable(null);
 
         if(mOnBindSuggestionCallback!=null)
             mOnBindSuggestionCallback.onBindSuggestion(viewHolder.leftIcon, viewHolder.body, item, position);

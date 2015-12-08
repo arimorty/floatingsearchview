@@ -2,6 +2,7 @@ package com.arlib.floatingsearchviewdemo;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,10 +12,12 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.arlib.floatingsearchviewdemo.data.ColorSuggestion;
 import com.arlib.floatingsearchviewdemo.data.DataHelper;
@@ -179,6 +182,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+            @Override
+            public void onBindSuggestion(ImageView leftIcon, TextView bodyText, SearchSuggestion item, int itemPosition) {
+
+                ColorSuggestion colorSuggestion = (ColorSuggestion)item;
+
+                if(colorSuggestion.getIsHistory()) {
+                    leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_history_black_24dp));
+                    leftIcon.setAlpha(.36f);
+                }else
+                    leftIcon.setImageDrawable(new ColorDrawable(Color.parseColor(colorSuggestion.getColor().getHex())));
+            }
+        });
 
        // mSearchView.setLeftActionIconColor(Color.RED);
         //mSearchView.setMenuItemIconColor(Color.BLUE);

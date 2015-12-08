@@ -175,6 +175,7 @@ public class FloatingSearchView extends FrameLayout {
     private View mSuggestionListContainer;
     private RecyclerView mSuggestionsList;
     private SearchSuggestionsAdapter mSuggestionsAdapter;
+    private SearchSuggestionsAdapter.OnBindSuggestionCallback mOnBindSuggestionCallback;
     private boolean mIsCollapsing = false;
     private int mSuggestionsTextSizePx;
     private boolean mIsInitialLayout = true;
@@ -979,6 +980,13 @@ public class FloatingSearchView extends FrameLayout {
                 };
             }
         }
+    }
+
+    public void setOnBindSuggestionCallback(SearchSuggestionsAdapter.OnBindSuggestionCallback callback){
+        this.mOnBindSuggestionCallback = callback;
+
+        if(mSuggestionsAdapter!=null)
+            mSuggestionsAdapter.setOnBindSuggestionCallback(mOnBindSuggestionCallback);
     }
 
     private void setSuggestionItemTextSize(int sizePx){
