@@ -188,24 +188,25 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
 
-                ColorSuggestion colorSuggestion = (ColorSuggestion)item;
+                ColorSuggestion colorSuggestion = (ColorSuggestion) item;
 
-                if(colorSuggestion.getIsHistory()) {
+                if (colorSuggestion.getIsHistory()) {
                     leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_history_black_24dp));
                     leftIcon.setAlpha(.36f);
-                }else
+                } else
                     leftIcon.setImageDrawable(new ColorDrawable(Color.parseColor(colorSuggestion.getColor().getHex())));
             }
 
         });
 
-       // mSearchView.setLeftActionIconColor(Color.RED);
-        //mSearchView.setMenuItemIconColor(Color.BLUE);
-       // mSearchView.setActionMenuOverflowColor(Color.GREEN);
-       // mSearchView.setClearBtnColor(Color.YELLOW);
-       // mSearchView.setBackgroundColor(Color.CYAN);
-       // mSearchView.setDividerColor(Color.RED);
-
+        mSearchView.setLeftActionIconColor(Color.RED);
+        mSearchView.setMenuItemIconColor(Color.BLUE);
+        mSearchView.setActionMenuOverflowColor(Color.GREEN);
+        mSearchView.setClearBtnColor(Color.YELLOW);
+        mSearchView.setBackgroundColor(Color.BLACK);
+        mSearchView.setDividerColor(Color.RED);
+        mSearchView.setViewTextColor(Color.WHITE);
+        mSearchView.setHintTextColor(Color.WHITE);
     }
 
     private void refreshBackgroundColor(String colorName, String colorValue){

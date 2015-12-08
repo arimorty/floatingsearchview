@@ -18,4 +18,5 @@
     <color name="left_action_icon">#787878</color>
     <color name="clear_btn_color">#787878</color>
     <color name="overflow_icon_color">#787878</color>
+    <color name="hint_color">#808080</color>
 </resources>

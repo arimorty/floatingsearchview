@@ -147,6 +147,8 @@ public class FloatingSearchView extends FrameLayout {
     private OnFocusChangeListener mFocusChangeListener;
     private TextView mSearchBarTitle;
     private EditText mSearchInput;
+    private int mSearchInputTextColor = -1;
+    private int mSearchInputHintColor = -1;
     private View mSearchInputParent;
     private String mOldQuery = "";
     private OnQueryChangeListener mQueryListener;
@@ -163,6 +165,8 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mShowSearchKey;
     private boolean mMenuOpen = false;
     private MenuView mMenuView;
+    private int mActionMenuItemColor;
+    private int mOverflowIconColor;
     private OnMenuItemClickListener mActionMenuItemListener;
     private ImageView mClearButton;
     private Drawable mIconClear;
@@ -174,6 +178,8 @@ public class FloatingSearchView extends FrameLayout {
     private RelativeLayout mSuggestionsSection;
     private View mSuggestionListContainer;
     private RecyclerView mSuggestionsList;
+    private int mSuggestionTextColor = -1;
+    private int mSuggestionRightIconColor;
     private SearchSuggestionsAdapter mSuggestionsAdapter;
     private SearchSuggestionsAdapter.OnBindSuggestionCallback mOnBindSuggestionCallback;
     private boolean mIsCollapsing = false;
@@ -474,6 +480,9 @@ public class FloatingSearchView extends FrameLayout {
             setMenuItemIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_menuItemIconColor, getResources().getColor(R.color.menu_icon_color)));
             setDividerColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_dividerColor, getResources().getColor(R.color.divider)));
             setClearBtnColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_clearBtnColor, getResources().getColor(R.color.clear_btn_color)));
+            setViewTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_viewTextColor, getResources().getColor(android.R.color.primary_text_dark)));
+            setHintTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_hintTextColor, getResources().getColor(R.color.hint_color)));
+            setSuggestionRightIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_suggestionRightIconColor, getResources().getColor(R.color.light_gray_inactive_icon)));
 
         } finally {
 
@@ -493,6 +502,10 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void setupQueryBar(){
+
+        mSearchInput.setTextColor(this.mSearchInputTextColor);
+        mSearchInput.setHintTextColor(this.mSearchInputHintColor);
+        mSearchBarTitle.setTextColor(this.mSearchInputTextColor);
 
         if(!isInEditMode() && mHostActivity!=null)
             mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -537,16 +550,18 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onVisibleWidthChanged(int newVisibleWidth) {
 
-                if(newVisibleWidth==0){
+                if (newVisibleWidth == 0) {
                     mClearButton.setTranslationX(-Util.dpToPx(4));
-                    mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48)+Util.dpToPx(4), 0);
-                }else{
+                    mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48) + Util.dpToPx(4), 0);
+                } else {
                     mClearButton.setTranslationX(-newVisibleWidth);
                     mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48), 0);
                 }
             }
         });
 
+        mMenuView.setActionIconColor(this.mActionMenuItemColor);
+        mMenuView.setOverflowColor(this.mOverflowIconColor);
 
         mClearButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -558,7 +573,6 @@ public class FloatingSearchView extends FrameLayout {
         });
 
         mSearchBarTitle.setVisibility(GONE);
-        mSearchBarTitle.setTextColor(getResources().getColor(R.color.gray_active_icon));
 
         mClearButton.setVisibility(View.INVISIBLE);
         mSearchInput.addTextChangedListener(new TextWatcherAdapter() {
@@ -683,8 +697,10 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void setMenuItemIconColor(int color){
 
+        this.mActionMenuItemColor = color;
+
         if(mMenuView!=null)
-            mMenuView.setActionIconColor(color);
+            mMenuView.setActionIconColor(this.mActionMenuItemColor);
     }
 
     /**
@@ -695,8 +711,10 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void setActionMenuOverflowColor(int color){
 
+        this.mOverflowIconColor = color;
+
         if(mMenuView!=null)
-            mMenuView.setOverflowColor(color);
+            mMenuView.setOverflowColor(this.mOverflowIconColor);
     }
 
     /**
@@ -711,6 +729,40 @@ public class FloatingSearchView extends FrameLayout {
         if(mQuerySection!=null && mSuggestionsList!=null){
             mQuerySection.setCardBackgroundColor(color);
             mSuggestionsList.setBackgroundColor(color);
+        }
+    }
+
+    /**
+     * Sets the text color of the search
+     * and suggestion text.
+     *
+     * @param color the color to be applied to the search and suggestion
+     *              text.
+     */
+    public void setViewTextColor(int color){
+
+        this.mSearchInputTextColor = color;
+        this.mSuggestionTextColor = color;
+
+        if(mSearchInput!=null && mSearchBarTitle!=null && mSuggestionsAdapter!=null){
+            mSearchInput.setTextColor(color);
+            mSuggestionsAdapter.setTextColor(color);
+            mSearchBarTitle.setTextColor(color);
+        }
+    }
+
+    /**
+     * Sets the text color of the search
+     * hint.
+     *
+     * @param color the color to be applied to the search hint.
+     */
+    public void setHintTextColor(int color){
+
+        this.mSearchInputHintColor = color;
+
+        if(mSearchInput!=null){
+            mSearchInput.setHintTextColor(color);
         }
     }
 
@@ -989,6 +1041,13 @@ public class FloatingSearchView extends FrameLayout {
             mSuggestionsAdapter.setOnBindSuggestionCallback(mOnBindSuggestionCallback);
     }
 
+    public void setSuggestionRightIconColor(int color){
+        this.mSuggestionRightIconColor = color;
+
+        if(mSuggestionsAdapter!=null)
+            mSuggestionsAdapter.setRightIconColor(this.mSuggestionRightIconColor);
+    }
+
     private void setSuggestionItemTextSize(int sizePx){
 
         this.mSuggestionsTextSizePx = sizePx;
@@ -1042,6 +1101,9 @@ public class FloatingSearchView extends FrameLayout {
                 mSearchInput.setSelection(mSearchInput.getText().length());
             }
         });
+
+        mSuggestionsAdapter.setTextColor(this.mSuggestionTextColor);
+        mSuggestionsAdapter.setRightIconColor(this.mSuggestionRightIconColor);
 
         mSuggestionsList.setAdapter(mSuggestionsAdapter);
 

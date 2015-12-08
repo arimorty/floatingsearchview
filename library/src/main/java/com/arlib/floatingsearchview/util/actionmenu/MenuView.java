@@ -114,16 +114,18 @@ public class MenuView extends LinearLayout {
 
     public void setOverflowColor(int overflowColor){
         this.mOverflowIconColor = overflowColor;
-
+        refreshColors();
     }
 
     private void refreshColors(){
 
         for(int i=0; i<getChildCount(); i++){
 
-            if(i==getChildCount()-2 && mHasOverflow)
-                setIconColor(((ImageView) getChildAt(i)).getDrawable(), mOverflowIconColor);
-            else  setIconColor(((ImageView)getChildAt(i)).getDrawable(), mActionIconColor);
+            Util.setIconColor(((ImageView) getChildAt(i)).getDrawable(), mActionIconColor);
+
+            if(mHasOverflow && i==getChildCount()-1)
+                Util.setIconColor(((ImageView) getChildAt(i)).getDrawable(), mOverflowIconColor);
+
         }
     }
 
@@ -211,7 +213,7 @@ public class MenuView extends LinearLayout {
                 if(menuItem.getIcon()!=null){
 
                     ImageView action = getActionHolder();
-                    action.setImageDrawable(setIconColor(menuItem.getIcon(), mActionIconColor));
+                    action.setImageDrawable(Util.setIconColor(menuItem.getIcon(), mActionIconColor));
                     addView(action);
                     mActionItems.add(menuItem);
 
@@ -235,7 +237,7 @@ public class MenuView extends LinearLayout {
         if(addOverflowAtTheEnd){
 
             ImageView overflowAction = getOverflowActionHolder();
-            overflowAction.setImageDrawable(setIconColor(
+            overflowAction.setImageDrawable(Util.setIconColor(
                     getResources().getDrawable(R.drawable.ic_more_vert_black_24dp), mOverflowIconColor));
             addView(overflowAction);
 
@@ -284,7 +286,7 @@ public class MenuView extends LinearLayout {
             if(i<mActionItems.size()){
                 ImageView action = (ImageView)currentView;
                 final MenuItem actionItem = mActionItems.get(i);
-                action.setImageDrawable(setIconColor(actionItem.getIcon(), mActionIconColor));
+                action.setImageDrawable(Util.setIconColor(actionItem.getIcon(), mActionIconColor));
 
                 action.setOnClickListener(new OnClickListener() {
                     @Override
@@ -394,7 +396,7 @@ public class MenuView extends LinearLayout {
             if(mActionItems.get(actionItemIndex).getItemId()!=showAlwaysActionItems.get(actionItemIndex).getItemId()){
 
                 ImageView action = (ImageView)getChildAt(actionItemIndex);
-                action.setImageDrawable(setIconColor(actionItem.getIcon(), mActionIconColor));
+                action.setImageDrawable(Util.setIconColor(actionItem.getIcon(), mActionIconColor));
 
                 action.setOnClickListener(new OnClickListener() {
                     @Override
@@ -512,12 +514,6 @@ public class MenuView extends LinearLayout {
             mMenuInflater = new SupportMenuInflater(getContext());
         }
         return mMenuInflater;
-    }
-
-    private Drawable setIconColor(Drawable icon, int color){
-        DrawableCompat.wrap(icon);
-        DrawableCompat.setTint(icon, color);
-        return icon;
     }
 
     public void setOnVisibleWidthChanged(OnVisibleWidthChanged listener){

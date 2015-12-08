@@ -19,7 +19,9 @@ package com.arlib.floatingsearchview.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.Display;
@@ -88,5 +90,11 @@ public class Util {
         display.getMetrics(outMetrics);
 
         return outMetrics.heightPixels;
+    }
+
+    public static Drawable setIconColor(Drawable icon, int color){
+        DrawableCompat.wrap(icon);
+        DrawableCompat.setTint(icon, color);
+        return icon;
     }
 }

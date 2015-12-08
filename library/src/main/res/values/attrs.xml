@@ -28,5 +28,8 @@
         <attr name="floatingSearch_clearBtnColor" format="color"/>
         <attr name="floatingSearch_backgroundColor" format="color"/>
         <attr name="floatingSearch_dividerColor" format="color"/>
+        <attr name="floatingSearch_viewTextColor" format="color"/>
+        <attr name="floatingSearch_hintTextColor" format="color"/>
+        <attr name="floatingSearch_suggestionRightIconColor" format="color"/>
     </declare-styleable>
 </resources>
