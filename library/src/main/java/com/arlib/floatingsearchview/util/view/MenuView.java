@@ -276,6 +276,9 @@ public class MenuView extends LinearLayout {
 
         cancelChildAnimListAndClear();
 
+        if(mMenuItems.isEmpty())
+            return;
+
         final int preAnimTranslationX = (int)getChildAt(0).getTranslationX();
 
         anims = new ArrayList<>();
