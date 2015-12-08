@@ -50,9 +50,11 @@ Usage
 
 <b>Left action mode:</b>
 
+The left action can be configured as follows:
+
 In your xml, add 
 ```xml
-   app:floatingSearch_leftAction=""
+   app:floatingSearch_leftActionMode=""
 ```
 
 <table>
@@ -83,7 +85,7 @@ Add a menu resource
     app:floatingSearch_menu="@menu/menu_main"
 ```
 
-<b>NOTE<b/>:
+**NOTE**:
 The menu resource's ```app:showAsAction=""```
 behaves as follows:
 
