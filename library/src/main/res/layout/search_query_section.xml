@@ -6,8 +6,7 @@
     card_view:cardUseCompatPadding="true"
     android:layout_height="wrap_content"
     android:id="@+id/search_query_section"
-    android:clickable="true"
-    android:background="@color/light_gray">
+    android:clickable="true">
 
     <RelativeLayout
         android:layout_width="match_parent"

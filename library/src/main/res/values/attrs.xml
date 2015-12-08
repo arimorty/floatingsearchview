@@ -22,5 +22,11 @@
         <attr name="floatingSearch_hideOverflowMenuWhenFocused" format="boolean"/>
         <attr name="floatingSearch_showOverFlowMenu" format="boolean"/>
         <attr name="floatingSearch_menu" format="reference"/>
+        <attr name="floatingSearch_leftActionColor" format="color"/>
+        <attr name="floatingSearch_menuItemIconColor" format="color"/>
+        <attr name="floatingSearch_actionMenuOverflowColor" format="color"/>
+        <attr name="floatingSearch_clearBtnColor" format="color"/>
+        <attr name="floatingSearch_backgroundColor" format="color"/>
+        <attr name="floatingSearch_dividerColor" format="color"/>
     </declare-styleable>
 </resources>

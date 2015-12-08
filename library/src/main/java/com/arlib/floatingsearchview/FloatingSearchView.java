@@ -40,6 +40,7 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
@@ -140,7 +141,7 @@ public class FloatingSearchView extends FrameLayout {
     private Drawable mBackgroundDrawable;
     private boolean mDismissOnOutsideTouch = true;
 
-    private View mQuerySection;
+    private CardView mQuerySection;
     private OnSearchListener mSearchListener;
     private boolean mIsFocused;
     private OnFocusChangeListener mFocusChangeListener;
@@ -316,7 +317,7 @@ public class FloatingSearchView extends FrameLayout {
 
         mBackgroundDrawable = new ColorDrawable(Color.BLACK);
 
-        mQuerySection = findViewById(R.id.search_query_section);
+        mQuerySection = (CardView)findViewById(R.id.search_query_section);
         mClearButton = (ImageView)findViewById(R.id.clear_btn);
         mSearchInput = (EditText)findViewById(R.id.search_bar_text);
         mSearchInputParent = findViewById(R.id.search_input_parent);
@@ -351,7 +352,9 @@ public class FloatingSearchView extends FrameLayout {
 
         setLeftActionIconColor(getResources().getColor(R.color.gray_active_icon));
         setClearBtnColor(getResources().getColor(R.color.gray_active_icon));
-        setActionMenuColor(getResources().getColor(R.color.gray_active_icon));
+        setMenuItemIconColor(getResources().getColor(R.color.gray_active_icon));
+        setActionMenuOverflowColor(getResources().getColor(R.color.gray_active_icon));
+        setBackgroundColor(Color.WHITE);
     }
 
 
@@ -444,8 +447,10 @@ public class FloatingSearchView extends FrameLayout {
             LayoutParams dividerLP = (LayoutParams)mDivider.getLayoutParams();
             LinearLayout.LayoutParams suggestListSectionLP = (LinearLayout.LayoutParams)mSuggestionsSection.getLayoutParams();
 
+            int cardPadding = Util.dpToPx(3);
+
             querySectionLP.setMargins(searchBarLeftMargin, searchBarTopMargin, searchBarRightMargin, 0);
-            dividerLP.setMargins(searchBarLeftMargin, 0, searchBarRightMargin, ((MarginLayoutParams) mDivider.getLayoutParams()).bottomMargin);
+            dividerLP.setMargins(searchBarLeftMargin+cardPadding, 0, searchBarRightMargin+cardPadding, ((MarginLayoutParams) mDivider.getLayoutParams()).bottomMargin);
             suggestListSectionLP.setMargins(searchBarLeftMargin, 0, searchBarRightMargin, 0);
 
             mQuerySection.setLayoutParams(querySectionLP);
@@ -674,7 +679,7 @@ public class FloatingSearchView extends FrameLayout {
      * @param color the color to be applied to the
      *              action menu items.
      */
-    public void setActionMenuColor(int color){
+    public void setMenuItemIconColor(int color){
 
         if(mMenuView!=null)
             mMenuView.setActionIconColor(color);
@@ -692,6 +697,32 @@ public class FloatingSearchView extends FrameLayout {
             mMenuView.setOverflowColor(color);
     }
 
+    /**
+     * Sets the background color of the search
+     * view.
+     *
+     * @param color the color to be applied to the search bar and
+     *              the suggestion section background.
+     */
+    public void setBackgroundColor(int color){
+
+        if(mQuerySection!=null && mSuggestionsList!=null){
+            mQuerySection.setCardBackgroundColor(color);
+            mSuggestionsList.setBackgroundColor(color);
+        }
+    }
+
+    /**
+     * Sets the color of the search divider that
+     * divides the search section from the suggestions.
+     *
+     * @param color the color to be applied the divider.
+     */
+    public void setDividerColor(int color){
+
+        if(mDivider!=null)
+            mDivider.setBackgroundColor(color);
+    }
 
     /**
      * Mimics a menu click that opens the menu. Useful when for navigation

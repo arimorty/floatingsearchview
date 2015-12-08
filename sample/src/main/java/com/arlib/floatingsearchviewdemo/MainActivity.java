@@ -157,7 +157,8 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {}
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
 
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -170,11 +171,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDrawerClosed(View drawerView) { }
+            public void onDrawerClosed(View drawerView) {
+            }
 
             @Override
-            public void onDrawerStateChanged(int newState) { }
+            public void onDrawerStateChanged(int newState) {
+            }
         });
+
+
+       // mSearchView.setLeftActionIconColor(Color.RED);
+        //mSearchView.setMenuItemIconColor(Color.BLUE);
+       // mSearchView.setActionMenuOverflowColor(Color.GREEN);
+       // mSearchView.setClearBtnColor(Color.YELLOW);
+       // mSearchView.setBackgroundColor(Color.CYAN);
+       // mSearchView.setDividerColor(Color.RED);
 
     }
 
