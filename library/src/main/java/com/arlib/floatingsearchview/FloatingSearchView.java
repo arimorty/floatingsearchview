@@ -509,7 +509,7 @@ public class FloatingSearchView extends FrameLayout {
 
                 mMenuView.reset(actionMenuAvailWidth());
 
-                if(mIsFocused)
+                if (mIsFocused)
                     mMenuView.hideIfRoomItems(false);
             }
         });
@@ -535,10 +535,16 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onVisibleWidthChanged(int newVisibleWidth) {
 
-                mClearButton.setTranslationX(-newVisibleWidth);
-                mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48), 0);
+                if(newVisibleWidth==0){
+                    mClearButton.setTranslationX(-Util.dpToPx(4));
+                    mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48)+Util.dpToPx(4), 0);
+                }else{
+                    mClearButton.setTranslationX(-newVisibleWidth);
+                    mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48), 0);
+                }
             }
         });
+
 
         mClearButton.setOnClickListener(new OnClickListener() {
             @Override
