@@ -62,7 +62,7 @@ public class MenuView extends LinearLayout {
 
     private final float ACTION_DIMENSION_PX;
 
-    private int mMenu;
+    private int mMenu = -1;
     private MenuBuilder mMenuBuilder;
     private SupportMenuInflater mMenuInflater;
     private MenuPopupHelper mMenuPopupHelper;
@@ -167,6 +167,9 @@ public class MenuView extends LinearLayout {
      *                   will show as actions.
      */
     public void reset(int availWidth){
+
+        if(mMenu==-1)
+            return;
 
         //clean view first
         removeAllViews();
@@ -278,6 +281,9 @@ public class MenuView extends LinearLayout {
      * @param withAnim
      */
     public void hideIfRoomItems(boolean withAnim){
+
+        if(mMenu==-1)
+            return;
 
         mActionShowAlwaysItems.clear();
         cancelChildAnimListAndClear();
@@ -403,6 +409,10 @@ public class MenuView extends LinearLayout {
      * @param withAnim
      */
     public void showIfRoomItems(boolean withAnim){
+
+
+        if(mMenu==-1)
+            return;
 
         cancelChildAnimListAndClear();
 
