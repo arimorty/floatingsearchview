@@ -349,16 +349,11 @@ public class FloatingSearchView extends FrameLayout {
         mIconSearch = getResources().getDrawable(R.drawable.ic_search_black_24dp);
         mIconSearch = DrawableCompat.wrap(mIconSearch);
 
-        setIconsColor(getResources().getColor(R.color.gray_active_icon));
+        setLeftActionIconColor(getResources().getColor(R.color.gray_active_icon));
+        setClearBtnColor(getResources().getColor(R.color.gray_active_icon));
+        setActionMenuColor(getResources().getColor(R.color.gray_active_icon));
     }
 
-    private void setIconsColor(int color){
-
-        mMenuBtnDrawable.setColor(color);
-        DrawableCompat.setTint(mIconClear, color);
-        DrawableCompat.setTint(mIconBackArrow, color);
-        DrawableCompat.setTint(mIconSearch, color);
-    }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
@@ -656,10 +651,32 @@ public class FloatingSearchView extends FrameLayout {
      * @param color the color to be applied to the
      *              left menu button.
      */
-    public void setLeftMenuIconColor(int color){
+    public void setLeftActionIconColor(int color){
 
-        //todo go over
         mMenuBtnDrawable.setColor(color);
+        DrawableCompat.setTint(mIconBackArrow, color);
+        DrawableCompat.setTint(mIconSearch, color);
+    }
+
+    /**
+     * Sets the action menu icons' color.
+     *
+     * @param color the color to be applied to the
+     *              action menu items.
+     */
+    public void setActionMenuColor(int color){
+
+
+    }
+
+    /**
+     * Sets the clear button's color.
+     *
+     * @param color the color to be applied to the
+     *              clear button.
+     */
+    public void setClearBtnColor(int color){
+        DrawableCompat.setTint(mIconClear, color);
     }
 
     /**
