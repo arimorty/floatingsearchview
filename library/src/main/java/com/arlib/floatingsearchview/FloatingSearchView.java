@@ -553,6 +553,7 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onVisibleWidthChanged(int newVisibleWidth) {
 
+                //todo avaoid magic numbers
                 if (newVisibleWidth == 0) {
                     mClearButton.setTranslationX(-Util.dpToPx(4));
                     mSearchInput.setPadding(0, 0, newVisibleWidth + Util.dpToPx(48) + Util.dpToPx(4), 0);
@@ -571,7 +572,6 @@ public class FloatingSearchView extends FrameLayout {
             public void onClick(View v) {
 
                 mSearchInput.setText("");
-
             }
         });
 
@@ -650,7 +650,7 @@ public class FloatingSearchView extends FrameLayout {
                     switch (mLeftActionMode){
 
                         case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:{
-                            toggleMenu();
+                            toggleLeftMenu();
                         }break;
                         case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:{
                             setSearchFocusedInternal(true);
@@ -848,7 +848,7 @@ public class FloatingSearchView extends FrameLayout {
     public void inflateOverflowMenu(int menuId){
        mMenuView.resetMenuResource(menuId);
 
-        //todo check fo synchronizatioin problems in MenuView
+        //todo check fo synchronization problems in MenuView
         //when calling it this way
        mMenuView.reset(actionMenuAvailWidth());
        if(mIsFocused)
@@ -861,7 +861,7 @@ public class FloatingSearchView extends FrameLayout {
         return mQuerySection.getWidth() - SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
     }
 
-    private void toggleMenu(){
+    private void toggleLeftMenu(){
 
         if(mMenuOpen){
             closeMenu(true, true, true);
