@@ -154,7 +154,7 @@ public class MenuView extends LinearLayout {
     }
 
     /**
-     * Resets the the view to fir into a new
+     * Resets the the view to fit into a new
      * available width.
      *
      * <p>This clears and then re-inflates the menu items
