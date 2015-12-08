@@ -51,37 +51,63 @@ Usage
 ```
 <br/>
 
-<b>Left action modes:</b>
+<b>Left action mode:</b>
 
-In your xml, add menu resource
+In your xml, add 
 ```xml
    app:floatingSearch_leftAction=""
 ```
 
 <table>
     <tr>
-        <td>showSearch</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/actionmenufeature/images/device-2015-12-06-215814.png"/></td>
+        <td>showHamburger</td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/master/images/vf2oi.png"/></td>
     </tr>
     <tr>
        <td>showSearch</td>
-        <td></td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/master/images/vf2lz.png"/></td>
     </tr>
     <tr>
-        <td>showSearch</td>
-        <td></td>
+        <td>showHome</td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/master/images/vf2c2.png"/></td>
+    </tr>
+    <tr>
+        <td>noLeftAction</td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/master/images/vf2ii.png"/></td>
     </tr>
 </table>
 
-
-
 <br/>
-<b>Configure <i>overflow</i> menu:</b>
 
-In your xml, add menu resource
+<b>Configure menu items:</b>
+
+Add a menu resource
 ```xml
     app:floatingSearch_menu="@menu/menu_main"
 ```
+
+Note:
+The menu resource's ```app:showAsAction=""```
+behaves as follows:
+
+<table>
+    <tr>
+        <td>never</td>
+        <td>Puts the menu item in the overflow menu</td>
+    </tr>
+    <tr>
+       <td>ifRoom</td>
+       <td>Shows an action icon for the menu if the following conditions are met:
+       1. The search is focused.
+       2. There is enough room fo it.
+       </td>
+    </tr>
+    <tr>
+        <td>always</td>
+        <td>Shows an action icon for the menu if there is room if regardless of whether the search is focused or not.
+        </td>
+    </tr>   
+</table>
 
 Listen for item selections 
 ```  
@@ -94,44 +120,46 @@ Listen for item selections
 ```
 
 <br/>
+
+
 <b>Configure suggestion item:</b>
 
 First, implement [SearchSuggestion](https://github.com/arimorty/floatingsearchview/blob/master/library/src/main/java/com/arlib/floatingsearchview/suggestions/model/SearchSuggestion.java) 
 
 <i>Optional</i>:
 
-+ Control the look of suggestion text.
-    ```  
-       @Override
-       public void setBodyText(TextView textView) {
-      
-           //here you have complete control over the TextView that will hold
-           //the search suggestion.
-       }
-    ```
-+ Control the look of the left icon.  
-     ```  
-        @Override
-        public boolean setLeftIcon(ImageView imageView) {
-          
-            //here you have complete control over the ImageView that will hold
-            //the search suggestion's left icon. You can choose your favorite image-loading library
-            //for setting the ImageView's image. 
-        }
-     ```    
+Set a callback for when a given suggestion is bound to the suggestion list.
+
+ ```mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+            @Override
+            public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
+
+                       //here you can set some attributes for the suggestion's left icon and text. For example,
+                       //you can choose your favorite image-loading library for setting the left icon's image. 
+            }
+
+        });``` 
 
 <br/>
-<b>To enable voice recognition:</b>
 
-In your xml, add
+<i>Styling</i>:
+
+Available styling:
+
 ```xml
-   app:floatingSearch_showVoiceInput="true"
+   <style name="SearchView">
+           <item name="floatingSearch_backgroundColor"></item>
+           <item name="floatingSearch_viewTextColor"></item>
+           <item name="floatingSearch_hintTextColor"></item>
+           <item name="floatingSearch_dividerColor"></item>
+           <item name="floatingSearch_clearBtnColor"></item>
+           <item name="floatingSearch_suggestionRightIconColor"></item>
+           <item name="floatingSearch_leftActionColor"></item>
+           <item name="floatingSearch_menuItemIconColor"></item>
+           <item name="floatingSearch_actionMenuOverflowColor"></item>
+    </style>
 ```
 
-In your Activity, add this single line in ```onActivityResult(int requestCode, int resultCode, Intent data)```
-```
-   mSearchView.onHostActivityResult(requestCode, resultCode, data);
-```
 
 Contributing
 ============
