@@ -272,112 +272,6 @@ public class MenuView extends LinearLayout {
         return (ImageView)LayoutInflater.from(getContext()).inflate(R.layout.overflow_action_item_layout, this, false);
     }
 
-    public void showIfRoomItems(boolean withAnim){
-
-        cancelChildAnimListAndClear();
-
-        if(mMenuItems.isEmpty())
-            return;
-
-        final int preAnimTranslationX = (int)getChildAt(0).getTranslationX();
-
-        anims = new ArrayList<>();
-
-        for(int i=0; i<getChildCount(); i++){
-
-            final View currentView = getChildAt(i);
-
-            if(i<mActionItems.size()){
-                ImageView action = (ImageView)currentView;
-                final MenuItem actionItem = mActionItems.get(i);
-                action.setImageDrawable(Util.setIconColor(actionItem.getIcon(), mActionIconColor));
-
-                action.setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                        if(mMenuCallback!=null)
-                            mMenuCallback.onMenuItemSelected(mMenuBuilder, actionItem);
-                    }
-                });
-            }
-
-            //todo go over logic
-            int animDuration = withAnim ?
-                    SHOW_IF_ROOM_ITEMS_ANIM_DURATION
-                    : 0;
-
-            Interpolator interpolator = new DecelerateInterpolator();
-
-            //todo check logic
-            if(i>mActionShowAlwaysItems.size()-1)
-                interpolator = new LinearInterpolator();
-
-            currentView.setClickable(true);
-            anims.add(ViewPropertyObjectAnimator.animate(currentView)
-                    .addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-
-                            currentView.setTranslationX(0);
-                        }
-                    })
-                    .setInterpolator(interpolator)
-                    .setDuration(animDuration)
-                    .translationX(0).get());
-            anims.add(ViewPropertyObjectAnimator.animate(currentView)
-                    .addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-
-                            currentView.setScaleX(1.0f);
-                        }
-                    })
-                    .setInterpolator(interpolator)
-                    .setDuration(animDuration)
-                    .scaleX(1.0f).get());
-            anims.add(ViewPropertyObjectAnimator.animate(currentView)
-                    .addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-
-                            currentView.setScaleY(1.0f);
-                        }
-                    })
-                    .setInterpolator(interpolator)
-                    .setDuration(animDuration)
-                    .scaleY(1.0f).get());
-            anims.add(ViewPropertyObjectAnimator.animate(currentView)
-                    .addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-
-                            currentView.setAlpha(1.0f);
-                        }
-                    })
-                    .setInterpolator(interpolator)
-                    .setDuration(animDuration)
-                    .alpha(1.0f).get());
-        }
-
-        AnimatorSet animSet = new AnimatorSet();
-
-        //temporary, from laziness
-        if(!withAnim)
-            animSet.setDuration(0);
-        animSet.playTogether(anims.toArray(new ObjectAnimator[anims.size()]));
-        animSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-
-                if(mOnVisibleWidthChanged!=null)
-                    mOnVisibleWidthChanged.onVisibleWidthChanged((getChildCount() * (int) ACTION_DIMENSION_PX)- (mHasOverflow ? Util.dpToPx(8) : 0));
-            }
-        });
-        animSet.start();
-
-    }
-
     public void hideIfRoomItems(boolean withAnim){
 
         mActionShowAlwaysItems.clear();
@@ -495,6 +389,112 @@ public class MenuView extends LinearLayout {
             });
             animSet.start();
         }
+
+    }
+
+    public void showIfRoomItems(boolean withAnim){
+
+        cancelChildAnimListAndClear();
+
+        if(mMenuItems.isEmpty())
+            return;
+
+        final int preAnimTranslationX = (int)getChildAt(0).getTranslationX();
+
+        anims = new ArrayList<>();
+
+        for(int i=0; i<getChildCount(); i++){
+
+            final View currentView = getChildAt(i);
+
+            if(i<mActionItems.size()){
+                ImageView action = (ImageView)currentView;
+                final MenuItem actionItem = mActionItems.get(i);
+                action.setImageDrawable(Util.setIconColor(actionItem.getIcon(), mActionIconColor));
+
+                action.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        if(mMenuCallback!=null)
+                            mMenuCallback.onMenuItemSelected(mMenuBuilder, actionItem);
+                    }
+                });
+            }
+
+            //todo go over logic
+            int animDuration = withAnim ?
+                    SHOW_IF_ROOM_ITEMS_ANIM_DURATION
+                    : 0;
+
+            Interpolator interpolator = new DecelerateInterpolator();
+
+            //todo check logic
+            if(i>mActionShowAlwaysItems.size()-1)
+                interpolator = new LinearInterpolator();
+
+            currentView.setClickable(true);
+            anims.add(ViewPropertyObjectAnimator.animate(currentView)
+                    .addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                            currentView.setTranslationX(0);
+                        }
+                    })
+                    .setInterpolator(interpolator)
+                    .setDuration(animDuration)
+                    .translationX(0).get());
+            anims.add(ViewPropertyObjectAnimator.animate(currentView)
+                    .addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                            currentView.setScaleX(1.0f);
+                        }
+                    })
+                    .setInterpolator(interpolator)
+                    .setDuration(animDuration)
+                    .scaleX(1.0f).get());
+            anims.add(ViewPropertyObjectAnimator.animate(currentView)
+                    .addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                            currentView.setScaleY(1.0f);
+                        }
+                    })
+                    .setInterpolator(interpolator)
+                    .setDuration(animDuration)
+                    .scaleY(1.0f).get());
+            anims.add(ViewPropertyObjectAnimator.animate(currentView)
+                    .addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+
+                            currentView.setAlpha(1.0f);
+                        }
+                    })
+                    .setInterpolator(interpolator)
+                    .setDuration(animDuration)
+                    .alpha(1.0f).get());
+        }
+
+        AnimatorSet animSet = new AnimatorSet();
+
+        //temporary, from laziness
+        if(!withAnim)
+            animSet.setDuration(0);
+        animSet.playTogether(anims.toArray(new ObjectAnimator[anims.size()]));
+        animSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+                if(mOnVisibleWidthChanged!=null)
+                    mOnVisibleWidthChanged.onVisibleWidthChanged((getChildCount() * (int) ACTION_DIMENSION_PX)- (mHasOverflow ? Util.dpToPx(8) : 0));
+            }
+        });
+        animSet.start();
 
     }
 
