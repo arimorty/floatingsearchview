@@ -1,12 +1,9 @@
-<b>NOTE<b/>: this README file is for release 1.1.0 which is was not released yet. 
-
-
 Floating Search View [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Floating%20Search%20View-green.svg?style=true)](https://android-arsenal.com/details/1/2842)
 =============
 
 An implementation of a floating search box with search suggestions.
 
-![Alt text](/images/inaction.gif)
+![Alt text](/images/vf353.gif)
 
 Usage
 -----
@@ -61,19 +58,19 @@ In your xml, add
 <table>
     <tr>
         <td>showHamburger</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/master/images/vf2oi.png"/></td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2oi.gif"/></td>
     </tr>
     <tr>
        <td>showSearch</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/master/images/vf2lz.png"/></td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2lz.gif"/></td>
     </tr>
     <tr>
         <td>showHome</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/master/images/vf2c2.png"/></td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2c2.gif"/></td>
     </tr>
     <tr>
         <td>noLeftAction</td>
-        <td><img src="https://github.com/arimorty/floatingsearchview/blob/master/images/vf2ii.png"/></td>
+        <td><img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/vf2ii.gif"/></td>
     </tr>
 </table>
 
@@ -86,7 +83,7 @@ Add a menu resource
     app:floatingSearch_menu="@menu/menu_main"
 ```
 
-Note:
+<b>NOTE<b/>:
 The menu resource's ```app:showAsAction=""```
 behaves as follows:
 
