@@ -1156,8 +1156,9 @@ public class FloatingSearchView extends FrameLayout {
         ViewCompat.animate(mSuggestionListContainer).cancel();
         float translationY = (-mSuggestionListContainer.getHeight())+getVisibleItemsHeight(newSearchSuggestions);
 
+        Log.d("dfsdfsdff", translationY+"");
         //todo refactor go over and make more clear
-        final float newTranslationY = translationY<0 ?
+        final float newTranslationY = (translationY+fiveDp)<0 ?
                 newSearchSuggestions.size()==0 ? translationY : translationY+threeDp
                 : -fiveDp;
 
