@@ -1364,9 +1364,10 @@ public class FloatingSearchView extends FrameLayout {
             if(mSearchInput.length()!=0)
                 mSearchInput.setText("");
 
-            mSkipTextChangeEvent = true;
-            if(mIsTitleSet)
+            if(mIsTitleSet) {
+                mSkipTextChangeEvent = true;
                 mSearchInput.setText(mTitleText);
+            }
 
             if(mFocusChangeListener!=null) {
                 mFocusChangeListener.onFocusCleared();
