@@ -230,10 +230,6 @@ public class MainActivity extends AppCompatActivity {
             public void onDrawerStateChanged(int newState) {
             }
         });
-
-        mSearchView.setSearchBarTitle("fsfsfdfs");
-        mSearchView.setSearchFocusable(false);
-
     }
 
     private void refreshBackgroundColor(String colorName, String colorValue){
