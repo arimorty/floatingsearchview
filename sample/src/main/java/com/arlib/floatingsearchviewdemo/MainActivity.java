@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onSearchTextChanged()");
             }
         });
+        mSearchView.setSearchBarTitle("dfsfs");
 
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
@@ -98,6 +99,8 @@ public class MainActivity extends AppCompatActivity {
                 refreshBackgroundColor(colorSuggestion.getColor().getName(), colorSuggestion.getColor().getHex());
 
                 Log.d(TAG, "onSuggestionClicked()");
+
+                //mSearchView.setShowHintWhenNotFocused(false);
             }
 
             @Override

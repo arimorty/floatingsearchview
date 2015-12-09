@@ -748,7 +748,6 @@ public class FloatingSearchView extends FrameLayout {
         this.mSuggestionTextColor = color;
 
         if(mSearchInput!=null && mSearchBarTitle!=null && mSuggestionsAdapter!=null){
-            Log.d("dfsdfsdf","setting text color to: "+color);
             mSearchInput.setTextColor(color);
             mSuggestionsAdapter.setTextColor(color);
             mSearchBarTitle.setTextColor(color);

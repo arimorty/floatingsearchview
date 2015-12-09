@@ -72,6 +72,7 @@
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:text="gdfgd"
                 android:editable="false" />
 
         </FrameLayout>
