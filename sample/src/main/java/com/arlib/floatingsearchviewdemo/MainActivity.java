@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onSearchTextChanged()");
             }
         });
-        mSearchView.setSearchBarTitle("dfsfs");
 
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
@@ -100,7 +99,6 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "onSuggestionClicked()");
 
-                //mSearchView.setShowHintWhenNotFocused(false);
             }
 
             @Override
@@ -211,7 +209,8 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) { }
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+            }
 
             @Override
             public void onDrawerOpened(View drawerView) {
@@ -224,11 +223,17 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onDrawerClosed(View drawerView) { }
+            public void onDrawerClosed(View drawerView) {
+            }
 
             @Override
-            public void onDrawerStateChanged(int newState) { }
+            public void onDrawerStateChanged(int newState) {
+            }
         });
+
+        mSearchView.setSearchBarTitle("fsfsfdfs");
+        mSearchView.setSearchFocusable(false);
+
     }
 
     private void refreshBackgroundColor(String colorName, String colorValue){

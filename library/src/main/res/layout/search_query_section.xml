@@ -61,19 +61,8 @@
                 android:singleLine="true"
                 android:ellipsize="end"
                 android:maxLines="1"
+                android:inputType="textNoSuggestions"
                 android:imeOptions="actionSearch"/>
-
-            <EditText
-                android:id="@+id/search_bar_title"
-                android:alpha="1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/transparent"
-                android:singleLine="true"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="gdfgd"
-                android:editable="false" />
 
         </FrameLayout>
 

@@ -144,8 +144,9 @@ public class FloatingSearchView extends FrameLayout {
     private OnSearchListener mSearchListener;
     private boolean mIsFocused;
     private OnFocusChangeListener mFocusChangeListener;
-    private TextView mSearchBarTitle;
     private EditText mSearchInput;
+    private String mTitleText;
+    private boolean mIsTitleSet;
     private int mSearchInputTextColor = -1;
     private int mSearchInputHintColor = -1;
     private View mSearchInputParent;
@@ -159,7 +160,7 @@ public class FloatingSearchView extends FrameLayout {
     private Drawable mIconBackArrow;
     private Drawable mIconSearch;
     @LeftActionMode int mLeftActionMode;
-    private boolean mShowHintNotFocused;
+    private boolean mSearchCanFocus;
     private String mSearchHint;
     private boolean mShowSearchKey;
     private boolean mMenuOpen = false;
@@ -327,7 +328,6 @@ public class FloatingSearchView extends FrameLayout {
         mClearButton = (ImageView)findViewById(R.id.clear_btn);
         mSearchInput = (EditText)findViewById(R.id.search_bar_text);
         mSearchInputParent = findViewById(R.id.search_input_parent);
-        mSearchBarTitle = (TextView)findViewById(R.id.search_bar_title);
         mLeftAction = (ImageView)findViewById(R.id.left_action);
         mSearchProgress = (ProgressBar)findViewById(R.id.search_bar_search_progress);
         initDrawables();
@@ -459,8 +459,6 @@ public class FloatingSearchView extends FrameLayout {
 
             setSearchHint(a.getString(R.styleable.FloatingSearchView_floatingSearch_searchHint));
 
-            setShowHintWhenNotFocused(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchHintWhenNotFocused, ATTRS_SEARCH_BAR_SHOW_SEARCH_HINT_NOT_FOCUSED_DEFAULT));
-
             setShowSearchKey(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchKey, ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT));
 
             setDismissOnOutsideClick(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dismissOnOutsideTouch, ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT));
@@ -504,7 +502,6 @@ public class FloatingSearchView extends FrameLayout {
 
         mSearchInput.setTextColor(this.mSearchInputTextColor);
         mSearchInput.setHintTextColor(this.mSearchInputHintColor);
-        mSearchBarTitle.setTextColor(this.mSearchInputTextColor);
 
         if(!isInEditMode() && mHostActivity!=null)
             mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -575,14 +572,12 @@ public class FloatingSearchView extends FrameLayout {
             }
         });
 
-        mSearchBarTitle.setVisibility(GONE);
-
         mClearButton.setVisibility(View.INVISIBLE);
         mSearchInput.addTextChangedListener(new TextWatcherAdapter() {
 
             public void onTextChanged(final CharSequence s, int start, int before, int count) {
 
-                if (mSkipTextChangeEvent) {
+                if (mSkipTextChangeEvent || !mIsFocused) {
                     mSkipTextChangeEvent = false;
                 } else {
 
@@ -747,10 +742,9 @@ public class FloatingSearchView extends FrameLayout {
         this.mSearchInputTextColor = color;
         this.mSuggestionTextColor = color;
 
-        if(mSearchInput!=null && mSearchBarTitle!=null && mSuggestionsAdapter!=null){
+        if(mSearchInput!=null && mSuggestionsAdapter!=null){
             mSearchInput.setTextColor(color);
             mSuggestionsAdapter.setTextColor(color);
-            mSearchBarTitle.setTextColor(color);
         }
     }
 
@@ -912,6 +906,16 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
+     * Wrapper implementation for EditText.setFocusable(boolean focusable)
+     *
+     * @param focusable true, to make search focus when
+     *                  clicked.
+     */
+    public void setSearchFocusable(boolean focusable){
+        mSearchInput.setFocusable(focusable);
+    }
+
+    /**
      * Set a hint that will appear in the
      * search input. Default hint is R.string.abc_search_hint
      * which is "search..." (when device language is set to english)
@@ -921,41 +925,40 @@ public class FloatingSearchView extends FrameLayout {
     public void setSearchHint(String searchHint){
 
         mSearchHint = searchHint != null ? searchHint : getResources().getString(R.string.abc_search_hint);
-
-        if(mShowHintNotFocused || mSearchInput.isFocused())
-            mSearchInput.setHint(mSearchHint);
-        else
-            mSearchInput.setHint("");
-    }
-
-    /**
-     * Control whether the hint will be shown
-     * when the search is not focused.
-     *
-     * @param show true to show hint when search
-     *             is inactive
-     */
-    public void setShowHintWhenNotFocused(boolean show){
-
-        mShowHintNotFocused = show;
-
-        if(mShowHintNotFocused)
-            mSearchInput.setHint(mSearchHint);
+        mSearchInput.setHint(mSearchHint);
     }
 
     /**
      * Sets the title for the search bar.
      *
-     * <p>Note that this is the regular text, not the
-     * hint. It won't have any effect if called when
-     * mShowHintInactive is true.</p>
+     * <p>Note that after the title is set, when
+     * the search gains focus, the title will be replaced
+     * by the search hint.</p>
      *
      * @param title the title to be shown when search
      *              is not focused
      */
     public void setSearchBarTitle(CharSequence title){
 
-        mSearchBarTitle.setText(title);
+        this.mTitleText = title.toString();
+        mIsTitleSet = true;
+        mSearchInput.setText(title);
+    }
+
+    /**
+     * Sets the search text.
+     *
+     * <p>Note that this is the different from
+     * {@link #setSearchBarTitle(CharSequence title) setSearchBarTitle} in
+     * that it keeps the text when the search gains focus.</p>
+     *
+     * @param text the text to be set for the search
+     *             input.
+     */
+    public void setSearchText(CharSequence text){
+
+        mIsTitleSet = false;
+        mSearchInput.setText(text);
     }
 
     /**
@@ -1324,6 +1327,11 @@ public class FloatingSearchView extends FrameLayout {
 
             mSearchInput.requestFocus();
 
+            if(mIsTitleSet) {
+                mSkipTextChangeEvent = true;
+                mSearchInput.setText("");
+            }
+
             mMenuView.hideIfRoomItems(true);
 
             Util.showSoftKeyboard(getContext(), mSearchInput);
@@ -1355,6 +1363,10 @@ public class FloatingSearchView extends FrameLayout {
 
             if(mSearchInput.length()!=0)
                 mSearchInput.setText("");
+
+            mSkipTextChangeEvent = true;
+            if(mIsTitleSet)
+                mSearchInput.setText(mTitleText);
 
             if(mFocusChangeListener!=null) {
                 mFocusChangeListener.onFocusCleared();
@@ -1666,7 +1678,8 @@ public class FloatingSearchView extends FrameLayout {
         savedState.searchHint = this.mSearchHint;
         savedState.dismissOnOutsideClick = this.mDismissOnOutsideTouch;
         savedState.showSearchKey = this.mShowSearchKey;
-        savedState.showHintWhenNotFocused = this.mShowHintNotFocused;
+        savedState.searchCanFocus = this.mSearchCanFocus;
+        savedState.isTitleSet = this.mIsTitleSet;
         //savedState.leftMode = this.mLeftActionMode;
         return savedState;
     }
@@ -1677,11 +1690,11 @@ public class FloatingSearchView extends FrameLayout {
         super.onRestoreInstanceState(savedState.getSuperState());
 
         this.mIsFocused = savedState.isFocused;
+        this.mIsTitleSet = savedState.isTitleSet;
 
         setSuggestionItemTextSize(savedState.suggestionTextSize);
         setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
         setShowSearchKey(savedState.showSearchKey);
-        setShowHintWhenNotFocused(savedState.showHintWhenNotFocused);
         //setLeftActionMode(savedState.leftMode);
         setSearchHint(savedState.searchHint);
 
@@ -1724,7 +1737,9 @@ public class FloatingSearchView extends FrameLayout {
         private String searchHint;
         private boolean dismissOnOutsideClick;
         private boolean showSearchKey;
-        private boolean showHintWhenNotFocused;
+        private boolean searchCanFocus;
+        private boolean isTitleSet;
+
         //private int leftMode;
 
         SavedState(Parcelable superState) {
@@ -1742,7 +1757,8 @@ public class FloatingSearchView extends FrameLayout {
             searchHint = in.readString();
             dismissOnOutsideClick = (in.readInt() != 0);
             showSearchKey = (in.readInt() != 0);
-            showHintWhenNotFocused = (in.readInt() != 0);
+            searchCanFocus = (in.readInt() != 0);
+            isTitleSet = (in.readInt() != 0);
             //leftMode = in.readInt();
         }
 
@@ -1756,7 +1772,8 @@ public class FloatingSearchView extends FrameLayout {
             out.writeString(searchHint);
             out.writeInt(dismissOnOutsideClick ? 1 : 0);
             out.writeInt(showSearchKey ? 1 : 0);
-            out.writeInt(showHintWhenNotFocused ? 1 : 0);
+            out.writeInt(searchCanFocus ? 1 : 0);
+            out.writeInt(isTitleSet ? 1 : 0);
             //out.writeInt(leftMode);
         }
 
