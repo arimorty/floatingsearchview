@@ -17,8 +17,6 @@
 package com.arlib.floatingsearchview.suggestions.model;
 
 import android.os.Parcelable;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 /**
  * An object that represents a single suggestion item
@@ -34,20 +32,5 @@ public interface SearchSuggestion extends Parcelable{
      * @return the text for this suggestion
      */
     String getBody();
-
-    /**
-     * Returns a creator object that will be used
-     * for saving state.
-     *
-     * <p>Classes that implement this object have
-     * the responsibility to include getBody() value
-     * in their Parcelable implementation. Failure to
-     * do so will result in empty suggestion items after
-     * a configuration change</p>
-     *
-     * @return a {@link Creator Creator} that
-     *         will be used to save state.
-     */
-    Creator getCreator();
 
 }

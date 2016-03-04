@@ -1,5 +1,8 @@
 package com.arlib.floatingsearchviewdemo.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -12,7 +15,7 @@ import com.google.gson.annotations.SerializedName;
  * Created on 10/19/2015.
  */
 
-public class ColorWrapper {
+public class ColorWrapper implements Parcelable {
 
     @SerializedName("hex")
     @Expose
@@ -23,6 +26,24 @@ public class ColorWrapper {
     @SerializedName("rgb")
     @Expose
     private String rgb;
+
+    private ColorWrapper(Parcel in) {
+        hex = in.readString();
+        name = in.readString();
+        rgb = in.readString();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(hex);
+        dest.writeString(name);
+        dest.writeString(rgb);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
 
     /**
      *
@@ -78,4 +99,15 @@ public class ColorWrapper {
         this.rgb = rgb;
     }
 
+    public static final Creator<ColorWrapper> CREATOR = new Creator<ColorWrapper>() {
+        @Override
+        public ColorWrapper createFromParcel(Parcel in) {
+            return new ColorWrapper(in);
+        }
+
+        @Override
+        public ColorWrapper[] newArray(int size) {
+            return new ColorWrapper[size];
+        }
+    };
 }
