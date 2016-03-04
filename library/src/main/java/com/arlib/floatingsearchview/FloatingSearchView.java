@@ -1672,8 +1672,6 @@ public class FloatingSearchView extends FrameLayout {
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
         savedState.suggestions = this.mSuggestionsAdapter.getDataSet();
-        if(!this.mSuggestionsAdapter.getDataSet().isEmpty())
-            savedState.suggestObjectCreator = this.mSuggestionsAdapter.getDataSet().get(0).getCreator();
         savedState.isFocused = this.mIsFocused;
         savedState.query = getQuery();
         savedState.suggestionTextSize = this.mSuggestionsTextSizePx;
@@ -1730,8 +1728,6 @@ public class FloatingSearchView extends FrameLayout {
 
     static class SavedState extends BaseSavedState {
 
-        private Creator suggestObjectCreator;
-
         private List<? extends SearchSuggestion> suggestions = new ArrayList<>();
         private boolean isFocused;
         private String query;
@@ -1751,8 +1747,7 @@ public class FloatingSearchView extends FrameLayout {
         private SavedState(Parcel in) {
             super(in);
 
-            if (suggestObjectCreator != null)
-                in.readTypedList(suggestions, suggestObjectCreator);
+            in.readList(suggestions, getClass().getClassLoader());
             isFocused = (in.readInt() != 0);
             query = in.readString();
             suggestionTextSize = in.readInt();
@@ -1767,7 +1762,7 @@ public class FloatingSearchView extends FrameLayout {
         @Override
         public void writeToParcel(Parcel out, int flags) {
             super.writeToParcel(out, flags);
-            out.writeTypedList(suggestions);
+            out.writeList(suggestions);
             out.writeInt(isFocused ? 1 : 0);
             out.writeString(query);
             out.writeInt(suggestionTextSize);
