@@ -1,12 +1,7 @@
 package com.arlib.floatingsearchviewdemo.data;
 
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Parcel;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.arlib.floatingsearchview.R;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
 /**
@@ -33,6 +28,8 @@ public  class ColorSuggestion implements SearchSuggestion {
 
     public ColorSuggestion(Parcel source) {
         this.mColorName = source.readString();
+        this.mColor = source.readParcelable(getClass().getClassLoader());
+        this.mIsHistory = source.readInt() != 0;
     }
 
     public ColorWrapper getColor(){
@@ -48,11 +45,6 @@ public  class ColorSuggestion implements SearchSuggestion {
     @Override
     public String getBody() {
         return mColor.getName();
-    }
-
-    @Override
-    public Creator getCreator() {
-        return CREATOR;
     }
 
     ///////
@@ -77,5 +69,7 @@ public  class ColorSuggestion implements SearchSuggestion {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mColorName);
+        dest.writeParcelable(mColor, flags);
+        dest.writeInt(mIsHistory ? 1 : 0);
     }
 }
