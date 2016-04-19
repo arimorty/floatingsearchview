@@ -8,7 +8,7 @@ An implementation of a floating search box with search suggestions.
 Usage
 -----
 
-1. In your dependencies, add
+1. In your dependencies, add:
     ```
          compile 'com.github.arimorty:floatingsearchview:1.1.2'
     ```
@@ -19,32 +19,32 @@ Usage
 **Example:**
 
 ```xml
-       <com.arlib.floatingsearchview.FloatingSearchView
-                android:id="@+id/floating_search_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
-                app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
-                app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
-                app:floatingSearch_searchHint="Search..."
-                app:floatingSearch_showSearchHintWhenNotFocused="true"
-                app:floatingSearch_showSearchKey="false"
-                app:floatingSearch_dismissOnOutsideTouch="true"
-                app:floatingSearch_leftActionMode="showHamburger"
-                app:floatingSearch_menu="@menu/menu_main"/>
+<com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/floating_search_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:floatingSearch_searchBarMarginLeft="@dimen/search_view_inset"
+        app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
+        app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
+        app:floatingSearch_searchHint="Search..."
+        app:floatingSearch_showSearchHintWhenNotFocused="true"
+        app:floatingSearch_showSearchKey="false"
+        app:floatingSearch_dismissOnOutsideTouch="true"
+        app:floatingSearch_leftActionMode="showHamburger"
+        app:floatingSearch_menu="@menu/menu_main"/>
 ```
 
-```
-  mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
-              @Override
-              public void onSearchTextChanged(String oldQuery, final String newQuery) {
+```java
+mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+      @Override
+      public void onSearchTextChanged(String oldQuery, final String newQuery) {
 
-                  //get suggestions based on newQuery
+          //get suggestions based on newQuery
 
-                  //pass them on to the search view
-                  mSearchView.swapSuggestions(newSuggestions);
-              }
-          });
+          //pass them on to the search view
+          mSearchView.swapSuggestions(newSuggestions);
+      }
+  });
 ```
 <br/>
 
@@ -54,7 +54,7 @@ The left action can be configured as follows:
 
 Add 
 ```xml
-   app:floatingSearch_leftActionMode="[insert one of the options from table below]"
+app:floatingSearch_leftActionMode="[insert one of the options from table below]"
 ```
 
 <table>
@@ -76,13 +76,13 @@ Add
 </table>
 
 Listen to *hamburger* button clicks:
-```
+```java
  mSearchView.setOnLeftMenuClickListener(
         new FloatingSearchView.OnLeftMenuClickListener() { ...} );          
 ```
 
 Listen to home (back arrow) button clicks:
-```
+```java
   mSearchView.setOnHomeActionClickListener(
          new FloatingSearchView.OnHomeActionClickListener() { ... });       
 ```
@@ -93,7 +93,7 @@ Listen to home (back arrow) button clicks:
 
 Add a menu resource
 ```xml
-    app:floatingSearch_menu="@menu/menu_main"
+app:floatingSearch_menu="@menu/menu_main"
 ```
 
 In the menu resource, set items' ```app:showAsAction="[insert one of the options described in the table below]"```
@@ -117,13 +117,13 @@ In the menu resource, set items' ```app:showAsAction="[insert one of the options
 </table>
 
 Listen for item selections 
-```  
-   mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
-      @Override
-      public void onMenuItemSelected(MenuItem item) {                  
-            
-      }
-   });
+```java
+mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+    @Override
+    public void onMenuItemSelected(MenuItem item) {                  
+        
+    }
+});
 ```
 
 <br/>
@@ -137,16 +137,16 @@ First, implement [SearchSuggestion](https://github.com/arimorty/floatingsearchvi
 
 Set a callback for when a given suggestion is bound to the suggestion list.
 
-``` 
-   mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
-            @Override
-            public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
+```java
+mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
+        @Override
+        public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
 
-                       //here you can set some attributes for the suggestion's left icon and text. For example,
-                       //you can choose your favorite image-loading library for setting the left icon's image. 
-            }
+                   //here you can set some attributes for the suggestion's left icon and text. For example,
+                   //you can choose your favorite image-loading library for setting the left icon's image. 
+        }
 
-        });
+    });
 ``` 
 
 <br/>
@@ -159,17 +159,17 @@ Set a callback for when a given suggestion is bound to the suggestion list.
 Available styling:
 
 ```xml
-   <style name="SearchView">
-           <item name="floatingSearch_backgroundColor"></item>
-           <item name="floatingSearch_viewTextColor"></item>
-           <item name="floatingSearch_hintTextColor"></item>
-           <item name="floatingSearch_dividerColor"></item>
-           <item name="floatingSearch_clearBtnColor"></item>
-           <item name="floatingSearch_leftActionColor"></item>
-           <item name="floatingSearch_menuItemIconColor"></item>
-           <item name="floatingSearch_suggestionRightIconColor"></item>
-           <item name="floatingSearch_actionMenuOverflowColor"></item>
-    </style>
+<style name="SearchView">
+       <item name="floatingSearch_backgroundColor"></item>
+       <item name="floatingSearch_viewTextColor"></item>
+       <item name="floatingSearch_hintTextColor"></item>
+       <item name="floatingSearch_dividerColor"></item>
+       <item name="floatingSearch_clearBtnColor"></item>
+       <item name="floatingSearch_leftActionColor"></item>
+       <item name="floatingSearch_menuItemIconColor"></item>
+       <item name="floatingSearch_suggestionRightIconColor"></item>
+       <item name="floatingSearch_actionMenuOverflowColor"></item>
+</style>
 ```
 
 
