@@ -341,7 +341,7 @@ public class MenuView extends LinearLayout {
                     .translationXBy(destTransX).get());
         }
 
-        for(int i=actionItemIndex; i<diff+actionItemIndex; i++){
+        for(int i=actionItemIndex; i<diff+actionItemIndex && i<getChildCount(); i++){
 
             final View currentView = getChildAt(i);
 
