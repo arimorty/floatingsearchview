@@ -1727,7 +1727,7 @@ public class FloatingSearchView extends FrameLayout {
             mSuggestionSecHeightListener = new OnSuggestionSecHeightSetListener() {
                 @Override
                 public void onSuggestionSecHeightSet() {
-                    swapSuggestions(savedState.suggestions, false);
+                    swapSuggestions(Collections.<SearchSuggestion>emptyList(), false);
                     mSuggestionSecHeightListener = null;
 
                     //todo refactor move to a better location
