@@ -167,6 +167,7 @@ public class FloatingSearchView extends FrameLayout {
     private MenuView mMenuView;
     private int mActionMenuItemColor;
     private int mOverflowIconColor;
+    private boolean mAnimateRightMenuOnFocus;
     private OnMenuItemClickListener mActionMenuItemListener;
     private ImageView mClearButton;
     private Drawable mIconClear;
@@ -713,6 +714,20 @@ public class FloatingSearchView extends FrameLayout {
 
         if(mMenuView!=null)
             mMenuView.setOverflowColor(this.mOverflowIconColor);
+    }
+
+    /**
+     * Sets the value of the animate right menu on focus boolean
+     *
+     * @param animateRightMenuOnFocus set the boolean to animate the right
+     *                                menu on focus or not
+     */
+    public void setAnimateRightMenuOnFocus(boolean animateRightMenuOnFocus){
+
+        this.mAnimateRightMenuOnFocus = animateRightMenuOnFocus;
+
+        if(mMenuView!=null)
+            mMenuView.setAnimateRightMenuOnFocus(this.mAnimateRightMenuOnFocus);
     }
 
     /**

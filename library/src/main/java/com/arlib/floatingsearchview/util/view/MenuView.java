@@ -71,6 +71,7 @@ public class MenuView extends LinearLayout {
 
     private int mActionIconColor;
     private int mOverflowIconColor;
+    private boolean mAnimateRightMenuOnFocus = true;
 
     //all menu items
     private List<MenuItemImpl> mMenuItems;
@@ -116,6 +117,10 @@ public class MenuView extends LinearLayout {
     public void setOverflowColor(int overflowColor){
         this.mOverflowIconColor = overflowColor;
         refreshColors();
+    }
+
+    public void setAnimateRightMenuOnFocus(boolean animateRightMenuOnFocus) {
+        mAnimateRightMenuOnFocus = animateRightMenuOnFocus;
     }
 
     private void refreshColors(){
@@ -321,66 +326,68 @@ public class MenuView extends LinearLayout {
             mActionShowAlwaysItems.add(actionItem);
         }
 
-        final int diff = mActionItems.size()-actionItemIndex+(mHasOverflow?1:0);
-
         anims = new ArrayList<>();
 
-        for(int i=0; i<actionItemIndex; i++) {
-            final View currentChild = getChildAt(i);
-            final float destTransX = ACTION_DIMENSION_PX * diff - (mHasOverflow ? Util.dpToPx(8) : 0);
-            anims.add(ViewPropertyObjectAnimator.animate(currentChild)
-                    .setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
-                    .setInterpolator(new AccelerateInterpolator())
-                    .addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
+        if(mAnimateRightMenuOnFocus) {
+            final int diff = mActionItems.size()-actionItemIndex+(mHasOverflow?1:0);
 
-                            currentChild.setTranslationX(destTransX);
-                        }
-                    })
-                    .translationXBy(destTransX).get());
-        }
+            for(int i=0; i<actionItemIndex; i++) {
+                final View currentChild = getChildAt(i);
+                final float destTransX = ACTION_DIMENSION_PX * diff - (mHasOverflow ? Util.dpToPx(8) : 0);
+                anims.add(ViewPropertyObjectAnimator.animate(currentChild)
+                        .setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
+                        .setInterpolator(new AccelerateInterpolator())
+                        .addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
 
-        for(int i=actionItemIndex; i<diff+actionItemIndex; i++){
+                                currentChild.setTranslationX(destTransX);
+                            }
+                        })
+                        .translationXBy(destTransX).get());
+            }
 
-            final View currentView = getChildAt(i);
+            for(int i=actionItemIndex; i<diff+actionItemIndex; i++){
 
-            currentView.setClickable(false);
+                final View currentView = getChildAt(i);
 
-            if(i!=getChildCount()-1)
+                currentView.setClickable(false);
+
+                if(i!=getChildCount()-1)
+                    anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
+                            .addListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+
+                                    currentView.setTranslationX(ACTION_DIMENSION_PX);
+                                }
+                            }).translationXBy(ACTION_DIMENSION_PX).get());
+
                 anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
                         .addListener(new AnimatorListenerAdapter() {
                             @Override
                             public void onAnimationEnd(Animator animation) {
 
-                                currentView.setTranslationX(ACTION_DIMENSION_PX);
+                                currentView.setScaleX(0.5f);
                             }
-                        }).translationXBy(ACTION_DIMENSION_PX).get());
+                        }).scaleX(.5f).get());
+                anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
+                        .addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
 
-            anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
-                    .addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
+                                currentView.setScaleY(0.5f);
+                            }
+                        }).scaleY(.5f).get());
+                anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
+                        .addListener(new AnimatorListenerAdapter() {
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
 
-                            currentView.setScaleX(0.5f);
-                        }
-                    }).scaleX(.5f).get());
-            anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
-                    .addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-
-                            currentView.setScaleY(0.5f);
-                        }
-                    }).scaleY(.5f).get());
-            anims.add(ViewPropertyObjectAnimator.animate(getChildAt(i)).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
-                    .addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-
-                            currentView.setAlpha(0.0f);
-                        }
-                    }).alpha(0.0f).get());
+                                currentView.setAlpha(0.0f);
+                            }
+                        }).alpha(0.0f).get());
+            }
         }
 
         final int actinItemsCount = actionItemIndex;
