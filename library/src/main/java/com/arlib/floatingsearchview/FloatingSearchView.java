@@ -623,6 +623,12 @@ public class FloatingSearchView extends FrameLayout {
                         mSearchListener.onSearchAction();
 
                     return true;
+                } else if(keyCode == KeyEvent.KEYCODE_BACK){
+                    if(isSearchBarFocused()){
+                        clearSearchFocus();
+                        return true;
+                    }
+                    
                 }
                 return false;
             }
