@@ -21,19 +21,14 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
@@ -83,11 +78,12 @@ public class MenuView extends LinearLayout {
     private boolean mHasOverflow = false;
 
     private OnVisibleWidthChanged mOnVisibleWidthChanged;
+    private int mVisibleWidth;
 
     private List<ObjectAnimator> anims = new ArrayList<>();
 
-    public interface OnVisibleWidthChanged{
-        void onVisibleWidthChanged(int newVisibleWidth);
+    public interface OnVisibleWidthChanged {
+        void onItemsMenuVisibleWidthChanged(int newVisibleWidth);
     }
 
     public MenuView(Context context) {
@@ -100,7 +96,7 @@ public class MenuView extends LinearLayout {
         init();
     }
 
-    private void init(){
+    private void init() {
         mMenuBuilder = new MenuBuilder(getContext());
         mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, this);
 
@@ -108,23 +104,23 @@ public class MenuView extends LinearLayout {
         mOverflowIconColor = getResources().getColor(R.color.gray_active_icon);
     }
 
-    public void setActionIconColor(int actionColor){
+    public void setActionIconColor(int actionColor) {
         this.mActionIconColor = actionColor;
         refreshColors();
     }
 
-    public void setOverflowColor(int overflowColor){
+    public void setOverflowColor(int overflowColor) {
         this.mOverflowIconColor = overflowColor;
         refreshColors();
     }
 
-    private void refreshColors(){
+    private void refreshColors() {
 
-        for(int i=0; i<getChildCount(); i++){
+        for (int i = 0; i < getChildCount(); i++) {
 
             Util.setIconColor(((ImageView) getChildAt(i)).getDrawable(), mActionIconColor);
 
-            if(mHasOverflow && i==getChildCount()-1)
+            if (mHasOverflow && i == getChildCount() - 1)
                 Util.setIconColor(((ImageView) getChildAt(i)).getDrawable(), mOverflowIconColor);
 
         }
@@ -138,7 +134,7 @@ public class MenuView extends LinearLayout {
      * @param menu a reference to a menu defined in
      *             resources.
      */
-    public void resetMenuResource(int menu){
+    public void resetMenuResource(int menu) {
 
         this.mMenu = menu;
     }
@@ -149,14 +145,14 @@ public class MenuView extends LinearLayout {
      *
      * @param menuCallback
      */
-    public void setMenuCallback(MenuBuilder.Callback menuCallback){
+    public void setMenuCallback(MenuBuilder.Callback menuCallback) {
         this.mMenuCallback = menuCallback;
     }
 
     /**
      * Resets the the view to fit into a new
      * available width.
-     *
+     * <p/>
      * <p>This clears and then re-inflates the menu items
      * , removes all of its associated action views, and recreates
      * the menu and action items to fit in the new width.</p>
@@ -166,9 +162,9 @@ public class MenuView extends LinearLayout {
      *                   android:showAsAction="ifRoom" or android:showAsAction="always"
      *                   will show as actions.
      */
-    public void reset(int availWidth){
+    public void reset(int availWidth) {
 
-        if(mMenu==-1)
+        if (mMenu == -1)
             return;
 
         //clean view first
@@ -181,7 +177,7 @@ public class MenuView extends LinearLayout {
 
         int holdAllItemsCount;
 
-        mMenuItems =  mMenuBuilder.getActionItems();
+        mMenuItems = mMenuBuilder.getActionItems();
         mMenuItems.addAll(mMenuBuilder.getNonActionItems());
 
         holdAllItemsCount = mMenuItems.size();
@@ -200,21 +196,21 @@ public class MenuView extends LinearLayout {
             }
         });
 
-        int availItemRoom = availWidth/(int)ACTION_DIMENSION_PX;
+        int availItemRoom = availWidth / (int) ACTION_DIMENSION_PX;
         boolean addOverflowAtTheEnd = false;
-        if(((menuItems.size()<holdAllItemsCount) || availItemRoom<menuItems.size())){
+        if (((menuItems.size() < holdAllItemsCount) || availItemRoom < menuItems.size())) {
             addOverflowAtTheEnd = true;
             availItemRoom--;
         }
 
         ArrayList<Integer> actionMenuItems = new ArrayList<>();
 
-        if(availItemRoom>0)
-            for(int i=0; i<menuItems.size(); i++){
+        if (availItemRoom > 0)
+            for (int i = 0; i < menuItems.size(); i++) {
 
                 final MenuItemImpl menuItem = menuItems.get(i);
 
-                if(menuItem.getIcon()!=null){
+                if (menuItem.getIcon() != null) {
 
                     ImageView action = getActionHolder();
                     action.setImageDrawable(Util.setIconColor(menuItem.getIcon(), mActionIconColor));
@@ -225,7 +221,7 @@ public class MenuView extends LinearLayout {
                         @Override
                         public void onClick(View v) {
 
-                            if(mMenuCallback!=null)
+                            if (mMenuCallback != null)
                                 mMenuCallback.onMenuItemSelected(mMenuBuilder, menuItem);
                         }
                     });
@@ -233,12 +229,12 @@ public class MenuView extends LinearLayout {
                     actionMenuItems.add(menuItem.getItemId());
 
                     availItemRoom--;
-                    if(availItemRoom==0)
+                    if (availItemRoom == 0)
                         break;
                 }
             }
 
-        if(addOverflowAtTheEnd){
+        if (addOverflowAtTheEnd) {
 
             ImageView overflowAction = getOverflowActionHolder();
             overflowAction.setImageDrawable(Util.setIconColor(
@@ -258,21 +254,27 @@ public class MenuView extends LinearLayout {
             mHasOverflow = true;
         }
 
-        for(int id: actionMenuItems)
+        for (int id : actionMenuItems)
             mMenuBuilder.removeItem(id);
 
         actionMenuItems.clear();
 
-        if(mOnVisibleWidthChanged!=null)
-            mOnVisibleWidthChanged.onVisibleWidthChanged(((int)ACTION_DIMENSION_PX * getChildCount())- (mHasOverflow ? Util.dpToPx(8) : 0));
+        if (mOnVisibleWidthChanged != null) {
+            mVisibleWidth = ((int) ACTION_DIMENSION_PX * getChildCount()) - (mHasOverflow ? Util.dpToPx(8) : 0);
+            mOnVisibleWidthChanged.onItemsMenuVisibleWidthChanged(mVisibleWidth);
+        }
     }
 
-    private ImageView getActionHolder(){
-        return (ImageView)LayoutInflater.from(getContext()).inflate(R.layout.action_item_layout, this, false);
+    public int getVisibleWidth(){
+        return mVisibleWidth;
     }
 
-    private ImageView getOverflowActionHolder(){
-        return (ImageView)LayoutInflater.from(getContext()).inflate(R.layout.overflow_action_item_layout, this, false);
+    private ImageView getActionHolder() {
+        return (ImageView) LayoutInflater.from(getContext()).inflate(R.layout.action_item_layout, this, false);
+    }
+
+    private ImageView getOverflowActionHolder() {
+        return (ImageView) LayoutInflater.from(getContext()).inflate(R.layout.overflow_action_item_layout, this, false);
     }
 
     /**
@@ -280,15 +282,15 @@ public class MenuView extends LinearLayout {
      *
      * @param withAnim
      */
-    public void hideIfRoomItems(boolean withAnim){
+    public void hideIfRoomItems(boolean withAnim) {
 
-        if(mMenu==-1)
+        if (mMenu == -1)
             return;
 
         mActionShowAlwaysItems.clear();
         cancelChildAnimListAndClear();
 
-        List<MenuItemImpl> showAlwaysActionItems = filter(mMenuItems,new MenuItemImplPredicate() {
+        List<MenuItemImpl> showAlwaysActionItems = filter(mMenuItems, new MenuItemImplPredicate() {
             @Override
             public boolean apply(MenuItemImpl menuItem) {
                 return menuItem.requiresActionButton();
@@ -296,15 +298,15 @@ public class MenuView extends LinearLayout {
         });
 
         int actionItemIndex;
-        for(actionItemIndex=0;
-            actionItemIndex<mActionItems.size() && actionItemIndex<showAlwaysActionItems.size();
-            actionItemIndex++){
+        for (actionItemIndex = 0;
+             actionItemIndex < mActionItems.size() && actionItemIndex < showAlwaysActionItems.size();
+             actionItemIndex++) {
 
             final MenuItemImpl actionItem = showAlwaysActionItems.get(actionItemIndex);
 
-            if(mActionItems.get(actionItemIndex).getItemId()!=showAlwaysActionItems.get(actionItemIndex).getItemId()){
+            if (mActionItems.get(actionItemIndex).getItemId() != showAlwaysActionItems.get(actionItemIndex).getItemId()) {
 
-                ImageView action = (ImageView)getChildAt(actionItemIndex);
+                ImageView action = (ImageView) getChildAt(actionItemIndex);
                 action.setImageDrawable(Util.setIconColor(actionItem.getIcon(), mActionIconColor));
 
                 action.setOnClickListener(new OnClickListener() {
@@ -321,11 +323,11 @@ public class MenuView extends LinearLayout {
             mActionShowAlwaysItems.add(actionItem);
         }
 
-        final int diff = mActionItems.size()-actionItemIndex+(mHasOverflow?1:0);
+        final int diff = mActionItems.size() - actionItemIndex + (mHasOverflow ? 1 : 0);
 
         anims = new ArrayList<>();
 
-        for(int i=0; i<actionItemIndex; i++) {
+        for (int i = 0; i < actionItemIndex; i++) {
             final View currentChild = getChildAt(i);
             final float destTransX = ACTION_DIMENSION_PX * diff - (mHasOverflow ? Util.dpToPx(8) : 0);
             anims.add(ViewPropertyObjectAnimator.animate(currentChild)
@@ -341,13 +343,13 @@ public class MenuView extends LinearLayout {
                     .translationXBy(destTransX).get());
         }
 
-        for(int i=actionItemIndex; i<diff+actionItemIndex; i++){
+        for (int i = actionItemIndex; i < diff + actionItemIndex; i++) {
 
             final View currentView = getChildAt(i);
 
             currentView.setClickable(false);
 
-            if(i!=getChildCount()-1)
+            if (i != getChildCount() - 1)
                 anims.add(ViewPropertyObjectAnimator.animate(currentView).setDuration(withAnim ? HIDE_IF_ROOM_ITEMS_ANIM_DURATION : 0)
                         .addListener(new AnimatorListenerAdapter() {
                             @Override
@@ -384,18 +386,20 @@ public class MenuView extends LinearLayout {
         }
 
         final int actinItemsCount = actionItemIndex;
-        if(!anims.isEmpty()){
+        if (!anims.isEmpty()) {
 
             AnimatorSet animSet = new AnimatorSet();
-            if(!withAnim)
+            if (!withAnim)
                 animSet.setDuration(0);
             animSet.playTogether(anims.toArray(new ObjectAnimator[anims.size()]));
             animSet.addListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
 
-                    if(mOnVisibleWidthChanged!=null)
-                        mOnVisibleWidthChanged.onVisibleWidthChanged(((int)ACTION_DIMENSION_PX * actinItemsCount));
+                    if (mOnVisibleWidthChanged != null) {
+                        mVisibleWidth = ((int) ACTION_DIMENSION_PX * actinItemsCount);
+                        mOnVisibleWidthChanged.onItemsMenuVisibleWidthChanged(mVisibleWidth);
+                    }
                 }
             });
             animSet.start();
@@ -408,25 +412,25 @@ public class MenuView extends LinearLayout {
      *
      * @param withAnim
      */
-    public void showIfRoomItems(boolean withAnim){
+    public void showIfRoomItems(boolean withAnim) {
 
 
-        if(mMenu==-1)
+        if (mMenu == -1)
             return;
 
         cancelChildAnimListAndClear();
 
-        if(mMenuItems.isEmpty())
+        if (mMenuItems.isEmpty())
             return;
 
         anims = new ArrayList<>();
 
-        for(int i=0; i<getChildCount(); i++){
+        for (int i = 0; i < getChildCount(); i++) {
 
             final View currentView = getChildAt(i);
 
-            if(i<mActionItems.size()){
-                ImageView action = (ImageView)currentView;
+            if (i < mActionItems.size()) {
+                ImageView action = (ImageView) currentView;
                 final MenuItem actionItem = mActionItems.get(i);
                 action.setImageDrawable(Util.setIconColor(actionItem.getIcon(), mActionIconColor));
 
@@ -434,7 +438,7 @@ public class MenuView extends LinearLayout {
                     @Override
                     public void onClick(View v) {
 
-                        if(mMenuCallback!=null)
+                        if (mMenuCallback != null)
                             mMenuCallback.onMenuItemSelected(mMenuBuilder, actionItem);
                     }
                 });
@@ -448,7 +452,7 @@ public class MenuView extends LinearLayout {
             Interpolator interpolator = new DecelerateInterpolator();
 
             //todo check logic
-            if(i>mActionShowAlwaysItems.size()-1)
+            if (i > mActionShowAlwaysItems.size() - 1)
                 interpolator = new LinearInterpolator();
 
             currentView.setClickable(true);
@@ -501,29 +505,31 @@ public class MenuView extends LinearLayout {
         AnimatorSet animSet = new AnimatorSet();
 
         //temporary, from laziness
-        if(!withAnim)
+        if (!withAnim)
             animSet.setDuration(0);
         animSet.playTogether(anims.toArray(new ObjectAnimator[anims.size()]));
         animSet.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
 
-                if(mOnVisibleWidthChanged!=null)
-                    mOnVisibleWidthChanged.onVisibleWidthChanged((getChildCount() * (int) ACTION_DIMENSION_PX)- (mHasOverflow ? Util.dpToPx(8) : 0));
+                if (mOnVisibleWidthChanged != null) {
+                    mVisibleWidth = (getChildCount() * (int) ACTION_DIMENSION_PX) - (mHasOverflow ? Util.dpToPx(8) : 0);
+                    mOnVisibleWidthChanged.onItemsMenuVisibleWidthChanged(mVisibleWidth);
+                }
             }
         });
         animSet.start();
 
     }
 
-    private interface MenuItemImplPredicate{
+    private interface MenuItemImplPredicate {
 
         boolean apply(MenuItemImpl menuItem);
     }
 
     private List<MenuItemImpl> filter(List<MenuItemImpl> target, MenuItemImplPredicate predicate) {
         List<MenuItemImpl> result = new ArrayList<>();
-        for (MenuItemImpl element: target) {
+        for (MenuItemImpl element : target) {
             if (predicate.apply(element)) {
                 result.add(element);
             }
@@ -538,13 +544,13 @@ public class MenuView extends LinearLayout {
         return mMenuInflater;
     }
 
-    public void setOnVisibleWidthChanged(OnVisibleWidthChanged listener){
+    public void setOnVisibleWidthChanged(OnVisibleWidthChanged listener) {
         this.mOnVisibleWidthChanged = listener;
     }
 
-    private void cancelChildAnimListAndClear(){
+    private void cancelChildAnimListAndClear() {
 
-        for(ObjectAnimator animator: anims)
+        for (ObjectAnimator animator : anims)
             animator.cancel();
         anims.clear();
     }

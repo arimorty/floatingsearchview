@@ -1,9 +1,9 @@
 package com.arlib.floatingsearchviewdemo;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +19,6 @@ import android.widget.Toast;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.arlib.floatingsearchview.util.view.BodyTextView;
-import com.arlib.floatingsearchview.util.view.IconImageView;
 import com.arlib.floatingsearchviewdemo.data.ColorSuggestion;
 import com.arlib.floatingsearchviewdemo.data.DataHelper;
 
@@ -43,17 +41,22 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mParentView = (ViewGroup)findViewById(R.id.parent_view);
+        mParentView = (ViewGroup) findViewById(R.id.parent_view);
 
-        mSearchView = (FloatingSearchView)findViewById(R.id.floating_search_view);
-        mColorNameText = (TextView)findViewById(R.id.color_name_text);
-        mColorValueText = (TextView)findViewById(R.id.color_value_text);
+        mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
+        mColorNameText = (TextView) findViewById(R.id.color_name_text);
+        mColorValueText = (TextView) findViewById(R.id.color_value_text);
 
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        //sets the background color
+        //sets the default background color
         refreshBackgroundColor("Blue", "#1976D2");
 
+        setupFloatingSearch();
+        setupDrawer();
+    }
+
+    private void setupFloatingSearch() {
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
             @Override
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
@@ -98,11 +101,10 @@ public class MainActivity extends AppCompatActivity {
                 refreshBackgroundColor(colorSuggestion.getColor().getName(), colorSuggestion.getColor().getHex());
 
                 Log.d(TAG, "onSuggestionClicked()");
-
             }
 
             @Override
-            public void onSearchAction() {
+            public void onSearchAction(String query) {
 
                 Log.d(TAG, "onSearchAction()");
             }
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
             @Override
             public void onFocus() {
+                mSearchView.clearQuery();
 
                 //show suggestions when search bar gains focus (typically history suggestions)
                 mSearchView.swapSuggestions(DataHelper.getHistory(MainActivity.this, 3));
@@ -120,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFocusCleared() {
+
 
                 Log.d(TAG, "onFocusCleared()");
             }
@@ -166,8 +170,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onMenuClosed() {
                 Log.d(TAG, "onMenuClosed()");
-
-                mDrawerLayout.closeDrawer(GravityCompat.START);
             }
         });
 
@@ -186,27 +188,30 @@ public class MainActivity extends AppCompatActivity {
          * callback to change some properties of the left icon and the text. For example, you
          * can load left icon images using your favorite image loading library, or change text color.
          *
-         * Some restrictions:
-         * 1. You can modify the height, eidth, margin, or padding of the text and left icon.
-         * 2. You can't modify the text's size.
          *
-         * Modifications to these properties will be ignored silently.
+         * Important:
+         * Keep in mind that the suggestion list is a RecyclerView so views are reused for different
+         * items in the list.
+         *
          */
         mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
-            public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
+            public void onBindSuggestion(ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
 
                 ColorSuggestion colorSuggestion = (ColorSuggestion) item;
 
                 if (colorSuggestion.getIsHistory()) {
-                    leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_history_black_24dp));
+                    leftIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_history_black_24dp, null));
                     leftIcon.setAlpha(.36f);
-                } else
+                } else {
                     leftIcon.setImageDrawable(new ColorDrawable(Color.parseColor(colorSuggestion.getColor().getHex())));
+                }
             }
 
         });
+    }
 
+    private void setupDrawer() {
         mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -219,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                 //a click on the left menu, we need to make sure
                 //to close it right after the drawer opens, so that
                 //it is closed when the drawer is  closed.
-                mSearchView.closeMenu(false);
+                mSearchView.setLeftMenuOpen(false);
             }
 
             @Override
@@ -232,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void refreshBackgroundColor(String colorName, String colorValue){
+    private void refreshBackgroundColor(String colorName, String colorValue) {
 
         int color = Color.parseColor(colorValue);
         Palette.Swatch swatch = new Palette.Swatch(color, 0);
@@ -256,8 +261,8 @@ public class MainActivity extends AppCompatActivity {
         int g = Color.green(color);
         int b = Color.blue(color);
 
-        return Color.argb(a, Math.max((int)(r * factor), 0), Math.max((int)(g * factor), 0),
-                Math.max((int)(b * factor), 0));
+        return Color.argb(a, Math.max((int) (r * factor), 0), Math.max((int) (g * factor), 0),
+                Math.max((int) (b * factor), 0));
     }
 
 }

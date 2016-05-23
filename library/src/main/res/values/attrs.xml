@@ -18,6 +18,7 @@
         <attr name="floatingSearch_voiceRecHint" format="string"/>
         <attr name="floatingSearch_searchHint" format="string"/>
         <attr name="floatingSearch_dismissOnOutsideTouch" format="boolean"/>
+        <attr name="floatingSearch_show_move_suggestion_up" format="boolean"/>
         <attr name="floatingSearch_hideOverflowMenuWhenFocused" format="boolean"/>
         <attr name="floatingSearch_showOverFlowMenu" format="boolean"/>
         <attr name="floatingSearch_menu" format="reference"/>
