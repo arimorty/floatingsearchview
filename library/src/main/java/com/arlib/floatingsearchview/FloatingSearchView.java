@@ -84,10 +84,12 @@ import java.util.List;
 public class FloatingSearchView extends FrameLayout {
 
     private static final String TAG = "FloatingSearchView";
+
     private static final int CARD_VIEW_SHADOW_HEIGHT = 3;
     private static final int CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT = 5;
     private static final long CLEAR_BTN_FADE_ANIM_DURATION = 500;
     private static final int CLEAR_BTN_WIDTH = 48;
+    private static final int LEFT_MENU_QUERY_INPUT_MARGIN = 52;
 
     private final int BACKGROUND_DRAWABLE_ALPHA_SEARCH_ACTIVE = 150;
     private final int BACKGROUND_DRAWABLE_ALPHA_SEARCH_INACTIVE = 0;
@@ -124,7 +126,7 @@ public class FloatingSearchView extends FrameLayout {
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
     private final int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
 
-    private final int SUGGEST_ITEM_ADD_ANIM_DURATION = 200;
+    private final int SUGGEST_ITEM_ADD_ANIM_DURATION = 250;
     private final Interpolator SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR = new LinearInterpolator();
 
     private Activity mHostActivity;
@@ -154,6 +156,7 @@ public class FloatingSearchView extends FrameLayout {
     private Drawable mIconSearch;
     @LeftActionMode
     int mLeftActionMode;
+    private int mLeftActionIconColor;
     private boolean mSearchCanFocus;
     private String mSearchHint;
     private boolean mShowSearchKey;
@@ -163,11 +166,14 @@ public class FloatingSearchView extends FrameLayout {
     private int mOverflowIconColor;
     private OnMenuItemClickListener mActionMenuItemListener;
     private ImageView mClearButton;
+    private int mClearBtnColor;
     private Drawable mIconClear;
+    private int mBackgroundColor;
     private boolean mSkipQueryFocusChangeEvent;
     private boolean mSkipTextChangeEvent;
 
     private View mDivider;
+    private int mDividerColor;
 
     private RelativeLayout mSuggestionsSection;
     private View mSuggestionListContainer;
@@ -452,7 +458,7 @@ public class FloatingSearchView extends FrameLayout {
             LayoutParams dividerLP = (LayoutParams) mDivider.getLayoutParams();
             LinearLayout.LayoutParams suggestListSectionLP =
                     (LinearLayout.LayoutParams) mSuggestionsSection.getLayoutParams();
-            int cardPadding = Util.dpToPx(3);
+            int cardPadding = Util.dpToPx(CARD_VIEW_SHADOW_HEIGHT);
             querySectionLP.setMargins(searchBarLeftMargin, searchBarTopMargin,
                     searchBarRightMargin, 0);
             dividerLP.setMargins(searchBarLeftMargin + cardPadding, 0,
@@ -472,16 +478,15 @@ public class FloatingSearchView extends FrameLayout {
                     R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize,
                     Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
             setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftActionMode,
-                    LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL));
+                    ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT));
             if (mLeftActionMode == LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL) {
-                mSearchInputParent.setTranslationX(-Util.dpToPx(48 + 20 - 16));
+                mSearchInputParent.setTranslationX(-Util.dpToPx(LEFT_MENU_QUERY_INPUT_MARGIN));
             }
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
                 mMenuView.resetMenuResource(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
             }
             setShowMoveUpSuggestion(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_show_move_suggestion_up,
                     ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT));
-
             setBackgroundColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_backgroundColor
                     , Util.getColor(getContext(), R.color.background)));
             setLeftActionIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_leftActionColor
@@ -553,7 +558,6 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onItemsMenuVisibleWidthChanged(int newVisibleWidth) {
 
-                //todo remove magic numbers
                 if (newVisibleWidth == 0) {
                     mClearButton.setTranslationX(-Util.dpToPx(4));
                     int paddingRight = newVisibleWidth + Util.dpToPx(4);
@@ -575,15 +579,14 @@ public class FloatingSearchView extends FrameLayout {
         mMenuView.setActionIconColor(this.mActionMenuItemColor);
         mMenuView.setOverflowColor(this.mOverflowIconColor);
 
+        mClearButton.setVisibility(View.INVISIBLE);
         mClearButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 mSearchInput.setText("");
             }
         });
 
-        mClearButton.setVisibility(View.INVISIBLE);
         mSearchInput.addTextChangedListener(new TextWatcherAdapter() {
 
             public void onTextChanged(final CharSequence s, int start, int before, int count) {
@@ -682,6 +685,7 @@ public class FloatingSearchView extends FrameLayout {
      *              left menu button.
      */
     public void setLeftActionIconColor(int color) {
+        mLeftActionIconColor = color;
         mMenuBtnDrawable.setColor(color);
         DrawableCompat.setTint(mIconBackArrow, color);
         DrawableCompat.setTint(mIconSearch, color);
@@ -694,7 +698,8 @@ public class FloatingSearchView extends FrameLayout {
      *              clear button.
      */
     public void setClearBtnColor(int color) {
-        DrawableCompat.setTint(mIconClear, color);
+        mClearBtnColor = color;
+        DrawableCompat.setTint(mIconClear, mClearBtnColor);
     }
 
     /**
@@ -731,13 +736,12 @@ public class FloatingSearchView extends FrameLayout {
      *              the suggestion section background.
      */
     public void setBackgroundColor(int color) {
+        mBackgroundColor = color;
         if (mQuerySection != null && mSuggestionsList != null) {
             mQuerySection.setCardBackgroundColor(color);
             mSuggestionsList.setBackgroundColor(color);
         }
     }
-
-    //TODO
 
     /**
      * Sets the text color of the search
@@ -747,11 +751,31 @@ public class FloatingSearchView extends FrameLayout {
      *              text.
      */
     public void setViewTextColor(int color) {
-        this.mSearchInputTextColor = color;
-        this.mSuggestionTextColor = color;
-        if (mSearchInput != null && mSuggestionsAdapter != null) {
-            mSearchInput.setTextColor(color);
-            mSuggestionsAdapter.setTextColor(color);
+        setSuggestionsTextColor(color);
+        setQueryTextColor(color);
+    }
+
+    /**
+     * Sets the text color of suggestion text.
+     *
+     * @param color
+     */
+    public void setSuggestionsTextColor(int color) {
+        mSuggestionTextColor = color;
+        if (mSuggestionsAdapter != null) {
+            mSuggestionsAdapter.setTextColor(mSuggestionTextColor);
+        }
+    }
+
+    /**
+     * Sets the text color of the search text.
+     *
+     * @param color
+     */
+    public void setQueryTextColor(int color) {
+        mSearchInputTextColor = color;
+        if (mSearchInput != null) {
+            mSearchInput.setTextColor(mSearchInputTextColor);
         }
     }
 
@@ -775,20 +799,20 @@ public class FloatingSearchView extends FrameLayout {
      * @param color the color to be applied the divider.
      */
     public void setDividerColor(int color) {
+        mDividerColor = color;
         if (mDivider != null) {
-            mDivider.setBackgroundColor(color);
+            mDivider.setBackgroundColor(mDividerColor);
         }
     }
 
     /**
      * Set the tint of the suggestion items' right btn (move suggestion to
-     * query input btn)
+     * query)
      *
      * @param color
      */
     public void setSuggestionRightIconColor(int color) {
         this.mSuggestionRightIconColor = color;
-
         if (mSuggestionsAdapter != null) {
             mSuggestionsAdapter.setRightIconColor(this.mSuggestionRightIconColor);
         }
@@ -796,13 +820,12 @@ public class FloatingSearchView extends FrameLayout {
 
     /**
      * Set the text size of the suggestion items.
-     * TODO
      *
      * @param sizePx
      */
     private void setSuggestionItemTextSize(int sizePx) {
+        //todo implement dynamic suggestionTextSize setter and expose method
         this.mSuggestionsTextSizePx = sizePx;
-        //setup adapter and make method public
     }
 
     /**
@@ -811,10 +834,8 @@ public class FloatingSearchView extends FrameLayout {
      * @param mode
      */
     private void setLeftActionMode(int mode) {
-
-        //todo implement dynamic leftActionMode setting and expose method
+        //todo implement dynamic leftActionMode setter and expose method
         mLeftActionMode = mode;
-        //refreshLeftIcon();
     }
 
     /**
@@ -829,8 +850,9 @@ public class FloatingSearchView extends FrameLayout {
         //todo check fo synchronization problems in MenuView
         //when calling it this way
         mMenuView.reset(actionMenuAvailWidth());
-        if (mIsFocused)
+        if (mIsFocused) {
             mMenuView.hideIfRoomItems(false);
+        }
     }
 
     /**
@@ -974,7 +996,6 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void refreshLeftIcon() {
-
         mLeftAction.setVisibility(VISIBLE);
         switch (mLeftActionMode) {
             case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:
@@ -1134,7 +1155,6 @@ public class FloatingSearchView extends FrameLayout {
                     public void onMoveItemToSearchClicked(SearchSuggestion item) {
 
                         mSearchInput.setText(item.getBody());
-
                         //move cursor to end of text
                         mSearchInput.setSelection(mSearchInput.getText().length());
                     }
@@ -1189,7 +1209,6 @@ public class FloatingSearchView extends FrameLayout {
         int cardTopBottomShadowPadding = Util.dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT);
         int cardRadiusSize = Util.dpToPx(CARD_VIEW_SHADOW_HEIGHT);
 
-        //TODO GO OVER
         int visibleHeight = getVisibleItemsHeight(newSearchSuggestions);
         int diff = mSuggestionListContainer.getHeight() - visibleHeight;
         int addedTranslationYForShadowOffsets = diff <= cardTopBottomShadowPadding ?
@@ -1504,7 +1523,6 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void openMenuDrawable(final DrawerArrowDrawable drawerArrowDrawable, boolean withAnim) {
-
         if (withAnim) {
             ValueAnimator anim = ValueAnimator.ofFloat(0.0f, 1.0f);
             anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -1523,7 +1541,6 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void closeMenuDrawable(final DrawerArrowDrawable drawerArrowDrawable, boolean withAnim) {
-
         if (withAnim) {
             ValueAnimator anim = ValueAnimator.ofFloat(1.0f, 0.0f);
             anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -1542,7 +1559,6 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void fadeOutBackground() {
-
         ValueAnimator anim = ValueAnimator.ofInt(BACKGROUND_DRAWABLE_ALPHA_SEARCH_ACTIVE, BACKGROUND_DRAWABLE_ALPHA_SEARCH_INACTIVE);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -1557,7 +1573,6 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void fadeInBackground() {
-
         ValueAnimator anim = ValueAnimator.ofInt(BACKGROUND_DRAWABLE_ALPHA_SEARCH_INACTIVE, BACKGROUND_DRAWABLE_ALPHA_SEARCH_ACTIVE);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -1591,6 +1606,16 @@ public class FloatingSearchView extends FrameLayout {
         savedState.showSearchKey = this.mShowSearchKey;
         savedState.searchCanFocus = this.mSearchCanFocus;
         savedState.isTitleSet = this.mIsTitleSet;
+        savedState.backgroundColor = this.mBackgroundColor;
+        savedState.suggestionsTextColor = this.mSuggestionTextColor;
+        savedState.queryTextColor = this.mSearchInputTextColor;
+        savedState.searchHintTextColor = this.mSearchInputHintColor;
+        savedState.actionOverflowMenueColor = this.mOverflowIconColor;
+        savedState.menuItemIconColor = this.mActionMenuItemColor;
+        savedState.leftIconColor = this.mLeftActionIconColor;
+        savedState.clearBtnColor = this.mClearBtnColor;
+        savedState.suggestionUpBtnColor = this.mSuggestionTextColor;
+        savedState.dividerColor = this.mDividerColor;
         return savedState;
     }
 
@@ -1601,12 +1626,21 @@ public class FloatingSearchView extends FrameLayout {
 
         this.mIsFocused = savedState.isFocused;
         this.mIsTitleSet = savedState.isTitleSet;
-
         setSuggestionItemTextSize(savedState.suggestionTextSize);
         setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
         setShowMoveUpSuggestion(savedState.showMoveSuggestionUpBtn);
         setShowSearchKey(savedState.showSearchKey);
         setSearchHint(savedState.searchHint);
+        setBackgroundColor(savedState.backgroundColor);
+        setSuggestionsTextColor(savedState.suggestionsTextColor);
+        setQueryTextColor(savedState.queryTextColor);
+        setHintTextColor(savedState.searchHintTextColor);
+        setActionMenuOverflowColor(savedState.actionOverflowMenueColor);
+        setMenuItemIconColor(savedState.menuItemIconColor);
+        setLeftActionIconColor(savedState.leftIconColor);
+        setClearBtnColor(savedState.clearBtnColor);
+        setSuggestionRightIconColor(savedState.suggestionUpBtnColor);
+        setDividerColor(savedState.dividerColor);
 
         if (this.mIsFocused) {
 
@@ -1647,8 +1681,16 @@ public class FloatingSearchView extends FrameLayout {
         private boolean showSearchKey;
         private boolean searchCanFocus;
         private boolean isTitleSet;
-
-        //private int leftMode;
+        private int backgroundColor;
+        private int suggestionsTextColor;
+        private int queryTextColor;
+        private int searchHintTextColor;
+        private int actionOverflowMenueColor;
+        private int menuItemIconColor;
+        private int leftIconColor;
+        private int clearBtnColor;
+        private int suggestionUpBtnColor;
+        private int dividerColor;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1666,6 +1708,16 @@ public class FloatingSearchView extends FrameLayout {
             showSearchKey = (in.readInt() != 0);
             searchCanFocus = (in.readInt() != 0);
             isTitleSet = (in.readInt() != 0);
+            backgroundColor = in.readInt();
+            suggestionsTextColor = in.readInt();
+            queryTextColor = in.readInt();
+            searchHintTextColor = in.readInt();
+            actionOverflowMenueColor = in.readInt();
+            menuItemIconColor = in.readInt();
+            leftIconColor = in.readInt();
+            clearBtnColor = in.readInt();
+            suggestionUpBtnColor = in.readInt();
+            dividerColor = in.readInt();
         }
 
         @Override
@@ -1681,6 +1733,16 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(showSearchKey ? 1 : 0);
             out.writeInt(searchCanFocus ? 1 : 0);
             out.writeInt(isTitleSet ? 1 : 0);
+            out.writeInt(backgroundColor);
+            out.writeInt(suggestionsTextColor);
+            out.writeInt(queryTextColor);
+            out.writeInt(searchHintTextColor);
+            out.writeInt(actionOverflowMenueColor);
+            out.writeInt(menuItemIconColor);
+            out.writeInt(leftIconColor);
+            out.writeInt(clearBtnColor);
+            out.writeInt(suggestionUpBtnColor);
+            out.writeInt(dividerColor);
         }
 
         public static final Creator<SavedState> CREATOR
