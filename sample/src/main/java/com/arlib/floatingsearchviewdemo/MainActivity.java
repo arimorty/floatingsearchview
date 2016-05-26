@@ -196,8 +196,7 @@ public class MainActivity extends AppCompatActivity {
          */
         mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
-            public void onBindSuggestion(ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
-
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
                 ColorSuggestion colorSuggestion = (ColorSuggestion) item;
 
                 if (colorSuggestion.getIsHistory()) {
