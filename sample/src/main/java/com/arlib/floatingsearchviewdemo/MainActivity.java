@@ -264,4 +264,14 @@ public class MainActivity extends AppCompatActivity {
                 Math.max((int) (b * factor), 0));
     }
 
+    @Override
+    public void onBackPressed() {
+        //if mSearchView.setSearchFocused(false) causes the focused search
+        //to close, than we don't want to close the activity. if mSearchView.setSearchFocused(false)
+        //returns false, we know that the search was in fact already closed, so we can call supper onBackPressed()
+        //and close the activity
+        if(!mSearchView.setSearchFocused(false)){
+            super.onBackPressed();
+        }
+    }
 }

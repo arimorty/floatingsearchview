@@ -1081,9 +1081,16 @@ public class FloatingSearchView extends FrameLayout {
     /**
      * Sets whether the search is focused or not.
      *
+     *
      * @param focused true, to set the search to be active/focused.
+     *
+     * @return true if the search was focused and will now become not focused. Useful for
+     *         calling supper.onBackPress() in the hosting activity only if this method returns false
+     *
      */
-    public void setSearchFocused(final boolean focused) {
+    public boolean setSearchFocused(final boolean focused) {
+
+        boolean updatedToNotFocused = !focused && this.mIsFocused;
 
         if ((focused != this.mIsFocused) && mSuggestionSecHeightListener == null) {
             if (mIsSuggestionsSecHeightSet) {
@@ -1098,6 +1105,7 @@ public class FloatingSearchView extends FrameLayout {
                 };
             }
         }
+        return updatedToNotFocused;
     }
 
     private void setupSuggestionSection() {
