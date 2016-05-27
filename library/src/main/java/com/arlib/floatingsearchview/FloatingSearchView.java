@@ -547,7 +547,7 @@ public class FloatingSearchView extends FrameLayout {
 
         });
 
-        mMenuView.setOnVisibleWidthChanged(new MenuView.OnVisibleWidthChanged() {
+        mMenuView.setOnVisibleWidthChanged(new MenuView.OnVisibleWidthChangedListener() {
             @Override
             public void onItemsMenuVisibleWidthChanged(int newVisibleWidth) {
 
