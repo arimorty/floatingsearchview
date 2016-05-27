@@ -42,6 +42,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -161,6 +162,7 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mShowSearchKey;
     private boolean mMenuOpen = false;
     private MenuView mMenuView;
+    private int mMenuId = -1;
     private int mActionMenuItemColor;
     private int mOverflowIconColor;
     private OnMenuItemClickListener mActionMenuItemListener;
@@ -476,7 +478,7 @@ public class FloatingSearchView extends FrameLayout {
                 mSearchInputParent.setTranslationX(-Util.dpToPx(LEFT_MENU_QUERY_INPUT_MARGIN));
             }
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
-                mMenuView.resetMenuResource(a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, 0));
+                mMenuId = (mMenuId != -1) ? mMenuId : a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, -1);
             }
             setShowMoveUpSuggestion(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_show_move_suggestion_up,
                     ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT));
@@ -513,7 +515,7 @@ public class FloatingSearchView extends FrameLayout {
         }
 
         if (isInEditMode()) {
-            mMenuView.reset(actionMenuAvailWidth());
+            mMenuView.reset(mMenuId, actionMenuAvailWidth());
         }
 
         ViewTreeObserver vto = mQuerySection.getViewTreeObserver();
@@ -522,7 +524,7 @@ public class FloatingSearchView extends FrameLayout {
             public void onGlobalLayout() {
                 Util.removeGlobalLayoutObserver(mQuerySection, this);
 
-                mMenuView.reset(actionMenuAvailWidth());
+                mMenuView.reset(mMenuId, actionMenuAvailWidth());
                 if (mIsFocused) {
                     mMenuView.hideIfRoomItems(false);
                 }
@@ -838,11 +840,8 @@ public class FloatingSearchView extends FrameLayout {
      * @param menuId a menu xml resource reference
      */
     public void inflateOverflowMenu(int menuId) {
-        mMenuView.resetMenuResource(menuId);
-
-        //todo check fo synchronization problems in MenuView
-        //when calling it this way
-        mMenuView.reset(actionMenuAvailWidth());
+        mMenuId = menuId;
+        mMenuView.reset(menuId, actionMenuAvailWidth());
         if (mIsFocused) {
             mMenuView.hideIfRoomItems(false);
         }
@@ -1612,6 +1611,7 @@ public class FloatingSearchView extends FrameLayout {
         savedState.clearBtnColor = this.mClearBtnColor;
         savedState.suggestionUpBtnColor = this.mSuggestionTextColor;
         savedState.dividerColor = this.mDividerColor;
+        savedState.menuId = mMenuId;
         return savedState;
     }
 
@@ -1622,6 +1622,8 @@ public class FloatingSearchView extends FrameLayout {
 
         this.mIsFocused = savedState.isFocused;
         this.mIsTitleSet = savedState.isTitleSet;
+        this.mMenuId = savedState.menuId;
+        mMenuView.reset(savedState.menuId, actionMenuAvailWidth());
         setSuggestionItemTextSize(savedState.suggestionTextSize);
         setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
         setShowMoveUpSuggestion(savedState.showMoveSuggestionUpBtn);
@@ -1686,6 +1688,7 @@ public class FloatingSearchView extends FrameLayout {
         private int clearBtnColor;
         private int suggestionUpBtnColor;
         private int dividerColor;
+        private int menuId;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1712,6 +1715,7 @@ public class FloatingSearchView extends FrameLayout {
             clearBtnColor = in.readInt();
             suggestionUpBtnColor = in.readInt();
             dividerColor = in.readInt();
+            menuId = in.readInt();
         }
 
         @Override
@@ -1736,6 +1740,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(clearBtnColor);
             out.writeInt(suggestionUpBtnColor);
             out.writeInt(dividerColor);
+            out.writeInt(menuId);
         }
 
         public static final Creator<SavedState> CREATOR

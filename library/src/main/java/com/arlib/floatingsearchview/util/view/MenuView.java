@@ -123,18 +123,6 @@ public class MenuView extends LinearLayout {
     }
 
     /**
-     * Sets the resource reference to the
-     * menu defined in xml that will be used
-     * in subsequent calls to {@link #reset(int availWidth) reset}
-     *
-     * @param menu a reference to a menu defined in
-     *             resources.
-     */
-    public void resetMenuResource(int menu) {
-        this.mMenu = menu;
-    }
-
-    /**
      * Set the callback that will be called when menu
      * items a selected.
      *
@@ -157,13 +145,15 @@ public class MenuView extends LinearLayout {
      *                   android:showAsAction="ifRoom" or android:showAsAction="always"
      *                   will show as actions.
      */
-    public void reset(int availWidth) {
-
+    public void reset(int menu, int availWidth) {
+        mMenu = menu;
         if (mMenu == -1) {
             return;
         }
 
-        mActionItems.clear();
+        mActionShowAlwaysItems = new ArrayList<>();
+        mActionItems = new ArrayList<>();
+        mMenuItems = new ArrayList<>();
         mMenuBuilder = new MenuBuilder(getContext());
         mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, this);
 
@@ -228,8 +218,8 @@ public class MenuView extends LinearLayout {
             }
         }
 
+        mHasOverflow = addOverflowAtTheEnd;
         if (addOverflowAtTheEnd) {
-            mHasOverflow = true;
 
             ImageView overflowAction = getOverflowActionView();
             overflowAction.setImageDrawable(Util.setIconColor(
