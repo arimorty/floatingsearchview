@@ -15,3 +15,14 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+# Support libs
+-dontwarn android.support.v7.**
+-keep class android.support.v7.** { *; }
+-keep interface android.support.v7.** { *; }
+
+-keep class com.bartoszlipinski.** { *; }
+-keep interface com.bartoszlipinski.** { *; }
+
+# Keep all floatingsearchview classes
+-keep class com.arlib.** { *; }

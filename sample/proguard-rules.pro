@@ -15,3 +15,14 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+##---------------Begin: proguard configuration for Gson  ----------
+
+#the sample project uses GSON, so if you set minifyEnabled to true, make sure to uncomment the below progaurd rules for GSON
+#-keepattributes Signature
+#-keepattributes *Annotation*
+#-keep class sun.misc.Unsafe { *; }
+#-keep class com.google.gson.stream.** { *; }
+#-keep class com.google.gson.examples.android.model.** { *; }
+
+##---------------End: proguard configuration for Gson  ----------
