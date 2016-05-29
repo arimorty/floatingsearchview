@@ -42,7 +42,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -90,7 +89,7 @@ public class FloatingSearchView extends FrameLayout {
     private static final int CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT = 5;
     private static final long CLEAR_BTN_FADE_ANIM_DURATION = 500;
     private static final int CLEAR_BTN_WIDTH = 48;
-    private static final int LEFT_MENU_QUERY_INPUT_MARGIN = 52;
+    private static final int LEFT_MENU_WIDTH_AND_MARGIN_START = 52;
 
     private final int BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED = 150;
     private final int BACKGROUND_DRAWABLE_ALPHA_SEARCH_NOT_FOCUSED = 0;
@@ -107,21 +106,20 @@ public class FloatingSearchView extends FrameLayout {
      */
     public final int SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
 
-    public final static int LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL = 1;
-    public final static int LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL = 2;
-    public final static int LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL = 3;
-    public final static int LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL = 4;
+    public final static int LEFT_ACTION_MODE_SHOW_HAMBURGER = 1;
+    public final static int LEFT_ACTION_MODE_SHOW_SEARCH = 2;
+    public final static int LEFT_ACTION_MODE_SHOW_HOME = 3;
+    public final static int LEFT_ACTION_MODE_NO_LEFT_ACTION = 4;
+    private final static int LEFT_ACTION_MODE_NOT_SET = -1;
 
-    @IntDef({LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL, LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL,
-            LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL
-            , LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL})
     @Retention(RetentionPolicy.SOURCE)
+    @IntDef({LEFT_ACTION_MODE_SHOW_HAMBURGER, LEFT_ACTION_MODE_SHOW_SEARCH,
+            LEFT_ACTION_MODE_SHOW_HOME, LEFT_ACTION_MODE_NO_LEFT_ACTION, LEFT_ACTION_MODE_NOT_SET})
     public @interface LeftActionMode {
     }
 
     @LeftActionMode
-    private final int ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT = LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL;
-
+    private final int ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT = LEFT_ACTION_MODE_NO_LEFT_ACTION;
     private final boolean ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT = false;
     private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = true;
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
@@ -156,7 +154,7 @@ public class FloatingSearchView extends FrameLayout {
     private Drawable mIconBackArrow;
     private Drawable mIconSearch;
     @LeftActionMode
-    int mLeftActionMode;
+    int mLeftActionMode = LEFT_ACTION_MODE_NOT_SET;
     private int mLeftActionIconColor;
     private String mSearchHint;
     private boolean mShowSearchKey;
@@ -245,7 +243,7 @@ public class FloatingSearchView extends FrameLayout {
      * clicked.
      * <p/>
      * Note: This is only relevant when leftActionMode is
-     * set to {@value #LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL}
+     * set to {@value #LEFT_ACTION_MODE_SHOW_HAMBURGER}
      */
     public interface OnLeftMenuClickListener {
 
@@ -268,7 +266,7 @@ public class FloatingSearchView extends FrameLayout {
      * is clicked.
      * <p/>
      * Note: This is only relevant when leftActionMode is
-     * set to {@value #LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL}
+     * set to {@value #LEFT_ACTION_MODE_SHOW_HOME}
      */
     public interface OnHomeActionClickListener {
 
@@ -472,11 +470,10 @@ public class FloatingSearchView extends FrameLayout {
             setSuggestionItemTextSize(a.getDimensionPixelSize(
                     R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize,
                     Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
-            setLeftActionMode(a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftActionMode,
-                    ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT));
-            if (mLeftActionMode == LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL) {
-                mSearchInputParent.setTranslationX(-Util.dpToPx(LEFT_MENU_QUERY_INPUT_MARGIN));
-            }
+            //noinspection ResourceType
+            mLeftActionMode = (mLeftActionMode == LEFT_ACTION_MODE_NOT_SET) ?
+                    a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftActionMode,
+                            ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT) : mLeftActionMode;
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
                 mMenuId = (mMenuId != -1) ? mMenuId : a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, -1);
             }
@@ -643,18 +640,18 @@ public class FloatingSearchView extends FrameLayout {
                     setSearchFocusedInternal(false);
                 } else {
                     switch (mLeftActionMode) {
-                        case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:
+                        case LEFT_ACTION_MODE_SHOW_HAMBURGER:
                             toggleLeftMenu();
                             break;
-                        case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:
+                        case LEFT_ACTION_MODE_SHOW_SEARCH:
                             setSearchFocusedInternal(true);
                             break;
-                        case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:
+                        case LEFT_ACTION_MODE_SHOW_HOME:
                             if (mOnHomeActionClickListener != null) {
                                 mOnHomeActionClickListener.onHomeClicked();
                             }
                             break;
-                        case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:
+                        case LEFT_ACTION_MODE_NO_LEFT_ACTION:
                             //do nothing
                             break;
                     }
@@ -828,9 +825,125 @@ public class FloatingSearchView extends FrameLayout {
      *
      * @param mode
      */
-    private void setLeftActionMode(int mode) {
-        //todo implement dynamic leftActionMode setter and expose method
+    public void setLeftActionMode(@LeftActionMode int mode) {
         mLeftActionMode = mode;
+        refreshLeftIcon();
+    }
+
+    private void refreshLeftIcon() {
+        int leftActionWidthAndMarginLeft = Util.dpToPx(LEFT_MENU_WIDTH_AND_MARGIN_START);
+        int queryTranslationX = 0;
+
+        mLeftAction.setVisibility(VISIBLE);
+        switch (mLeftActionMode) {
+            case LEFT_ACTION_MODE_SHOW_HAMBURGER:
+                mLeftAction.setImageDrawable(mMenuBtnDrawable);
+                break;
+            case LEFT_ACTION_MODE_SHOW_SEARCH:
+                mLeftAction.setImageDrawable(mIconSearch);
+                break;
+            case LEFT_ACTION_MODE_SHOW_HOME:
+                mLeftAction.setImageDrawable(mMenuBtnDrawable);
+                mMenuBtnDrawable.setProgress(1.0f);
+                break;
+            case LEFT_ACTION_MODE_NO_LEFT_ACTION:
+                mLeftAction.setVisibility(View.INVISIBLE);
+                queryTranslationX = -leftActionWidthAndMarginLeft;
+                break;
+        }
+        mSearchInputParent.setTranslationX(queryTranslationX);
+    }
+
+    private void toggleLeftMenu() {
+        if (mMenuOpen) {
+            closeMenu(true);
+        } else {
+            openMenu(true);
+        }
+    }
+
+    /**
+     * <p/>
+     * Enables clients to directly manipulate
+     * the menu icon's progress.
+     * <p/>
+     * Useful for custom animation/behaviors.
+     *
+     * @param progress the desired progress of the menu
+     *                 icon's rotation: 0.0 == hamburger
+     *                 shape, 1.0 == back arrow shape
+     */
+    public void setMenuIconProgress(float progress) {
+        mMenuBtnDrawable.setProgress(progress);
+        if (progress == 0) {
+            closeMenu(false);
+        } else if (progress == 1.0) {
+            openMenu(false);
+        }
+    }
+
+    /**
+     * Mimics a menu click that opens the menu. Useful when for navigation
+     * drawers when they open as a result of dragging.
+     */
+    public void openMenu(boolean withAnim) {
+        mMenuOpen = true;
+        openMenuDrawable(mMenuBtnDrawable, withAnim);
+        if (mOnMenuClickListener != null) {
+            mOnMenuClickListener.onMenuOpened();
+        }
+    }
+
+    /**
+     * Mimics a menu click that closes. Useful when fo navigation
+     * drawers when they close as a result of selecting and item.
+     *
+     * @param withAnim true, will close the menu button with
+     *                 the  Material animation
+     */
+    public void closeMenu(boolean withAnim) {
+        mMenuOpen = false;
+        closeMenuDrawable(mMenuBtnDrawable, withAnim);
+        if (mOnMenuClickListener != null) {
+            mOnMenuClickListener.onMenuClosed();
+        }
+    }
+
+    /**
+     * Set the hamburger menu to open or closed without
+     * animating hamburger to arrow and without calling listeners.
+     *
+     * @param isOpen
+     */
+    public void setLeftMenuOpen(boolean isOpen) {
+        mMenuOpen = isOpen;
+        mMenuBtnDrawable.setProgress(isOpen ? 1.0f : 0.0f);
+    }
+
+    /**
+     * Shows a circular progress on top of the
+     * menu action button.
+     * <p/>
+     * Call hidProgress()
+     * to change back to normal and make the menu
+     * action visible.
+     */
+    public void showProgress() {
+        mLeftAction.setVisibility(View.GONE);
+        mSearchProgress.setAlpha(0.0f);
+        mSearchProgress.setVisibility(View.VISIBLE);
+        ObjectAnimator.ofFloat(mSearchProgress, "alpha", 0.0f, 1.0f).start();
+    }
+
+    /**
+     * Hides the progress bar after
+     * a prior call to showProgress()
+     */
+    public void hideProgress() {
+        mSearchProgress.setVisibility(View.GONE);
+        mLeftAction.setAlpha(0.0f);
+        mLeftAction.setVisibility(View.VISIBLE);
+        ObjectAnimator.ofFloat(mLeftAction, "alpha", 0.0f, 1.0f).start();
     }
 
     /**
@@ -967,125 +1080,11 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
-     * <p/>
-     * Enables clients to directly manipulate
-     * the menu icon's progress.
-     * <p/>
-     * Useful for custom animation/behaviors.
-     *
-     * @param progress the desired progress of the menu
-     *                 icon's rotation: 0.0 == hamburger
-     *                 shape, 1.0 == back arrow shape
-     */
-    public void setMenuIconProgress(float progress) {
-        mMenuBtnDrawable.setProgress(progress);
-        if (progress == 0) {
-            closeMenu(false);
-        } else if (progress == 1.0) {
-            openMenu(false);
-        }
-    }
-
-    private void refreshLeftIcon() {
-        mLeftAction.setVisibility(VISIBLE);
-        switch (mLeftActionMode) {
-            case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:
-                mLeftAction.setImageDrawable(mMenuBtnDrawable);
-                break;
-            case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:
-                mLeftAction.setImageDrawable(mIconSearch);
-                break;
-            case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:
-                mLeftAction.setImageDrawable(mMenuBtnDrawable);
-                mMenuBtnDrawable.setProgress(1.0f);
-                break;
-            case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:
-                mLeftAction.setVisibility(View.INVISIBLE);
-                break;
-        }
-    }
-
-    private void toggleLeftMenu() {
-        if (mMenuOpen) {
-            closeMenu(true);
-        } else {
-            openMenu(true);
-        }
-    }
-
-    /**
-     * Mimics a menu click that opens the menu. Useful when for navigation
-     * drawers when they open as a result of dragging.
-     */
-    public void openMenu(boolean withAnim) {
-        mMenuOpen = true;
-        openMenuDrawable(mMenuBtnDrawable, withAnim);
-        if (mOnMenuClickListener != null) {
-            mOnMenuClickListener.onMenuOpened();
-        }
-    }
-
-    /**
-     * Mimics a menu click that closes. Useful when fo navigation
-     * drawers when they close as a result of selecting and item.
-     *
-     * @param withAnim true, will close the menu button with
-     *                 the  Material animation
-     */
-    public void closeMenu(boolean withAnim) {
-        mMenuOpen = false;
-        closeMenuDrawable(mMenuBtnDrawable, withAnim);
-        if (mOnMenuClickListener != null) {
-            mOnMenuClickListener.onMenuClosed();
-        }
-    }
-
-    /**
-     * Set the hamburger menu to open or closed without
-     * animating hamburger to arrow and without calling listeners.
-     *
-     * @param isOpen
-     */
-    public void setLeftMenuOpen(boolean isOpen) {
-        mMenuOpen = isOpen;
-        mMenuBtnDrawable.setProgress(isOpen ? 1.0f : 0.0f);
-    }
-
-    /**
-     * Shows a circular progress on top of the
-     * menu action button.
-     * <p/>
-     * Call hidProgress()
-     * to change back to normal and make the menu
-     * action visible.
-     */
-    public void showProgress() {
-        mLeftAction.setVisibility(View.GONE);
-        mSearchProgress.setAlpha(0.0f);
-        mSearchProgress.setVisibility(View.VISIBLE);
-        ObjectAnimator.ofFloat(mSearchProgress, "alpha", 0.0f, 1.0f).start();
-    }
-
-    /**
-     * Hides the progress bar after
-     * a prior call to showProgress()
-     */
-    public void hideProgress() {
-        mSearchProgress.setVisibility(View.GONE);
-        mLeftAction.setAlpha(0.0f);
-        mLeftAction.setVisibility(View.VISIBLE);
-        ObjectAnimator.ofFloat(mLeftAction, "alpha", 0.0f, 1.0f).start();
-    }
-
-    /**
      * Sets whether the search is focused or not.
      *
-     *
      * @param focused true, to set the search to be active/focused.
-     *
      * @return true if the search was focused and will now become not focused. Useful for
-     *         calling supper.onBackPress() in the hosting activity only if this method returns false
-     *
+     * calling supper.onBackPress() in the hosting activity only if this method returns false
      */
     public boolean setSearchFocused(final boolean focused) {
 
@@ -1348,13 +1347,13 @@ public class FloatingSearchView extends FrameLayout {
         mLeftAction.setVisibility(View.VISIBLE);
 
         switch (mLeftActionMode) {
-            case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:
+            case LEFT_ACTION_MODE_SHOW_HAMBURGER:
                 openMenuDrawable(mMenuBtnDrawable, withAnim);
                 if (!mMenuOpen) {
                     break;
                 }
                 break;
-            case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:
+            case LEFT_ACTION_MODE_SHOW_SEARCH:
                 mLeftAction.setImageDrawable(mIconBackArrow);
                 if (withAnim) {
                     mLeftAction.setRotation(45);
@@ -1367,14 +1366,15 @@ public class FloatingSearchView extends FrameLayout {
                     animSet.start();
                 }
                 break;
-            case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:
+            case LEFT_ACTION_MODE_SHOW_HOME:
                 //do nothing
                 break;
-            case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:
+            case LEFT_ACTION_MODE_NO_LEFT_ACTION:
                 mLeftAction.setImageDrawable(mIconBackArrow);
 
                 if (withAnim) {
-                    ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent).translationX(0).get();
+                    ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator
+                            .animate(mSearchInputParent).translationX(0).get();
 
                     mLeftAction.setScaleX(0.5f);
                     mLeftAction.setScaleY(0.5f);
@@ -1403,21 +1403,21 @@ public class FloatingSearchView extends FrameLayout {
     private void transitionOutLeftSection(boolean withAnim) {
 
         switch (mLeftActionMode) {
-            case LEFT_ACTION_MODE_SHOW_HAMBURGER_ENUM_VAL:
+            case LEFT_ACTION_MODE_SHOW_HAMBURGER:
                 closeMenuDrawable(mMenuBtnDrawable, withAnim);
                 break;
-            case LEFT_ACTION_MODE_SHOW_SEARCH_ENUM_VAL:
+            case LEFT_ACTION_MODE_SHOW_SEARCH:
                 changeIcon(mLeftAction, mIconSearch, withAnim);
                 break;
-            case LEFT_ACTION_MODE_SHOW_HOME_ENUM_VAL:
+            case LEFT_ACTION_MODE_SHOW_HOME:
                 //do nothing
                 break;
-            case LEFT_ACTION_MODE_NO_LEFT_ACTION_ENUM_VAL:
+            case LEFT_ACTION_MODE_NO_LEFT_ACTION:
                 mLeftAction.setImageDrawable(mIconBackArrow);
 
                 if (withAnim) {
                     ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent)
-                            .translationX(-Util.dpToPx(48 + 20 - 16)).get();
+                            .translationX(-Util.dpToPx(LEFT_MENU_WIDTH_AND_MARGIN_START)).get();
 
                     ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(0.5f).get();
                     ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(0.5f).get();
@@ -1612,6 +1612,7 @@ public class FloatingSearchView extends FrameLayout {
         savedState.suggestionUpBtnColor = this.mSuggestionTextColor;
         savedState.dividerColor = this.mDividerColor;
         savedState.menuId = mMenuId;
+        savedState.leftActionMode = mLeftActionMode;
         return savedState;
     }
 
@@ -1639,6 +1640,7 @@ public class FloatingSearchView extends FrameLayout {
         setClearBtnColor(savedState.clearBtnColor);
         setSuggestionRightIconColor(savedState.suggestionUpBtnColor);
         setDividerColor(savedState.dividerColor);
+        setLeftActionMode(savedState.leftActionMode);
 
         if (this.mIsFocused) {
 
@@ -1689,6 +1691,7 @@ public class FloatingSearchView extends FrameLayout {
         private int suggestionUpBtnColor;
         private int dividerColor;
         private int menuId;
+        private int leftActionMode;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1716,6 +1719,7 @@ public class FloatingSearchView extends FrameLayout {
             suggestionUpBtnColor = in.readInt();
             dividerColor = in.readInt();
             menuId = in.readInt();
+            leftActionMode = in.readInt();
         }
 
         @Override
@@ -1741,6 +1745,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(suggestionUpBtnColor);
             out.writeInt(dividerColor);
             out.writeInt(menuId);
+            out.writeInt(leftActionMode);
         }
 
         public static final Creator<SavedState> CREATOR
