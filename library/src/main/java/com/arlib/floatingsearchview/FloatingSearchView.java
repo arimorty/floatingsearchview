@@ -442,11 +442,10 @@ public class FloatingSearchView extends FrameLayout {
             applyXmlAttributes(attrs);
         }
 
-        int sdkVersion = Build.VERSION.SDK_INT;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
-            setBackgroundDrawable(mBackgroundDrawable);
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             setBackground(mBackgroundDrawable);
+        } else {
+            setBackgroundDrawable(mBackgroundDrawable);
         }
 
         setupQueryBar();

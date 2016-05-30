@@ -19,6 +19,7 @@ package com.arlib.floatingsearchview.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
@@ -34,6 +35,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 public class Util {
 
@@ -98,10 +100,11 @@ public class Util {
         return outMetrics.heightPixels;
     }
 
-    public static Drawable setIconColor(Drawable icon, int color) {
-        DrawableCompat.wrap(icon);
-        DrawableCompat.setTint(icon, color);
-        return icon;
+    public static void setIconColor(ImageView iconHolder, int color) {
+        Drawable wrappedDrawable = DrawableCompat.wrap(iconHolder.getDrawable());
+        DrawableCompat.setTint(wrappedDrawable, color);
+        iconHolder.setImageDrawable(wrappedDrawable);
+        iconHolder.invalidate();
     }
 
     /**
