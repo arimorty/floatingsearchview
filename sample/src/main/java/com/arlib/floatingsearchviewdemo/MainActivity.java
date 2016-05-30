@@ -31,10 +31,10 @@ public class MainActivity extends AppCompatActivity {
 
     private FloatingSearchView mSearchView;
 
-    private DrawerLayout mDrawerLayout;
-
     private RecyclerView mSearchResultsList;
     private SearchResultsListAdapter mSearchResultsAdapter;
+
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFocusCleared() {
 
-
                 Log.d(TAG, "onFocusCleared()");
             }
         });
@@ -158,7 +157,6 @@ public class MainActivity extends AppCompatActivity {
                     mSearchView.setClearBtnColor(Color.parseColor("#D30102"));
                     mSearchView.setSuggestionRightIconColor(Color.parseColor("#BCADAD"));
                     mSearchView.setDividerColor(Color.parseColor("#dfd7b9"));
-
                 } else {
 
                     //just print action
@@ -195,15 +193,14 @@ public class MainActivity extends AppCompatActivity {
 
         /*
          * Here you have access to the left icon and the text of a given suggestion
-         * item when as it is bound to the suggestion list. You can utilize this
+         * item after as it is bound to the suggestion list. You can utilize this
          * callback to change some properties of the left icon and the text. For example, you
-         * can load left icon images using your favorite image loading library, or change text color.
+         * can load the left icon images using your favorite image loading library, or change text color.
          *
          *
          * Important:
-         * Keep in mind that the suggestion list is a RecyclerView so views are reused for different
+         * Keep in mind that the suggestion list is a RecyclerView, so views are reused for different
          * items in the list.
-         *
          */
         mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
@@ -222,6 +219,8 @@ public class MainActivity extends AppCompatActivity {
 
         });
 
+        //listen for when suggestion list expands/shrinks in order to move down/up the
+        //search results list
         mSearchView.setOnSuggestionsListHeightChanged(new FloatingSearchView.OnSuggestionsListHeightChanged() {
             @Override
             public void onSuggestionsListHeightChanged(float newHeight) {
@@ -265,9 +264,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //if mSearchView.setSearchFocused(false) causes the focused search
-        //to close, than we don't want to close the activity. if mSearchView.setSearchFocused(false)
-        //returns false, we know that the search was in fact already closed, so we can call supper onBackPressed()
-        //and close the activity
+        //to close, then we don't want to close the activity. if mSearchView.setSearchFocused(false)
+        //returns false, we know that the search was already closed so the call didn't change the focus
+        //state and it makes sense to call supper onBackPressed() and close the activity
         if (!mSearchView.setSearchFocused(false)) {
             super.onBackPressed();
         }
