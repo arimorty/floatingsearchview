@@ -155,8 +155,8 @@ Set a callback for when a given suggestion is bound to the suggestion list.
 
 **Styling:**
 
-<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_light.png"/>
-<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_dark.png"/>
+<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_light.png" width="350"/>
+<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_dark.png" width="350"/>
 
 Available styling:
 
