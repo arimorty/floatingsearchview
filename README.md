@@ -29,6 +29,7 @@ Usage
                 app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
                 app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
                 app:floatingSearch_searchHint="Search..."
+                app:floatingSearch_suggestionsListAnimDuration="250"
                 app:floatingSearch_showSearchKey="false"
                 app:floatingSearch_leftActionMode="showHamburger"
                 app:floatingSearch_menu="@menu/menu_main"/>

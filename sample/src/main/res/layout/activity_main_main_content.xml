@@ -36,6 +36,7 @@
             app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
             app:floatingSearch_searchHint="Search..."
             app:floatingSearch_showSearchKey="true"
+            app:floatingSearch_suggestionsListAnimDuration="250"
             app:floatingSearch_dimBackground="false"/>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

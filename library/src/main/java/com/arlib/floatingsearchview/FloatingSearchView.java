@@ -2,13 +2,13 @@ package com.arlib.floatingsearchview;
 
 /**
  * Copyright (C) 2015 Ari C.
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -125,10 +125,10 @@ public class FloatingSearchView extends FrameLayout {
     private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = true;
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
     private final int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
-    private static final boolean ATTRS_SHOW_DIM_BACKGROUND_DEFAULT = true;
+    private final boolean ATTRS_SHOW_DIM_BACKGROUND_DEFAULT = true;
 
-    private final int SUGGESTIONS_LIST_HEIGHT_UPDATE_ANIM_DURATION = 250;
     private final Interpolator SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR = new LinearInterpolator();
+    private final int ATTRS_SUGGESTION_ANIM_DURATION_DEFAULT = 250;
 
     private Activity mHostActivity;
 
@@ -189,6 +189,7 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mIsSuggestionsSecHeightSet;
     private boolean mShowMoveUpSuggestion = ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT;
     private OnSuggestionsListHeightChanged mOnSuggestionsListHeightChanged;
+    private long mSuggestionSectionAnimDuration;
 
     //An interface for implementing a listener that will get notified when the suggestions
     //section's height is set. This is to be used internally only.
@@ -493,6 +494,8 @@ public class FloatingSearchView extends FrameLayout {
                     ATTRS_SHOW_DIM_BACKGROUND_DEFAULT));
             setShowMoveUpSuggestion(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showMoveSuggestionUp,
                     ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT));
+            this.mSuggestionSectionAnimDuration = a.getInt(R.styleable.FloatingSearchView_floatingSearch_suggestionsListAnimDuration,
+                    ATTRS_SUGGESTION_ANIM_DURATION_DEFAULT);
             setBackgroundColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_backgroundColor
                     , Util.getColor(getContext(), R.color.background)));
             setLeftActionIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_leftActionColor
@@ -770,6 +773,16 @@ public class FloatingSearchView extends FrameLayout {
         if (mSuggestionsAdapter != null) {
             mSuggestionsAdapter.setTextColor(mSuggestionTextColor);
         }
+    }
+
+    /**
+     * Set the duration for the suggestions list expand/collapse
+     * animation.
+     *
+     * @param duration
+     */
+    public void setSuggestionsAnimDuration(long duration) {
+        this.mSuggestionSectionAnimDuration = duration;
     }
 
     /**
@@ -1255,7 +1268,7 @@ public class FloatingSearchView extends FrameLayout {
         if (withAnim) {
             ViewCompat.animate(mSuggestionListContainer).
                     setInterpolator(SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR).
-                    setDuration(SUGGESTIONS_LIST_HEIGHT_UPDATE_ANIM_DURATION).
+                    setDuration(mSuggestionSectionAnimDuration).
                     translationY(newTranslationY)
                     .setUpdateListener(new ViewPropertyAnimatorUpdateListener() {
                         @Override
@@ -1695,6 +1708,7 @@ public class FloatingSearchView extends FrameLayout {
         this.mIsFocused = savedState.isFocused;
         this.mIsTitleSet = savedState.isTitleSet;
         this.mMenuId = savedState.menuId;
+        this.mSuggestionSectionAnimDuration = savedState.suggestionsSectionAnimSuration;
         setSuggestionItemTextSize(savedState.suggestionTextSize);
         setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
         setShowMoveUpSuggestion(savedState.showMoveSuggestionUpBtn);
@@ -1765,6 +1779,7 @@ public class FloatingSearchView extends FrameLayout {
         private int menuId;
         private int leftActionMode;
         private boolean dimBackground;
+        private long suggestionsSectionAnimSuration;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1794,6 +1809,7 @@ public class FloatingSearchView extends FrameLayout {
             menuId = in.readInt();
             leftActionMode = in.readInt();
             dimBackground = (in.readInt() != 0);
+            suggestionsSectionAnimSuration = in.readLong();
         }
 
         @Override
@@ -1821,6 +1837,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(menuId);
             out.writeInt(leftActionMode);
             out.writeInt(dimBackground ? 1 : 0);
+            out.writeLong(suggestionsSectionAnimSuration);
         }
 
         public static final Creator<SavedState> CREATOR
