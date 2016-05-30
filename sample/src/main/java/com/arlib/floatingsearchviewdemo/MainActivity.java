@@ -6,6 +6,7 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -220,7 +221,8 @@ public class MainActivity extends AppCompatActivity {
          */
         mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
-            public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon,
+                                         TextView textView, SearchSuggestion item, int itemPosition) {
                 ColorSuggestion colorSuggestion = (ColorSuggestion) item;
 
                 if (colorSuggestion.getIsHistory()) {
@@ -255,6 +257,23 @@ public class MainActivity extends AppCompatActivity {
         mSearchResultsAdapter = new SearchResultsListAdapter();
         mSearchResultsList.setAdapter(mSearchResultsAdapter);
         mSearchResultsList.setLayoutManager(new LinearLayoutManager(this));
+        mSearchResultsAdapter.setItemsOnClickListener(new SearchResultsListAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(ColorWrapper colorWrapper) {
+
+                int color = Color.parseColor(colorWrapper.getHex());
+                Palette.Swatch swatch = new Palette.Swatch(color, 0);
+                mSearchView.setBackgroundColor(color);
+                mSearchView.setViewTextColor(swatch.getBodyTextColor());
+                mSearchView.setHintTextColor(swatch.getTitleTextColor());
+                mSearchView.setLeftActionIconColor(swatch.getTitleTextColor());
+                mSearchView.setActionMenuOverflowColor(swatch.getTitleTextColor());
+                mSearchView.setMenuItemIconColor(swatch.getBodyTextColor());
+                mSearchView.setLeftActionIconColor(swatch.getTitleTextColor());
+                mSearchView.setClearBtnColor(swatch.getBodyTextColor());
+                mSearchView.setDividerColor(swatch.getTitleTextColor());
+            }
+        });
     }
 
     private void setupDrawer() {

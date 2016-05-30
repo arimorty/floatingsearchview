@@ -39,6 +39,12 @@ public class SearchResultsListAdapter extends RecyclerView.Adapter<SearchResults
 
     private int mLastAnimatedItemPosition = -1;
 
+    public interface OnItemClickListener{
+        void onClick(ColorWrapper colorWrapper);
+    }
+
+    private OnItemClickListener mItemsOnClickListener;
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mColorName;
         public final TextView mColorValue;
@@ -57,6 +63,10 @@ public class SearchResultsListAdapter extends RecyclerView.Adapter<SearchResults
         notifyDataSetChanged();
     }
 
+    public void setItemsOnClickListener(OnItemClickListener onClickListener){
+        this.mItemsOnClickListener = onClickListener;
+    }
+
     @Override
     public SearchResultsListAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
@@ -65,7 +75,7 @@ public class SearchResultsListAdapter extends RecyclerView.Adapter<SearchResults
     }
 
     @Override
-    public void onBindViewHolder(SearchResultsListAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(SearchResultsListAdapter.ViewHolder holder, final int position) {
 
         ColorWrapper colorSuggestion = mDataSet.get(position);
         holder.mColorName.setText(colorSuggestion.getName());
@@ -80,6 +90,15 @@ public class SearchResultsListAdapter extends RecyclerView.Adapter<SearchResults
         if(mLastAnimatedItemPosition < position){
             animateItem(holder.itemView);
             mLastAnimatedItemPosition = position;
+        }
+
+        if(mItemsOnClickListener != null){
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mItemsOnClickListener.onClick(mDataSet.get(position));
+                }
+            });
         }
     }
 
