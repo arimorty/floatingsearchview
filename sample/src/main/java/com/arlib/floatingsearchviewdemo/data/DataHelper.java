@@ -11,108 +11,190 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class DataHelper {
 
-        private static final String COLORS_FILE_NAME = "colors.json";
+    private static final String COLORS_FILE_NAME = "colors.json";
 
-        private static List<ColorWrapper> sColorWrappers = new ArrayList<>();
+    private static List<ColorWrapper> sColorWrappers = new ArrayList<>();
 
-        public interface OnFindResultsListener{
+    private static List<ColorSuggestion> sColorSuggestions =
+            new ArrayList<>(Arrays.asList(
+                    new ColorSuggestion("green"),
+                    new ColorSuggestion("blue"),
+                    new ColorSuggestion("pink"),
+                    new ColorSuggestion("purple"),
+                    new ColorSuggestion("brown"),
+                    new ColorSuggestion("gray"),
+                    new ColorSuggestion("Granny Smith Apple"),
+                    new ColorSuggestion("Indigo"),
+                    new ColorSuggestion("Periwinkle"),
+                    new ColorSuggestion("Mahogany"),
+                    new ColorSuggestion("Maize"),
+                    new ColorSuggestion("Mahogany"),
+                    new ColorSuggestion("Outer Space"),
+                    new ColorSuggestion("Melon"),
+                    new ColorSuggestion("Yellow"),
+                    new ColorSuggestion("Orange"),
+                    new ColorSuggestion("Red"),
+                    new ColorSuggestion("Orchid")));
 
-                void onResults(List<ColorSuggestion> results);
+    public interface OnFindColorsListener {
+        void onResults(List<ColorWrapper> results);
+    }
+
+    public interface OnFindSuggestionsListener {
+        void onResults(List<ColorSuggestion> results);
+    }
+
+    public static List<ColorSuggestion> getHistory(Context context, int count) {
+
+        List<ColorSuggestion> suggestionList = new ArrayList<>();
+        ColorSuggestion colorSuggestion;
+        for (int i = 0; i < sColorSuggestions.size(); i++) {
+            colorSuggestion = sColorSuggestions.get(i);
+            colorSuggestion.setIsHistory(true);
+            suggestionList.add(colorSuggestion);
+            if (suggestionList.size() == count) {
+                break;
+            }
         }
+        return suggestionList;
+    }
 
-        public static List<ColorSuggestion> getHistory(Context context, int count){
+    public static void resetSuggestionsHistory() {
+        for (ColorSuggestion colorSuggestion : sColorSuggestions) {
+            colorSuggestion.setIsHistory(false);
+        }
+    }
 
-                initColorWrapperList(context);
+    public static void findSuggestions(Context context, String query, final int limit,
+                                       final OnFindSuggestionsListener listener) {
+        new Filter() {
 
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+
+                DataHelper.resetSuggestionsHistory();
                 List<ColorSuggestion> suggestionList = new ArrayList<>();
+                if (!(constraint == null || constraint.length() == 0)) {
 
-                ColorSuggestion colorSuggestion;
-                for(int i=0; i<count; i++){
-                        colorSuggestion = new ColorSuggestion(sColorWrappers.get(i));
-                        colorSuggestion.setIsHistory(true);
-                        suggestionList.add(colorSuggestion);
-                }
+                    for (ColorSuggestion suggestion : sColorSuggestions) {
+                        if (suggestion.getBody().toUpperCase()
+                                .startsWith(constraint.toString().toUpperCase())) {
 
-                return suggestionList;
-        }
-
-        public static void find(Context context, String query, final OnFindResultsListener listener){
-
-                initColorWrapperList(context);
-
-                new Filter(){
-
-                        @Override
-                        protected FilterResults performFiltering(CharSequence constraint) {
-
-
-                                List<ColorSuggestion> suggestionList = new ArrayList<>();
-
-                                if (!(constraint == null || constraint.length() == 0)) {
-
-                                        for(ColorWrapper color: sColorWrappers){
-
-                                                if(color.getName().toUpperCase().startsWith(constraint.toString().toUpperCase()))
-                                                        suggestionList.add(new ColorSuggestion(color));
-                                        }
-
-                                }
-
-                                FilterResults results = new FilterResults();
-                                results.values = suggestionList;
-                                results.count = suggestionList.size();
-
-                                return results;
+                            suggestionList.add(suggestion);
+                            if (limit != -1 && suggestionList.size() == limit) {
+                                break;
+                            }
                         }
+                    }
+                }
 
-                        @Override
-                        protected void publishResults(CharSequence constraint, FilterResults results) {
+                FilterResults results = new FilterResults();
+                Collections.sort(suggestionList, new Comparator<ColorSuggestion>() {
+                    @Override
+                    public int compare(ColorSuggestion lhs, ColorSuggestion rhs) {
+                        return lhs.getIsHistory() ? -1 : 0;
+                    }
+                });
+                results.values = suggestionList;
+                results.count = suggestionList.size();
 
-                                if(listener!=null)
-                                        listener.onResults((List<ColorSuggestion>)results.values);
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+
+                if (listener != null) {
+                    listener.onResults((List<ColorSuggestion>) results.values);
+                }
+            }
+        }.filter(query);
+
+    }
+
+
+    public static void findColors(Context context, String query, final OnFindColorsListener listener) {
+        initColorWrapperList(context);
+
+        new Filter() {
+
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+
+
+                List<ColorWrapper> suggestionList = new ArrayList<>();
+
+                if (!(constraint == null || constraint.length() == 0)) {
+
+                    for (ColorWrapper color : sColorWrappers) {
+                        if (color.getName().toUpperCase()
+                                .startsWith(constraint.toString().toUpperCase())) {
+
+                            suggestionList.add(color);
                         }
-                }.filter(query);
+                    }
 
-        }
-
-        private static void initColorWrapperList(Context context){
-
-                if(sColorWrappers.isEmpty()) {
-
-                        String jsonString = loadJson(context);
-                        sColorWrappers = deserializeColors(jsonString);
-                }
-        }
-
-        private static String loadJson(Context context) {
-
-                String jsonString;
-
-                try {
-                        InputStream is = context.getAssets().open(COLORS_FILE_NAME);
-                        int size = is.available();
-                        byte[] buffer = new byte[size];
-                        is.read(buffer);
-                        is.close();
-                        jsonString = new String(buffer, "UTF-8");
-                } catch (IOException ex) {
-                        ex.printStackTrace();
-                        return null;
                 }
 
-                return jsonString;
+                FilterResults results = new FilterResults();
+                results.values = suggestionList;
+                results.count = suggestionList.size();
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+
+                if (listener != null) {
+                    listener.onResults((List<ColorWrapper>) results.values);
+                }
+            }
+        }.filter(query);
+
+    }
+
+    private static void initColorWrapperList(Context context) {
+
+        if (sColorWrappers.isEmpty()) {
+            String jsonString = loadJson(context);
+            sColorWrappers = deserializeColors(jsonString);
+        }
+    }
+
+    private static String loadJson(Context context) {
+
+        String jsonString;
+
+        try {
+            InputStream is = context.getAssets().open(COLORS_FILE_NAME);
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            jsonString = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            return null;
         }
 
-        private static List<ColorWrapper> deserializeColors(String jsonString){
+        return jsonString;
+    }
 
-                Gson gson = new Gson();
+    private static List<ColorWrapper> deserializeColors(String jsonString) {
 
-                Type collectionType = new TypeToken<List<ColorWrapper>>() {}.getType();
-                return gson.fromJson(jsonString, collectionType);
-        }
+        Gson gson = new Gson();
+
+        Type collectionType = new TypeToken<List<ColorWrapper>>() {
+        }.getType();
+        return gson.fromJson(jsonString, collectionType);
+    }
 
 }

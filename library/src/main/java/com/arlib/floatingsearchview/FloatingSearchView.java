@@ -36,6 +36,7 @@ import android.support.annotation.IntDef;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
+import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.CardView;
@@ -124,6 +125,7 @@ public class FloatingSearchView extends FrameLayout {
     private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = true;
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
     private final int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
+    private static final boolean ATTRS_SHOW_DIM_BACKGROUND_DEFAULT = true;
 
     private final int SUGGESTIONS_LIST_HEIGHT_UPDATE_ANIM_DURATION = 250;
     private final Interpolator SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR = new LinearInterpolator();
@@ -132,6 +134,7 @@ public class FloatingSearchView extends FrameLayout {
 
     private View mMainLayout;
     private Drawable mBackgroundDrawable;
+    private boolean mDimBackground;
     private boolean mDismissOnOutsideTouch = true;
     private boolean mIsFocused;
     private OnFocusChangeListener mFocusChangeListener;
@@ -185,6 +188,7 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mIsInitialLayout = true;
     private boolean mIsSuggestionsSecHeightSet;
     private boolean mShowMoveUpSuggestion = ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT;
+    private OnSuggestionsListHeightChanged mOnSuggestionsListHeightChanged;
 
     //An interface for implementing a listener that will get notified when the suggestions
     //section's height is set. This is to be used internally only.
@@ -193,6 +197,16 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private OnSuggestionSecHeightSetListener mSuggestionSecHeightListener;
+
+    /**
+     * Interface for implementing a listener to listen
+     * changes in suggestion list height that occur when the list is expands/shrinks
+     * because of calls to {@link FloatingSearchView#swapSuggestions(List)}
+     */
+    public interface OnSuggestionsListHeightChanged {
+
+        void onSuggestionsListHeightChanged(float newHeight);
+    }
 
     /**
      * Interface for implementing a listener to listen
@@ -401,6 +415,8 @@ public class FloatingSearchView extends FrameLayout {
             });
 
             mIsInitialLayout = false;
+
+            refreshDimBackground();
         }
     }
 
@@ -410,10 +426,8 @@ public class FloatingSearchView extends FrameLayout {
             applyXmlAttributes(attrs);
         }
 
-        mBackgroundDrawable.setAlpha(BACKGROUND_DRAWABLE_ALPHA_SEARCH_NOT_FOCUSED);
-
         int sdkVersion = Build.VERSION.SDK_INT;
-        if (sdkVersion < Build.VERSION_CODES.JELLY_BEAN) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN) {
             setBackgroundDrawable(mBackgroundDrawable);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             setBackground(mBackgroundDrawable);
@@ -471,12 +485,13 @@ public class FloatingSearchView extends FrameLayout {
                     R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize,
                     Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
             //noinspection ResourceType
-            mLeftActionMode = (mLeftActionMode == LEFT_ACTION_MODE_NOT_SET) ?
-                    a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftActionMode,
-                            ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT) : mLeftActionMode;
+            mLeftActionMode = a.getInt(R.styleable.FloatingSearchView_floatingSearch_leftActionMode,
+                    ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT);
             if (a.hasValue(R.styleable.FloatingSearchView_floatingSearch_menu)) {
-                mMenuId = (mMenuId != -1) ? mMenuId : a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, -1);
+                mMenuId = a.getResourceId(R.styleable.FloatingSearchView_floatingSearch_menu, -1);
             }
+            setDimBackground(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dimBackground,
+                    ATTRS_SHOW_DIM_BACKGROUND_DEFAULT));
             setShowMoveUpSuggestion(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_show_move_suggestion_up,
                     ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT));
             setBackgroundColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_backgroundColor
@@ -521,10 +536,7 @@ public class FloatingSearchView extends FrameLayout {
             public void onGlobalLayout() {
                 Util.removeGlobalLayoutObserver(mQuerySection, this);
 
-                mMenuView.reset(mMenuId, actionMenuAvailWidth());
-                if (mIsFocused) {
-                    mMenuView.hideIfRoomItems(false);
-                }
+                inflateOverflowMenu(mMenuId);
             }
         });
 
@@ -625,6 +637,8 @@ public class FloatingSearchView extends FrameLayout {
                     if (mSearchListener != null) {
                         mSearchListener.onSearchAction(getQuery());
                     }
+                    mSkipTextChangeEvent = true;
+                    setSearchBarTitle(getQuery());
                     setSearchFocusedInternal(false);
                     return true;
                 }
@@ -1013,6 +1027,24 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
+     * Sets whether a dim background will show when the search is focused
+     *
+     * @param dimEnabled True to show dim
+     */
+    public void setDimBackground(boolean dimEnabled) {
+        this.mDimBackground = dimEnabled;
+        refreshDimBackground();
+    }
+
+    private void refreshDimBackground(){
+        if (this.mDimBackground  && mIsFocused) {
+            mBackgroundDrawable.setAlpha(BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED);
+        } else {
+            mBackgroundDrawable.setAlpha(BACKGROUND_DRAWABLE_ALPHA_SEARCH_NOT_FOCUSED);
+        }
+    }
+
+    /**
      * Sets the arrow up of suggestion items to be enabled and visible or
      * disabled and invisible.
      *
@@ -1201,8 +1233,8 @@ public class FloatingSearchView extends FrameLayout {
     private void updateSuggestionsSectionHeight(List<? extends SearchSuggestion>
                                                         newSearchSuggestions, boolean withAnim) {
 
-        int cardTopBottomShadowPadding = Util.dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT);
-        int cardRadiusSize = Util.dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT);
+        final int cardTopBottomShadowPadding = Util.dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT);
+        final int cardRadiusSize = Util.dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT);
 
         int visibleHeight = getVisibleItemsHeight(newSearchSuggestions);
         int diff = mSuggestionListContainer.getHeight() - visibleHeight;
@@ -1214,13 +1246,24 @@ public class FloatingSearchView extends FrameLayout {
 
         final boolean animateAtEnd = newTranslationY >= mSuggestionListContainer.getTranslationY();
 
+        final float fullyInvisibleTranslationY = -mSuggestionListContainer.getHeight() + cardRadiusSize;
         ViewCompat.animate(mSuggestionListContainer).cancel();
         if (withAnim) {
             ViewCompat.animate(mSuggestionListContainer).
                     setInterpolator(SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR).
                     setDuration(SUGGESTIONS_LIST_HEIGHT_UPDATE_ANIM_DURATION).
-                    translationY(newTranslationY).
-                    setListener(new ViewPropertyAnimatorListenerAdapter() {
+                    translationY(newTranslationY)
+                    .setUpdateListener(new ViewPropertyAnimatorUpdateListener() {
+                        @Override
+                        public void onAnimationUpdate(View view) {
+
+                            if (mOnSuggestionsListHeightChanged != null) {
+                                float newSuggestionsHeight = Math.abs(view.getTranslationY() - fullyInvisibleTranslationY);
+                                mOnSuggestionsListHeightChanged.onSuggestionsListHeightChanged(newSuggestionsHeight);
+                            }
+                        }
+                    })
+                    .setListener(new ViewPropertyAnimatorListenerAdapter() {
                         @Override
                         public void onAnimationCancel(View view) {
                             mSuggestionListContainer.setTranslationY(newTranslationY);
@@ -1245,6 +1288,10 @@ public class FloatingSearchView extends FrameLayout {
                     }).start();
         } else {
             mSuggestionListContainer.setTranslationY(newTranslationY);
+            if (mOnSuggestionsListHeightChanged != null) {
+                float newSuggestionsHeight = Math.abs(mSuggestionListContainer.getTranslationY() - fullyInvisibleTranslationY);
+                mOnSuggestionsListHeightChanged.onSuggestionsListHeightChanged(newSuggestionsHeight);
+            }
         }
     }
 
@@ -1273,8 +1320,9 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void setOnBindSuggestionCallback(SearchSuggestionsAdapter.OnBindSuggestionCallback callback) {
         this.mOnBindSuggestionCallback = callback;
-        if (mSuggestionsAdapter != null)
+        if (mSuggestionsAdapter != null) {
             mSuggestionsAdapter.setOnBindSuggestionCallback(mOnBindSuggestionCallback);
+        }
     }
 
     /**
@@ -1293,13 +1341,15 @@ public class FloatingSearchView extends FrameLayout {
         return mIsFocused;
     }
 
-    private void setSearchFocusedInternal(boolean focused) {
+    private void setSearchFocusedInternal(final boolean focused) {
         this.mIsFocused = focused;
 
         if (focused) {
             mSearchInput.requestFocus();
             moveSuggestListToInitialPos();
-            fadeInBackground();
+            if (mDimBackground) {
+                fadeInBackground();
+            }
             mMenuView.hideIfRoomItems(true);
             transitionInLeftSection(true);
             Util.showSoftKeyboard(getContext(), mSearchInput);
@@ -1316,7 +1366,9 @@ public class FloatingSearchView extends FrameLayout {
         } else {
             mMainLayout.requestFocus();
             clearSuggestions();
-            fadeOutBackground();
+            if (mDimBackground) {
+                fadeOutBackground();
+            }
             mMenuView.showIfRoomItems(true);
             transitionOutLeftSection(true);
             mClearButton.setVisibility(View.GONE);
@@ -1331,6 +1383,10 @@ public class FloatingSearchView extends FrameLayout {
                 mFocusChangeListener.onFocusCleared();
             }
         }
+
+        //if we don't have focus, we want to allow the client's views below our invisible
+        //screen-covering view to handle touches
+        mSuggestionsSection.setEnabled(focused);
     }
 
     private void changeIcon(ImageView imageView, Drawable newIcon, boolean withAnim) {
@@ -1446,6 +1502,16 @@ public class FloatingSearchView extends FrameLayout {
                 }
                 break;
         }
+    }
+
+    /**
+     * Sets the listener that will be notified when the suggestion list's height
+     * changes.
+     *
+     * @param onSuggestionsListHeightChanged the new suggestions list's height
+     */
+    public void setOnSuggestionsListHeightChanged(OnSuggestionsListHeightChanged onSuggestionsListHeightChanged) {
+        this.mOnSuggestionsListHeightChanged = onSuggestionsListHeightChanged;
     }
 
     /**
@@ -1613,6 +1679,7 @@ public class FloatingSearchView extends FrameLayout {
         savedState.dividerColor = this.mDividerColor;
         savedState.menuId = mMenuId;
         savedState.leftActionMode = mLeftActionMode;
+        savedState.dimBackground = mDimBackground;
         return savedState;
     }
 
@@ -1624,7 +1691,6 @@ public class FloatingSearchView extends FrameLayout {
         this.mIsFocused = savedState.isFocused;
         this.mIsTitleSet = savedState.isTitleSet;
         this.mMenuId = savedState.menuId;
-        mMenuView.reset(savedState.menuId, actionMenuAvailWidth());
         setSuggestionItemTextSize(savedState.suggestionTextSize);
         setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
         setShowMoveUpSuggestion(savedState.showMoveSuggestionUpBtn);
@@ -1641,7 +1707,9 @@ public class FloatingSearchView extends FrameLayout {
         setSuggestionRightIconColor(savedState.suggestionUpBtnColor);
         setDividerColor(savedState.dividerColor);
         setLeftActionMode(savedState.leftActionMode);
+        setDimBackground(savedState.dimBackground);
 
+        mSuggestionsSection.setEnabled(this.mIsFocused);
         if (this.mIsFocused) {
 
             mBackgroundDrawable.setAlpha(BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED);
@@ -1692,6 +1760,7 @@ public class FloatingSearchView extends FrameLayout {
         private int dividerColor;
         private int menuId;
         private int leftActionMode;
+        private boolean dimBackground;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1720,6 +1789,7 @@ public class FloatingSearchView extends FrameLayout {
             dividerColor = in.readInt();
             menuId = in.readInt();
             leftActionMode = in.readInt();
+            dimBackground = (in.readInt() != 0);
         }
 
         @Override
@@ -1746,6 +1816,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(dividerColor);
             out.writeInt(menuId);
             out.writeInt(leftActionMode);
+            out.writeInt(dimBackground ? 1 : 0);
         }
 
         public static final Creator<SavedState> CREATOR
