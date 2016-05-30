@@ -423,6 +423,8 @@ public class FloatingSearchView extends FrameLayout {
 
     private void setupViews(AttributeSet attrs) {
 
+        mSuggestionsSection.setEnabled(false);
+
         if (attrs != null) {
             applyXmlAttributes(attrs);
         }
