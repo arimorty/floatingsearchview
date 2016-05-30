@@ -5,7 +5,7 @@ An implementation of a floating search box with search suggestions.
 
 <div style="background: #F0F1F4;  border: 15px solid #F0F1F4;">
 
-![Alt text](https://github.com/arimorty/floatingsearchview/blob/improvements/images/14zhou.gif?raw=true)
+![Alt text](/images/14zhou.gif)
 
 </div>
 
