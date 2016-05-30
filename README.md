@@ -3,11 +3,11 @@ Floating Search View [![Android Arsenal](https://img.shields.io/badge/Android%20
 
 An implementation of a floating search box with search suggestions.
 
-<div style="background: #F0F1F4;  border: 15px solid #F0F1F4;">
+<br style="background: #F0F1F4;  border: 15px solid #F0F1F4;">
 
 ![Alt text](/images/14zhou.gif)
 
-</div>
+</br>
 
 Usage
 -----
