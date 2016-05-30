@@ -91,7 +91,7 @@ Listen to home (back arrow) button clicks:
 
 **Configure menu items:**
 
-![Alt text](/images/150sde.gif)
+![Alt text](/images/150sox.gif)
 ![Alt text](/images/150sg9.gif)
 
 Add a menu resource
