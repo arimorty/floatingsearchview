@@ -1,13 +1,7 @@
 package com.arlib.floatingsearchviewdemo.data;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
- * Copyright (C) 2016 Arlib
+ * Copyright (C) 2015 Ari C.
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +15,13 @@ import com.google.gson.annotations.SerializedName;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
 public class ColorWrapper implements Parcelable {
 
     @SerializedName("hex")

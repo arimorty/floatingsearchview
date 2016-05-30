@@ -1,7 +1,7 @@
 package com.arlib.floatingsearchview.util;
 
 /**
- * Copyright (C) 2016 Arlib
+ * Copyright (C) 2015 Ari C.
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package com.arlib.floatingsearchview.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;

@@ -5,7 +5,7 @@ import android.os.Parcel;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 
 /**
- * Copyright (C) 2016 Arlib
+ * Copyright (C) 2015 Ari C.
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 public class ColorSuggestion implements SearchSuggestion {
 
     private String mColorName;

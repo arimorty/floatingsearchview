@@ -180,7 +180,7 @@ Available styling:
 License
 =======
 
-    Copyright (C) 2016 Arlib
+    Copyright (C) 2015 Ari C.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
