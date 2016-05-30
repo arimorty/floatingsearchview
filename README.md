@@ -1,7 +1,7 @@
 Floating Search View [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Floating%20Search%20View-green.svg?style=true)](https://android-arsenal.com/details/1/2842)
 =============
 
-An implementation of a floating search box with search suggestions.
+An implementation of a floating search box with search suggestions also called persistent search bar.
 
 ![Alt text](/images/150696.gif)
 ![Alt text](/images/1506tq.gif)
