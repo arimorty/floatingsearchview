@@ -252,7 +252,6 @@ public class MainActivity extends AppCompatActivity {
                         .replaceFirst(mSearchView.getQuery(),
                                 "<font color=\"" + textLight + "\">" + mSearchView.getQuery() + "</font>");
                 textView.setText(Html.fromHtml(text));
-
             }
 
         });

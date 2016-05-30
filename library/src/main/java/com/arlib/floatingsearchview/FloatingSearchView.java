@@ -491,7 +491,7 @@ public class FloatingSearchView extends FrameLayout {
             }
             setDimBackground(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dimBackground,
                     ATTRS_SHOW_DIM_BACKGROUND_DEFAULT));
-            setShowMoveUpSuggestion(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_show_move_suggestion_up,
+            setShowMoveUpSuggestion(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showMoveSuggestionUp,
                     ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT));
             setBackgroundColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_backgroundColor
                     , Util.getColor(getContext(), R.color.background)));
