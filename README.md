@@ -3,7 +3,7 @@ Floating Search View [![Android Arsenal](https://img.shields.io/badge/Android%20
 
 An implementation of a floating search box with search suggestions.
 
-![Alt text](/images/vf353.gif)
+![Alt text](/images/14zgyz.gif)
 
 Usage
 -----
@@ -140,7 +140,7 @@ Set a callback for when a given suggestion is bound to the suggestion list.
 ``` 
    mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
-            public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
 
                        //here you can set some attributes for the suggestion's left icon and text. For example,
                        //you can choose your favorite image-loading library for setting the left icon's image. 
@@ -173,16 +173,10 @@ Available styling:
 ```
 
 
-Contributing
-============
-
-At this point we want to focus on stability and efficiency before adding new features. All suggestions
-or bug reports are welcome.
-
 License
 =======
 
-    Copyright (C) 2015 Arlib
+    Copyright (C) 2016 Arlib
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
