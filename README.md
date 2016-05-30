@@ -4,6 +4,8 @@ Floating Search View [![Android Arsenal](https://img.shields.io/badge/Android%20
 An implementation of a floating search box with search suggestions.
 
 ![Alt text](/images/150696.gif)
+![Alt text](/images/1506tq.gif)
+
 
 Usage
 -----
