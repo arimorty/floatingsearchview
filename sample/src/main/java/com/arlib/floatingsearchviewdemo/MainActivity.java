@@ -22,7 +22,6 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
@@ -47,6 +46,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
+
+    public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
 
     private FloatingSearchView mSearchView;
 
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupFloatingSearch() {
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+
             @Override
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
 
@@ -88,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //simulates a query call to a data source
                     //with a new query.
-                    DataHelper.findSuggestions(MainActivity.this, newQuery, 5, new DataHelper.OnFindSuggestionsListener() {
+                    DataHelper.findSuggestions(MainActivity.this, newQuery, 5, FIND_SUGGESTION_SIMULATED_DELAY, new DataHelper.OnFindSuggestionsListener() {
 
                         @Override
                         public void onResults(List<ColorSuggestion> results) {

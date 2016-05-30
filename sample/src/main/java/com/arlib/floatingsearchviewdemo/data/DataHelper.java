@@ -87,12 +87,18 @@ public class DataHelper {
         }
     }
 
-    public static void findSuggestions(Context context, String query, final int limit,
+    public static void findSuggestions(Context context, String query, final int limit, final long simulatedDelay,
                                        final OnFindSuggestionsListener listener) {
         new Filter() {
 
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
+
+                try {
+                    Thread.sleep(simulatedDelay);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 DataHelper.resetSuggestionsHistory();
                 List<ColorSuggestion> suggestionList = new ArrayList<>();
