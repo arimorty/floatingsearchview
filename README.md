@@ -15,7 +15,7 @@ Usage
          compile 'com.github.arimorty:floatingsearchview:2.0.0'
     ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
-   up the full width and height of the screen   
+   up the full width and height of the screen
 3. Listen to query changes and provide suggestion items that implement SearchSuggestion
 
 **Example:**
@@ -29,9 +29,7 @@ Usage
                 app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
                 app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
                 app:floatingSearch_searchHint="Search..."
-                app:floatingSearch_showSearchHintWhenNotFocused="true"
                 app:floatingSearch_showSearchKey="false"
-                app:floatingSearch_dismissOnOutsideTouch="true"
                 app:floatingSearch_leftActionMode="showHamburger"
                 app:floatingSearch_menu="@menu/menu_main"/>
 ```
@@ -92,6 +90,9 @@ Listen to home (back arrow) button clicks:
 <br/>
 
 **Configure menu items:**
+
+![Alt text](/images/150sde.gif)
+![Alt text](/images/150sg9.gif)
 
 Add a menu resource
 ```xml
