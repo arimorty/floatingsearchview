@@ -1,17 +1,33 @@
 package com.arlib.floatingsearchviewdemo;
 
-import android.content.Intent;
+/**
+ * Copyright (C) 2015 Ari C.
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p/>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,9 +35,10 @@ import android.widget.Toast;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
-import com.arlib.floatingsearchview.util.view.BodyTextView;
-import com.arlib.floatingsearchview.util.view.IconImageView;
+import com.arlib.floatingsearchview.util.Util;
+import com.arlib.floatingsearchviewdemo.adapter.SearchResultsListAdapter;
 import com.arlib.floatingsearchviewdemo.data.ColorSuggestion;
+import com.arlib.floatingsearchviewdemo.data.ColorWrapper;
 import com.arlib.floatingsearchviewdemo.data.DataHelper;
 
 import java.util.List;
@@ -30,31 +47,34 @@ public class MainActivity extends AppCompatActivity {
 
     private final String TAG = "MainActivity";
 
+    public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
+
     private FloatingSearchView mSearchView;
 
-    private ViewGroup mParentView;
-    private TextView mColorNameText;
-    private TextView mColorValueText;
+    private RecyclerView mSearchResultsList;
+    private SearchResultsListAdapter mSearchResultsAdapter;
 
     private DrawerLayout mDrawerLayout;
+
+    private boolean mIsDarkSearchTheme = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mParentView = (ViewGroup)findViewById(R.id.parent_view);
+        mSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
+        mSearchResultsList = (RecyclerView) findViewById(R.id.search_results_list);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        mSearchView = (FloatingSearchView)findViewById(R.id.floating_search_view);
-        mColorNameText = (TextView)findViewById(R.id.color_name_text);
-        mColorValueText = (TextView)findViewById(R.id.color_value_text);
+        setupFloatingSearch();
+        setupResultsList();
+        setupDrawer();
+    }
 
-        mDrawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
-
-        //sets the background color
-        refreshBackgroundColor("Blue", "#1976D2");
-
+    private void setupFloatingSearch() {
         mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+
             @Override
             public void onSearchTextChanged(String oldQuery, final String newQuery) {
 
@@ -70,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //simulates a query call to a data source
                     //with a new query.
-                    DataHelper.find(MainActivity.this, newQuery, new DataHelper.OnFindResultsListener() {
+                    DataHelper.findSuggestions(MainActivity.this, newQuery, 5, FIND_SUGGESTION_SIMULATED_DELAY, new DataHelper.OnFindSuggestionsListener() {
 
                         @Override
                         public void onResults(List<ColorSuggestion> results) {
@@ -95,15 +115,30 @@ public class MainActivity extends AppCompatActivity {
             public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
 
                 ColorSuggestion colorSuggestion = (ColorSuggestion) searchSuggestion;
-                refreshBackgroundColor(colorSuggestion.getColor().getName(), colorSuggestion.getColor().getHex());
+                DataHelper.findColors(MainActivity.this, colorSuggestion.getBody(),
+                        new DataHelper.OnFindColorsListener() {
 
+                            @Override
+                            public void onResults(List<ColorWrapper> results) {
+                                mSearchResultsAdapter.swapData(results);
+                            }
+
+                        });
                 Log.d(TAG, "onSuggestionClicked()");
-
             }
 
             @Override
-            public void onSearchAction() {
+            public void onSearchAction(String query) {
 
+                DataHelper.findColors(MainActivity.this, query,
+                        new DataHelper.OnFindColorsListener() {
+
+                            @Override
+                            public void onResults(List<ColorWrapper> results) {
+                                mSearchResultsAdapter.swapData(results);
+                            }
+
+                        });
                 Log.d(TAG, "onSearchAction()");
             }
         });
@@ -111,6 +146,7 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
             @Override
             public void onFocus() {
+                mSearchView.clearQuery();
 
                 //show suggestions when search bar gains focus (typically history suggestions)
                 mSearchView.swapSuggestions(DataHelper.getHistory(MainActivity.this, 3));
@@ -125,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         //handle menu clicks the same way as you would
         //in a regular activity
         mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
@@ -133,17 +170,18 @@ public class MainActivity extends AppCompatActivity {
 
                 if (item.getItemId() == R.id.action_change_colors) {
 
-                    //demonstrate setting colors for items
-                    mSearchView.setBackgroundColor(Color.parseColor("#ECE7D5"));
-                    mSearchView.setViewTextColor(Color.parseColor("#657A81"));
-                    mSearchView.setHintTextColor(Color.parseColor("#596D73"));
-                    mSearchView.setActionMenuOverflowColor(Color.parseColor("#B58900"));
-                    mSearchView.setMenuItemIconColor(Color.parseColor("#2AA198"));
-                    mSearchView.setLeftActionIconColor(Color.parseColor("#657A81"));
-                    mSearchView.setClearBtnColor(Color.parseColor("#D30102"));
-                    mSearchView.setSuggestionRightIconColor(Color.parseColor("#BCADAD"));
-                    mSearchView.setDividerColor(Color.parseColor("#dfd7b9"));
+                    mIsDarkSearchTheme = true;
 
+                    //demonstrate setting colors for items
+                    mSearchView.setBackgroundColor(Color.parseColor("#787878"));
+                    mSearchView.setViewTextColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setHintTextColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setActionMenuOverflowColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setMenuItemIconColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setLeftActionIconColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setClearBtnColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setDividerColor(Color.parseColor("#BEBEBE"));
+                    mSearchView.setLeftActionIconColor(Color.parseColor("#e9e9e9"));
                 } else {
 
                     //just print action
@@ -158,16 +196,14 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
             @Override
             public void onMenuOpened() {
-                Log.d(TAG, "onMenuOpened()");
 
+                Log.d(TAG, "onMenuOpened()");
                 mDrawerLayout.openDrawer(GravityCompat.START);
             }
 
             @Override
             public void onMenuClosed() {
                 Log.d(TAG, "onMenuClosed()");
-
-                mDrawerLayout.closeDrawer(GravityCompat.START);
             }
         });
 
@@ -182,32 +218,62 @@ public class MainActivity extends AppCompatActivity {
 
         /*
          * Here you have access to the left icon and the text of a given suggestion
-         * item when as it is bound to the suggestion list. You can utilize this
+         * item after as it is bound to the suggestion list. You can utilize this
          * callback to change some properties of the left icon and the text. For example, you
-         * can load left icon images using your favorite image loading library, or change text color.
+         * can load the left icon images using your favorite image loading library, or change text color.
          *
-         * Some restrictions:
-         * 1. You can modify the height, eidth, margin, or padding of the text and left icon.
-         * 2. You can't modify the text's size.
          *
-         * Modifications to these properties will be ignored silently.
+         * Important:
+         * Keep in mind that the suggestion list is a RecyclerView, so views are reused for different
+         * items in the list.
          */
         mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
-            public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
-
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon,
+                                         TextView textView, SearchSuggestion item, int itemPosition) {
                 ColorSuggestion colorSuggestion = (ColorSuggestion) item;
 
+                String textColor = mIsDarkSearchTheme ? "#ffffff" : "#000000";
+                String textLight = mIsDarkSearchTheme ? "#bfbfbf" : "#787878";
+
                 if (colorSuggestion.getIsHistory()) {
-                    leftIcon.setImageDrawable(leftIcon.getResources().getDrawable(R.drawable.ic_history_black_24dp));
+                    leftIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
+                            R.drawable.ic_history_black_24dp, null));
+
+                    Util.setIconColor(leftIcon, Color.parseColor(textColor));
                     leftIcon.setAlpha(.36f);
-                } else
-                    leftIcon.setImageDrawable(new ColorDrawable(Color.parseColor(colorSuggestion.getColor().getHex())));
+                } else {
+                    leftIcon.setAlpha(0.0f);
+                    leftIcon.setImageDrawable(null);
+                }
+
+                textView.setTextColor(Color.parseColor(textColor));
+                String text = colorSuggestion.getBody()
+                        .replaceFirst(mSearchView.getQuery(),
+                                "<font color=\"" + textLight + "\">" + mSearchView.getQuery() + "</font>");
+                textView.setText(Html.fromHtml(text));
             }
 
         });
 
-        mDrawerLayout.setDrawerListener(new DrawerLayout.DrawerListener() {
+        //listen for when suggestion list expands/shrinks in order to move down/up the
+        //search results list
+        mSearchView.setOnSuggestionsListHeightChanged(new FloatingSearchView.OnSuggestionsListHeightChanged() {
+            @Override
+            public void onSuggestionsListHeightChanged(float newHeight) {
+                mSearchResultsList.setTranslationY(newHeight);
+            }
+        });
+    }
+
+    private void setupResultsList() {
+        mSearchResultsAdapter = new SearchResultsListAdapter();
+        mSearchResultsList.setAdapter(mSearchResultsAdapter);
+        mSearchResultsList.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void setupDrawer() {
+        mDrawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
             }
@@ -219,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
                 //a click on the left menu, we need to make sure
                 //to close it right after the drawer opens, so that
                 //it is closed when the drawer is  closed.
-                mSearchView.closeMenu(false);
+                mSearchView.setLeftMenuOpen(false);
             }
 
             @Override
@@ -232,32 +298,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void refreshBackgroundColor(String colorName, String colorValue){
-
-        int color = Color.parseColor(colorValue);
-        Palette.Swatch swatch = new Palette.Swatch(color, 0);
-
-        mColorNameText.setTextColor(swatch.getTitleTextColor());
-        mColorNameText.setText(colorName);
-
-        mColorValueText.setTextColor(swatch.getBodyTextColor());
-        mColorValueText.setText(colorValue);
-
-        mParentView.setBackgroundColor(color);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP)
-            getWindow().setStatusBarColor(getDarkerColor(color, .8f));
-
+    @Override
+    public void onBackPressed() {
+        //if mSearchView.setSearchFocused(false) causes the focused search
+        //to close, then we don't want to close the activity. if mSearchView.setSearchFocused(false)
+        //returns false, we know that the search was already closed so the call didn't change the focus
+        //state and it makes sense to call supper onBackPressed() and close the activity
+        if (!mSearchView.setSearchFocused(false)) {
+            super.onBackPressed();
+        }
     }
-
-    private static int getDarkerColor(int color, float factor) {
-
-        int a = Color.alpha(color);
-        int r = Color.red(color);
-        int g = Color.green(color);
-        int b = Color.blue(color);
-
-        return Color.argb(a, Math.max((int)(r * factor), 0), Math.max((int)(g * factor), 0),
-                Math.max((int)(b * factor), 0));
-    }
-
 }

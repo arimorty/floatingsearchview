@@ -1,45 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/suggestion_item_background">
+    android:background="@drawable/suggestion_item_background"
+    android:orientation="horizontal">
 
-    <com.arlib.floatingsearchview.util.view.IconImageView
-        android:visibility="visible"
-        android:alpha="1"
+    <ImageView
         android:id="@+id/left_icon"
         android:layout_width="@dimen/square_button_size"
         android:layout_height="@dimen/square_button_size"
-        android:padding="@dimen/square_button_padding"
         android:layout_gravity="center"
-        android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin"/>
-
-    <com.arlib.floatingsearchview.util.view.BodyTextView
-        android:id="@+id/body"
-        android:layout_gravity="center"
-        android:layout_width="0dp"
-        android:layout_weight="1"
-        android:layout_height="wrap_content"
-        android:ellipsize="end"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:layout_marginLeft="@dimen/search_bar_search_input_left_margin"
-        android:gravity="left|center"
-        android:textSize="@dimen/suggestion_body_text_size"
-        android:text="body"/>
-
-    <com.arlib.floatingsearchview.util.view.IconImageView
+        android:layout_marginStart="@dimen/search_bar_left_icon_left_margin"
         android:alpha="1"
+        android:padding="@dimen/square_button_padding"
         android:visibility="visible"
+        android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin" />
+
+    <TextView
+        android:id="@+id/body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|center"
+        android:layout_marginStart="@dimen/search_bar_search_input_left_margin"
+        android:layout_weight="1"
+        android:ellipsize="end"
+        android:gravity="start|center"
+        android:paddingBottom="4dp"
+        android:paddingTop="4dp"
+        android:textSize="@dimen/suggestion_body_text_size"
+        tools:text="body"
+        android:layout_marginLeft="@dimen/search_bar_search_input_left_margin" />
+
+    <ImageView
         android:id="@+id/right_icon"
         android:layout_width="@dimen/square_button_size"
         android:layout_height="@dimen/square_button_size"
-        android:padding="@dimen/square_button_padding"
         android:layout_gravity="center"
-        android:rotation="45"
-        android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"
+        android:layout_marginEnd="@dimen/search_bar_right_icon_right_margin"
+        android:alpha="1"
         android:background="@drawable/oval_btn_selector"
-        android:src="@drawable/ic_arrow_back_black_24dp"/>
+        android:padding="@dimen/square_button_padding"
+        android:rotation="45"
+        android:src="@drawable/ic_arrow_back_black_24dp"
+        android:visibility="visible"
+        android:layout_marginRight="@dimen/search_bar_right_icon_right_margin" />
 
 </LinearLayout>
