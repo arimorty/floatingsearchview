@@ -8,6 +8,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -230,6 +231,12 @@ public class MainActivity extends AppCompatActivity {
                     leftIcon.setAlpha(0.0f);
                     leftIcon.setImageDrawable(null);
                 }
+
+                textView.setTextColor(Color.BLACK);
+                String text = colorSuggestion.getBody()
+                        .replaceFirst(mSearchView.getQuery(), "<font color=\"#787878\">"+mSearchView.getQuery()+"</font>");
+                textView.setText(Html.fromHtml(text));
+
             }
 
         });

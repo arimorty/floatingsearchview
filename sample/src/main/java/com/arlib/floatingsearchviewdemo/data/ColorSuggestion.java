@@ -25,7 +25,7 @@ public class ColorSuggestion implements SearchSuggestion {
     private boolean mIsHistory = false;
 
     public ColorSuggestion(String suggestion) {
-        this.mColorName = suggestion;
+        this.mColorName = suggestion.toLowerCase();
     }
 
     public ColorSuggestion(Parcel source) {

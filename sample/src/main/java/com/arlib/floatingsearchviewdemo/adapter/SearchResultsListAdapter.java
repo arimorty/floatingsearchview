@@ -1,5 +1,6 @@
 package com.arlib.floatingsearchviewdemo.adapter;
 
+import android.app.Activity;
 import android.graphics.Color;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.RecyclerView;
@@ -7,8 +8,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 
+import com.arlib.floatingsearchview.util.Util;
 import com.arlib.floatingsearchviewdemo.R;
 import com.arlib.floatingsearchviewdemo.data.ColorWrapper;
 
@@ -30,9 +33,11 @@ import java.util.List;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class SearchResultsListAdapter  extends RecyclerView.Adapter<SearchResultsListAdapter.ViewHolder>  {
+public class SearchResultsListAdapter extends RecyclerView.Adapter<SearchResultsListAdapter.ViewHolder> {
 
     private List<ColorWrapper> mDataSet = new ArrayList<>();
+
+    private int mLastAnimatedItemPosition = -1;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public final TextView mColorName;
@@ -47,10 +52,8 @@ public class SearchResultsListAdapter  extends RecyclerView.Adapter<SearchResult
         }
     }
 
-    public void swapData(List<ColorWrapper> mNewDataSet){
+    public void swapData(List<ColorWrapper> mNewDataSet) {
         mDataSet = mNewDataSet;
-        Log.d("dcscds", mNewDataSet.size()+"");
-
         notifyDataSetChanged();
     }
 
@@ -73,10 +76,24 @@ public class SearchResultsListAdapter  extends RecyclerView.Adapter<SearchResult
         holder.mTextContainer.setBackgroundColor(color);
         holder.mColorName.setTextColor(swatch.getTitleTextColor());
         holder.mColorValue.setTextColor(swatch.getBodyTextColor());
+
+        if(mLastAnimatedItemPosition < position){
+            animateItem(holder.itemView);
+            mLastAnimatedItemPosition = position;
+        }
     }
 
     @Override
     public int getItemCount() {
         return mDataSet.size();
+    }
+
+    private void animateItem(View view) {
+        view.setTranslationY(Util.getScreenHeight((Activity) view.getContext()));
+        view.animate()
+                .translationY(0)
+                .setInterpolator(new DecelerateInterpolator(3.f))
+                .setDuration(700)
+                .start();
     }
 }
