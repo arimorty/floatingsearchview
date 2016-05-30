@@ -91,7 +91,6 @@ Listen to home (back arrow) button clicks:
 
 **Configure menu items:**
 
-![Alt text](/images/150sox.gif)
 ![Alt text](/images/150sg9.gif)
 
 Add a menu resource
@@ -174,6 +173,9 @@ Available styling:
            <item name="floatingSearch_actionMenuOverflowColor"></item>
     </style>
 ```
+
+### Are you using this library?
+If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) and let me know. All feedback is well appreciated!
 
 
 License
