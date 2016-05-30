@@ -1051,6 +1051,10 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void setShowMoveUpSuggestion(boolean show) {
         mShowMoveUpSuggestion = show;
+        refreshShowMoveUpSuggestion();
+    }
+
+    private void refreshShowMoveUpSuggestion() {
         if (mSuggestionsAdapter != null) {
             mSuggestionsAdapter.setShowMoveUpIcon(mShowMoveUpSuggestion);
         }
@@ -1186,6 +1190,7 @@ public class FloatingSearchView extends FrameLayout {
                         mSearchInput.setSelection(mSearchInput.getText().length());
                     }
                 });
+        refreshShowMoveUpSuggestion();
         mSuggestionsAdapter.setTextColor(this.mSuggestionTextColor);
         mSuggestionsAdapter.setRightIconColor(this.mSuggestionRightIconColor);
 
