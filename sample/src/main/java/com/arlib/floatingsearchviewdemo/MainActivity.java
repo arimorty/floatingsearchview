@@ -36,6 +36,7 @@ import android.widget.Toast;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.Util;
 import com.arlib.floatingsearchviewdemo.adapter.SearchResultsListAdapter;
 import com.arlib.floatingsearchviewdemo.data.ColorSuggestion;
 import com.arlib.floatingsearchviewdemo.data.ColorWrapper;
@@ -53,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private SearchResultsListAdapter mSearchResultsAdapter;
 
     private DrawerLayout mDrawerLayout;
+
+    private boolean mIsDarkSearchTheme = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -165,16 +168,18 @@ public class MainActivity extends AppCompatActivity {
 
                 if (item.getItemId() == R.id.action_change_colors) {
 
+                    mIsDarkSearchTheme = true;
+
                     //demonstrate setting colors for items
-                    mSearchView.setBackgroundColor(Color.parseColor("#ECE7D5"));
-                    mSearchView.setViewTextColor(Color.parseColor("#657A81"));
-                    mSearchView.setHintTextColor(Color.parseColor("#596D73"));
-                    mSearchView.setActionMenuOverflowColor(Color.parseColor("#B58900"));
-                    mSearchView.setMenuItemIconColor(Color.parseColor("#2AA198"));
-                    mSearchView.setLeftActionIconColor(Color.parseColor("#657A81"));
-                    mSearchView.setClearBtnColor(Color.parseColor("#D30102"));
-                    mSearchView.setSuggestionRightIconColor(Color.parseColor("#BCADAD"));
-                    mSearchView.setDividerColor(Color.parseColor("#dfd7b9"));
+                    mSearchView.setBackgroundColor(Color.parseColor("#787878"));
+                    mSearchView.setViewTextColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setHintTextColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setActionMenuOverflowColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setMenuItemIconColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setLeftActionIconColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setClearBtnColor(Color.parseColor("#e9e9e9"));
+                    mSearchView.setDividerColor(Color.parseColor("#BEBEBE"));
+                    mSearchView.setLeftActionIconColor(Color.parseColor("#e9e9e9"));
                 } else {
 
                     //just print action
@@ -226,18 +231,24 @@ public class MainActivity extends AppCompatActivity {
                                          TextView textView, SearchSuggestion item, int itemPosition) {
                 ColorSuggestion colorSuggestion = (ColorSuggestion) item;
 
+                String textColor = mIsDarkSearchTheme ? "#ffffff" : "#000000";
+                String textLight = mIsDarkSearchTheme ? "#bfbfbf" : "#787878";
+
                 if (colorSuggestion.getIsHistory()) {
                     leftIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
                             R.drawable.ic_history_black_24dp, null));
+
+                    Util.setIconColor(leftIcon, Color.parseColor(textColor));
                     leftIcon.setAlpha(.36f);
                 } else {
                     leftIcon.setAlpha(0.0f);
                     leftIcon.setImageDrawable(null);
                 }
 
-                textView.setTextColor(Color.BLACK);
+                textView.setTextColor(Color.parseColor(textColor));
                 String text = colorSuggestion.getBody()
-                        .replaceFirst(mSearchView.getQuery(), "<font color=\"#787878\">" + mSearchView.getQuery() + "</font>");
+                        .replaceFirst(mSearchView.getQuery(),
+                                "<font color=\"" + textLight + "\">" + mSearchView.getQuery() + "</font>");
                 textView.setText(Html.fromHtml(text));
 
             }
@@ -258,23 +269,6 @@ public class MainActivity extends AppCompatActivity {
         mSearchResultsAdapter = new SearchResultsListAdapter();
         mSearchResultsList.setAdapter(mSearchResultsAdapter);
         mSearchResultsList.setLayoutManager(new LinearLayoutManager(this));
-        mSearchResultsAdapter.setItemsOnClickListener(new SearchResultsListAdapter.OnItemClickListener() {
-            @Override
-            public void onClick(ColorWrapper colorWrapper) {
-
-                int color = Color.parseColor(colorWrapper.getHex());
-                Palette.Swatch swatch = new Palette.Swatch(color, 0);
-                mSearchView.setBackgroundColor(color);
-                mSearchView.setViewTextColor(swatch.getBodyTextColor());
-                mSearchView.setHintTextColor(swatch.getTitleTextColor());
-                mSearchView.setLeftActionIconColor(swatch.getTitleTextColor());
-                mSearchView.setActionMenuOverflowColor(swatch.getTitleTextColor());
-                mSearchView.setMenuItemIconColor(swatch.getBodyTextColor());
-                mSearchView.setLeftActionIconColor(swatch.getTitleTextColor());
-                mSearchView.setClearBtnColor(swatch.getBodyTextColor());
-                mSearchView.setDividerColor(swatch.getTitleTextColor());
-            }
-        });
     }
 
     private void setupDrawer() {

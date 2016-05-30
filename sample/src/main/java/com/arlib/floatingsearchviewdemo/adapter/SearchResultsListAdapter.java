@@ -82,10 +82,8 @@ public class SearchResultsListAdapter extends RecyclerView.Adapter<SearchResults
         holder.mColorValue.setText(colorSuggestion.getHex());
 
         int color = Color.parseColor(colorSuggestion.getHex());
-        Palette.Swatch swatch = new Palette.Swatch(color, 0);
-        holder.mTextContainer.setBackgroundColor(color);
-        holder.mColorName.setTextColor(swatch.getTitleTextColor());
-        holder.mColorValue.setTextColor(swatch.getBodyTextColor());
+        holder.mColorName.setTextColor(color);
+        holder.mColorValue.setTextColor(color);
 
         if(mLastAnimatedItemPosition < position){
             animateItem(holder.itemView);
