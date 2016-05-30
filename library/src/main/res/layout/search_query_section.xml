@@ -1,93 +1,92 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    card_view:cardUseCompatPadding="true"
-    android:layout_height="wrap_content"
     android:id="@+id/search_query_section"
-    android:clickable="true">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    card_view:cardUseCompatPadding="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="@dimen/square_button_size"
-        android:orientation="horizontal"
-        android:layout_gravity="center">
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal">
 
         <FrameLayout
             android:id="@+id/search_bar_left_action_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/search_bar_left_icon_left_margin"
-            android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin">
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/search_bar_left_icon_left_margin"
+            android:layout_marginStart="@dimen/search_bar_left_icon_left_margin">
 
             <ImageView
-                android:alpha="1"
                 android:id="@+id/left_action"
                 android:layout_width="@dimen/square_button_size"
                 android:layout_height="@dimen/square_button_size"
-                android:padding="@dimen/square_button_padding"
-                android:clickable="true"
+                android:alpha="1"
                 android:background="@drawable/oval_btn_selector"
-                android:src="@drawable/ic_arrow_back_black_24dp"/>
+                android:clickable="true"
+                android:padding="@dimen/square_button_padding"
+                android:src="@drawable/ic_arrow_back_black_24dp" />
 
             <ProgressBar
                 android:id="@+id/search_bar_search_progress"
                 android:layout_width="@dimen/square_button_size"
                 android:layout_height="@dimen/square_button_size"
-                android:padding="@dimen/square_button_padding"
                 android:clickable="false"
-                android:visibility="gone"/>
-
+                android:padding="@dimen/square_button_padding"
+                android:visibility="gone" />
         </FrameLayout>
 
         <FrameLayout
             android:id="@+id/search_input_parent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_toEndOf="@+id/search_bar_left_action_container"
-            android:layout_toRightOf="@+id/search_bar_left_action_container"
-            android:layout_marginStart="20dp"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
             android:layout_marginLeft="20dp"
-            android:layout_centerInParent="true">
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/search_bar_left_action_container"
+            android:layout_toRightOf="@+id/search_bar_left_action_container">
 
             <EditText
                 android:id="@+id/search_bar_text"
-                android:alpha="1"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:alpha="1"
                 android:background="@color/transparent"
-                android:hint="@string/abc_search_hint"
-                android:singleLine="true"
                 android:ellipsize="end"
-                android:maxLines="1"
+                android:hint="@string/abc_search_hint"
+                android:imeOptions="actionSearch"
                 android:inputType="textNoSuggestions"
-                android:imeOptions="actionSearch"/>
-
+                android:maxLines="1"
+                android:minHeight="@dimen/square_button_size"
+                android:singleLine="true" />
         </FrameLayout>
 
         <ImageView
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
-            android:alpha="1"
             android:id="@+id/clear_btn"
             android:layout_width="@dimen/square_button_size"
             android:layout_height="@dimen/square_button_size"
-            android:padding="@dimen/square_button_padding"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:alpha="1"
+            android:background="@drawable/oval_btn_selector"
             android:clickable="true"
-            android:layout_centerInParent="true"
-            android:background="@drawable/oval_btn_selector"/>
+            android:padding="@dimen/square_button_padding" />
 
         <com.arlib.floatingsearchview.util.view.MenuView
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true"
             android:id="@+id/menu_view"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_centerInParent="true"
-            android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"/>
-
+            android:layout_height="@dimen/square_button_size"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/search_bar_right_icon_right_margin"
+            android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"
+            android:orientation="horizontal" />
     </RelativeLayout>
-
 </android.support.v7.widget.CardView>
