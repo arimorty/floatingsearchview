@@ -1,19 +1,21 @@
 Floating Search View [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Floating%20Search%20View-green.svg?style=true)](https://android-arsenal.com/details/1/2842)
 =============
 
-An implementation of a floating search box with search suggestions.
+An implementation of a floating search box with search suggestions, also called persistent search bar.
 
-![Alt text](/images/vf353.gif)
+![Alt text](/images/150696.gif)
+![Alt text](/images/1506tq.gif)
+![Alt text](/images/1508kn.gif)
 
 Usage
 -----
 
 1. In your dependencies, add
     ```
-         compile 'com.github.arimorty:floatingsearchview:1.1.2'
+         compile 'com.github.arimorty:floatingsearchview:2.0.1'
     ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
-   up the full width and height of the screen   
+   up the full width and height of the screen
 3. Listen to query changes and provide suggestion items that implement SearchSuggestion
 
 **Example:**
@@ -27,9 +29,8 @@ Usage
                 app:floatingSearch_searchBarMarginTop="@dimen/search_view_inset"
                 app:floatingSearch_searchBarMarginRight="@dimen/search_view_inset"
                 app:floatingSearch_searchHint="Search..."
-                app:floatingSearch_showSearchHintWhenNotFocused="true"
+                app:floatingSearch_suggestionsListAnimDuration="250"
                 app:floatingSearch_showSearchKey="false"
-                app:floatingSearch_dismissOnOutsideTouch="true"
                 app:floatingSearch_leftActionMode="showHamburger"
                 app:floatingSearch_menu="@menu/menu_main"/>
 ```
@@ -91,6 +92,8 @@ Listen to home (back arrow) button clicks:
 
 **Configure menu items:**
 
+![Alt text](/images/150sg9.gif)
+
 Add a menu resource
 ```xml
     app:floatingSearch_menu="@menu/menu_main"
@@ -140,7 +143,7 @@ Set a callback for when a given suggestion is bound to the suggestion list.
 ``` 
    mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
-            public void onBindSuggestion(IconImageView leftIcon, BodyTextView bodyText, SearchSuggestion item, int itemPosition) {
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
 
                        //here you can set some attributes for the suggestion's left icon and text. For example,
                        //you can choose your favorite image-loading library for setting the left icon's image. 
@@ -153,8 +156,8 @@ Set a callback for when a given suggestion is bound to the suggestion list.
 
 **Styling:**
 
-<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/device-2015-12-08-123103.png"/>
-
+<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_light.png" width="350"/>
+<img src="https://github.com/arimorty/floatingsearchview/blob/develop/images/style_dark.png" width="350"/>
 
 Available styling:
 
@@ -172,17 +175,14 @@ Available styling:
     </style>
 ```
 
+### Are you using this library?
+If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) and let me know. All feedback is well appreciated!
 
-Contributing
-============
-
-At this point we want to focus on stability and efficiency before adding new features. All suggestions
-or bug reports are welcome.
 
 License
 =======
 
-    Copyright (C) 2015 Arlib
+    Copyright (C) 2015 Ari C.
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

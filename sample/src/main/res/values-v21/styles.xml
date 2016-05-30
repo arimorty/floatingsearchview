@@ -1,0 +1,8 @@
+<resources>
+
+    <style name="AppTheme" parent="Base.Theme.FloatingSearchDemo">
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+</resources>

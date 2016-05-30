@@ -1,4 +1,6 @@
-package com.arlib.floatingsearchview.util;/*
+package com.arlib.floatingsearchview.util;
+
+/*
  * Copyright (C) 2010 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -45,8 +47,6 @@ import java.util.ArrayList;
 
 /**
  * Presents a menu as a small, simple popup anchored to another view.
- *
- *
  */
 public class MenuPopupHelper implements AdapterView.OnItemClickListener, View.OnKeyListener,
         ViewTreeObserver.OnGlobalLayoutListener, PopupWindow.OnDismissListener,

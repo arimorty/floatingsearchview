@@ -1,12 +1,14 @@
-/*
- * Copyright (C) 2015 Arlib
- *
+package com.arlib.floatingsearchview.suggestions.model;
+
+/**
+ * Copyright (C) 2015 Ari C.
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,11 +16,7 @@
  * limitations under the License.
  */
 
-package com.arlib.floatingsearchview.suggestions.model;
-
 import android.os.Parcelable;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 /**
  * An object that represents a single suggestion item
@@ -34,20 +32,5 @@ public interface SearchSuggestion extends Parcelable{
      * @return the text for this suggestion
      */
     String getBody();
-
-    /**
-     * Returns a creator object that will be used
-     * for saving state.
-     *
-     * <p>Classes that implement this object have
-     * the responsibility to include getBody() value
-     * in their Parcelable implementation. Failure to
-     * do so will result in empty suggestion items after
-     * a configuration change</p>
-     *
-     * @return a {@link Creator Creator} that
-     *         will be used to save state.
-     */
-    Creator getCreator();
 
 }
