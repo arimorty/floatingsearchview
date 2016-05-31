@@ -645,6 +645,12 @@ public class FloatingSearchView extends FrameLayout {
                     setSearchBarTitle(getQuery());
                     setSearchFocusedInternal(false);
                     return true;
+                } else if(keyCode == KeyEvent.KEYCODE_BACK){
+                    if(isSearchBarFocused()){
+                        clearSearchFocus();
+                        return true;
+                    }
+                    
                 }
                 return false;
             }
