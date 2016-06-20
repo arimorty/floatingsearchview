@@ -1360,53 +1360,74 @@ public class FloatingSearchView extends FrameLayout {
         return mIsFocused;
     }
 
-    private void setSearchFocusedInternal(final boolean focused) {
+  private void setSearchFocusedInternal(boolean focused){
+
         this.mIsFocused = focused;
 
-        if (focused) {
-            mSearchInput.requestFocus();
-            moveSuggestListToInitialPos();
-            if (mDimBackground) {
-                fadeInBackground();
-            }
-            mMenuView.hideIfRoomItems(true);
+        if(focused){
+
+            mLeftAction.setVisibility(View.VISIBLE);
+
             transitionInLeftSection(true);
-            Util.showSoftKeyboard(getContext(), mSearchInput);
-            if (mMenuOpen) {
-                closeMenu(false);
-            }
-            if (mIsTitleSet) {
+
+            if(mMenuOpen)
+                closeMenu(false, true, true);
+
+            moveSuggestListToInitialPos();
+            mSuggestionsSection.setVisibility(VISIBLE);
+
+            fadeInBackground();
+
+            mSearchInput.requestFocus();
+
+            if(mIsTitleSet) {
                 mSkipTextChangeEvent = true;
                 mSearchInput.setText("");
             }
-            if (mFocusChangeListener != null) {
+
+            mMenuView.hideIfRoomItems(true);
+
+            Util.showSoftKeyboard(getContext(), mSearchInput);
+
+            if(mFocusChangeListener!=null)
                 mFocusChangeListener.onFocus();
-            }
-        } else {
-            mMainLayout.requestFocus();
-            clearSuggestions();
-            if (mDimBackground) {
-                fadeOutBackground();
-            }
-            mMenuView.showIfRoomItems(true);
+        }else{
+
             transitionOutLeftSection(true);
-            mClearButton.setVisibility(View.GONE);
-            if (mHostActivity != null) {
+
+            clearSuggestions(new OnSuggestionsClearListener() {
+                @Override
+                public void onCleared() {
+
+                    mSuggestionsSection.setVisibility(View.INVISIBLE);
+                }
+            });
+
+            fadeOutBackground();
+
+            findViewById(R.id.search_bar).requestFocus();
+
+            if(mHostActivity!=null)
                 Util.closeSoftKeyboard(mHostActivity);
-            }
-            if (mIsTitleSet) {
+
+            mMenuView.showIfRoomItems(true);
+
+            mClearButton.setVisibility(View.INVISIBLE);
+
+            if(mSearchInput.length()!=0)
+                mSearchInput.setText("");
+
+            if(mIsTitleSet) {
                 mSkipTextChangeEvent = true;
                 mSearchInput.setText(mTitleText);
             }
-            if (mFocusChangeListener != null) {
+
+            if(mFocusChangeListener!=null) {
                 mFocusChangeListener.onFocusCleared();
             }
         }
-
-        //if we don't have focus, we want to allow the client's views below our invisible
-        //screen-covering view to handle touches
-        mSuggestionsSection.setEnabled(focused);
     }
+
 
     private void changeIcon(ImageView imageView, Drawable newIcon, boolean withAnim) {
         imageView.setImageDrawable(newIcon);
