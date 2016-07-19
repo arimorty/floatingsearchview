@@ -1369,6 +1369,7 @@ public class FloatingSearchView extends FrameLayout {
         if (focused) {
             mSearchInput.requestFocus();
             moveSuggestListToInitialPos();
+            mSuggestionsSection.setVisibility(VISIBLE);
             if (mDimBackground) {
                 fadeInBackground();
             }
