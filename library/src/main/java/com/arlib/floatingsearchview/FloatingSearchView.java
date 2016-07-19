@@ -1255,17 +1255,21 @@ public class FloatingSearchView extends FrameLayout {
         final int cardTopBottomShadowPadding = Util.dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT);
         final int cardRadiusSize = Util.dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT);
 
-        int visibleHeight = getVisibleItemsHeight(newSearchSuggestions);
-        int diff = mSuggestionListContainer.getHeight() - visibleHeight;
-        int addedTranslationYForShadowOffsets = diff <= cardTopBottomShadowPadding ?
+
+        int visibleSuggestionHeight = calculateSuggestionItemsHeight(newSearchSuggestions,
+                mSuggestionListContainer.getHeight());
+        int diff = mSuggestionListContainer.getHeight() - visibleSuggestionHeight;
+        int addedTranslationYForShadowOffsets = (diff <= cardTopBottomShadowPadding) ?
                 -(cardTopBottomShadowPadding - diff) :
-                Math.max(cardRadiusSize - (diff - cardTopBottomShadowPadding), cardRadiusSize);
+                diff < (mSuggestionListContainer.getHeight()-cardTopBottomShadowPadding) ? cardRadiusSize : 0;
         final float newTranslationY = -mSuggestionListContainer.getHeight() +
-                getVisibleItemsHeight(newSearchSuggestions) + addedTranslationYForShadowOffsets;
+                visibleSuggestionHeight + addedTranslationYForShadowOffsets;
 
         final boolean animateAtEnd = newTranslationY >= mSuggestionListContainer.getTranslationY();
 
+        //todo go over
         final float fullyInvisibleTranslationY = -mSuggestionListContainer.getHeight() + cardRadiusSize;
+
         ViewCompat.animate(mSuggestionListContainer).cancel();
         if (withAnim) {
             ViewCompat.animate(mSuggestionListContainer).
@@ -1314,16 +1318,15 @@ public class FloatingSearchView extends FrameLayout {
         }
     }
 
-    //returns the cumulative height that the current suggestion items take up, or the full height
-    //of the suggestions list, if the cumulative items' height is >= the lists height
-    private int getVisibleItemsHeight(List<? extends SearchSuggestion> suggestions) {
+    //returns the cumulative height that the current suggestion items take up or the given max if the
+    //results is >= max. The max option allows us to avoid doing unnecessary and potentially long calculations.
+    private int calculateSuggestionItemsHeight(List<? extends SearchSuggestion> suggestions, int max) {
 
         int visibleItemsHeight = 0;
         for (int i = 0; i < suggestions.size() && i < mSuggestionsList.getChildCount(); i++) {
             visibleItemsHeight += mSuggestionsList.getChildAt(i).getHeight();
-
-            if (visibleItemsHeight > mSuggestionListContainer.getHeight()) {
-                visibleItemsHeight = mSuggestionListContainer.getHeight();
+            if (visibleItemsHeight > max) {
+                visibleItemsHeight = max;
                 break;
             }
         }
