@@ -494,6 +494,10 @@ public class MenuView extends LinearLayout {
                     .alpha(1.0f).get());
         }
 
+        if(anims.isEmpty()){
+            return;
+        }
+
         AnimatorSet animSet = new AnimatorSet();
         if (!withAnim) {
             //temporary, from laziness
