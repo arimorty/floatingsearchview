@@ -174,9 +174,10 @@ public class MenuView extends LinearLayout {
         List<MenuItemImpl> localActionItems = filter(mMenuItems, new MenuItemImplPredicate() {
             @Override
             public boolean apply(MenuItemImpl menuItem) {
-                return menuItem.requiresActionButton() || menuItem.requestsActionButton();
+                return menuItem.getIcon() != null && (menuItem.requiresActionButton() || menuItem.requestsActionButton());
             }
         });
+
 
         int availItemRoom = availWidth / (int) ACTION_DIMENSION_PX;
 
@@ -278,7 +279,7 @@ public class MenuView extends LinearLayout {
         List<MenuItemImpl> showAlwaysActionItems = filter(mMenuItems, new MenuItemImplPredicate() {
             @Override
             public boolean apply(MenuItemImpl menuItem) {
-                return menuItem.requiresActionButton();
+                return  menuItem.getIcon() != null && menuItem.requiresActionButton();
             }
         });
 
