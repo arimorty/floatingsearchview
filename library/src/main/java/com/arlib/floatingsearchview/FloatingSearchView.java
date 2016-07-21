@@ -1415,7 +1415,12 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void transitionInLeftSection(boolean withAnim) {
-        mLeftAction.setVisibility(View.VISIBLE);
+
+        if(mSearchProgress.getVisibility() != View.VISIBLE) {
+            mLeftAction.setVisibility(View.VISIBLE);
+        }else {
+            mLeftAction.setVisibility(View.INVISIBLE);
+        }
 
         switch (mLeftActionMode) {
             case LEFT_ACTION_MODE_SHOW_HAMBURGER:
