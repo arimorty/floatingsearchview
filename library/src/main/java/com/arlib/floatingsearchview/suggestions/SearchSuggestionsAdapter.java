@@ -92,8 +92,10 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
                 @Override
                 public void onClick(View v) {
 
-                    if (mListener != null)
+                    int adapterPosition = getAdapterPosition();
+                    if (mListener != null && adapterPosition != RecyclerView.NO_POSITION) {
                         mListener.onMoveItemToSearchClicked(getAdapterPosition());
+                    }
                 }
             });
 
