@@ -608,8 +608,9 @@ public class FloatingSearchView extends FrameLayout {
                         mQueryListener.onSearchTextChanged(mOldQuery, mSearchInput.getText().toString());
                     }
 
-                    mOldQuery = mSearchInput.getText().toString();
                 }
+
+                mOldQuery = mSearchInput.getText().toString();
             }
 
         });
@@ -634,7 +635,12 @@ public class FloatingSearchView extends FrameLayout {
                         mSearchListener.onSearchAction(getQuery());
                     }
                     mSkipTextChangeEvent = true;
-                    setSearchBarTitle(getQuery());
+                    mSkipTextChangeEvent = true;
+                    if(mIsTitleSet) {
+                        setSearchBarTitle(getQuery());
+                    }else {
+                        setSearchText(getQuery());
+                    }
                     setSearchFocusedInternal(false);
                     return true;
                 }
@@ -1114,7 +1120,7 @@ public class FloatingSearchView extends FrameLayout {
      * @return the current query
      */
     public String getQuery() {
-        return mSearchInput.getText().toString();
+        return mOldQuery;
     }
 
     public void clearQuery() {
@@ -1179,13 +1185,18 @@ public class FloatingSearchView extends FrameLayout {
 
                     @Override
                     public void onItemSelected(SearchSuggestion item) {
+                        mIsFocused = false;
 
                         if (mSearchListener != null) {
                             mSearchListener.onSuggestionClicked(item);
                         }
 
                         mSkipTextChangeEvent = true;
-                        setSearchBarTitle(item.getBody());
+                        if(mIsTitleSet) {
+                            setSearchBarTitle(item.getBody());
+                        }else {
+                            setSearchText(item.getBody());
+                        }
                         setSearchFocusedInternal(false);
                     }
 
@@ -1375,6 +1386,8 @@ public class FloatingSearchView extends FrameLayout {
                 mSkipTextChangeEvent = true;
                 mSearchInput.setText("");
             }
+            mClearButton.setVisibility((mSearchInput.getText().toString().length() == 0) ?
+                    View.INVISIBLE : View.VISIBLE);
             if (mFocusChangeListener != null) {
                 mFocusChangeListener.onFocus();
             }

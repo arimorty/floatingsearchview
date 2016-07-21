@@ -18,6 +18,7 @@ package com.arlib.floatingsearchviewdemo;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
 
     private boolean mIsDarkSearchTheme = false;
+
+    private String mLastQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
-            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+            public void onSuggestionClicked(final SearchSuggestion searchSuggestion) {
 
                 ColorSuggestion colorSuggestion = (ColorSuggestion) searchSuggestion;
                 DataHelper.findColors(MainActivity.this, colorSuggestion.getBody(),
@@ -125,10 +128,13 @@ public class MainActivity extends AppCompatActivity {
 
                         });
                 Log.d(TAG, "onSuggestionClicked()");
+
+                mLastQuery = searchSuggestion.getBody();
             }
 
             @Override
             public void onSearchAction(String query) {
+                mLastQuery = query;
 
                 DataHelper.findColors(MainActivity.this, query,
                         new DataHelper.OnFindColorsListener() {
@@ -146,7 +152,6 @@ public class MainActivity extends AppCompatActivity {
         mSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
             @Override
             public void onFocus() {
-                mSearchView.clearQuery();
 
                 //show suggestions when search bar gains focus (typically history suggestions)
                 mSearchView.swapSuggestions(DataHelper.getHistory(MainActivity.this, 3));
@@ -156,6 +161,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFocusCleared() {
+
+                //set the title of the bar so that when focus is returned a new query begins
+                mSearchView.setSearchBarTitle(mLastQuery);
+
+                //you can also set setSearchText(...) to make keep the query there when not focused and when focus returns
+                //mSearchView.setSearchText(searchSuggestion.getBody());
 
                 Log.d(TAG, "onFocusCleared()");
             }
