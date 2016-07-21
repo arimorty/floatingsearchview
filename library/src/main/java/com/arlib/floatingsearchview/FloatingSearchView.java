@@ -100,13 +100,6 @@ public class FloatingSearchView extends FrameLayout {
 
     private final int ATTRS_SEARCH_BAR_MARGIN_DEFAULT = 0;
 
-    /*
-     * The ideal min width that the left icon plus the query EditText
-     * should have. It applies only when determining how to render
-     * the action items, it doesn't set the views' min attributes.
-     */
-    public final int SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
-
     public final static int LEFT_ACTION_MODE_SHOW_HAMBURGER = 1;
     public final static int LEFT_ACTION_MODE_SHOW_SEARCH = 2;
     public final static int LEFT_ACTION_MODE_SHOW_HOME = 3;
@@ -333,7 +326,6 @@ public class FloatingSearchView extends FrameLayout {
 
     public FloatingSearchView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH = Util.dpToPx(225);
         init(attrs);
     }
 
@@ -418,6 +410,10 @@ public class FloatingSearchView extends FrameLayout {
             mIsInitialLayout = false;
 
             refreshDimBackground();
+
+            if(isInEditMode()) {
+                inflateOverflowMenu(mMenuId);
+            }
         }
     }
 
@@ -528,10 +524,6 @@ public class FloatingSearchView extends FrameLayout {
 
         if (!isInEditMode() && mHostActivity != null) {
             mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-        }
-
-        if (isInEditMode()) {
-            mMenuView.reset(mMenuId, actionMenuAvailWidth());
         }
 
         ViewTreeObserver vto = mQuerySection.getViewTreeObserver();
@@ -682,10 +674,10 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private int actionMenuAvailWidth() {
-        if (isInEditMode()) {
-            return Util.dpToPx(360) - SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
+        if(isInEditMode()){
+            return mQuerySection.getMeasuredWidth() / 2;
         }
-        return mQuerySection.getWidth() - SEARCH_BAR_LEFT_SECTION_DESIRED_WIDTH;
+        return mQuerySection.getWidth() / 2;
     }
 
     /**
