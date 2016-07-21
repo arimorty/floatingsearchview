@@ -50,7 +50,7 @@
             android:layout_toEndOf="@+id/search_bar_left_action_container"
             android:layout_toRightOf="@+id/search_bar_left_action_container">
 
-            <EditText
+            <com.arlib.floatingsearchview.util.view.SearchInputView
                 android:id="@+id/search_bar_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

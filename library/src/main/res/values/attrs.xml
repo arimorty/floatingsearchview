@@ -22,6 +22,7 @@
         <attr name="floatingSearch_suggestionsListAnimDuration" format="integer"/>
         <attr name="floatingSearch_hideOverflowMenuWhenFocused" format="boolean"/>
         <attr name="floatingSearch_showOverFlowMenu" format="boolean"/>
+        <attr name="floatingSearch_close_search_on_keyboard_dismiss" format="boolean"/>
         <attr name="floatingSearch_menu" format="reference"/>
         <attr name="floatingSearch_leftActionColor" format="color"/>
         <attr name="floatingSearch_menuItemIconColor" format="color"/>

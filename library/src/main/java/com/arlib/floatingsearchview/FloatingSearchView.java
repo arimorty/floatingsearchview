@@ -70,6 +70,7 @@ import com.arlib.floatingsearchview.util.adapter.GestureDetectorListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.OnItemTouchListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.TextWatcherAdapter;
 import com.arlib.floatingsearchview.util.view.MenuView;
+import com.arlib.floatingsearchview.util.view.SearchInputView;
 import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator;
 
 import java.lang.annotation.Retention;
@@ -116,6 +117,7 @@ public class FloatingSearchView extends FrameLayout {
     private final int ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT = LEFT_ACTION_MODE_NO_LEFT_ACTION;
     private final boolean ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT = false;
     private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = true;
+    private final boolean ATTRS_DISMISS_ON_KEYBOARD_DISMISS_DEFAULT = false;
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
     private final int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
     private final boolean ATTRS_SHOW_DIM_BACKGROUND_DEFAULT = true;
@@ -134,7 +136,8 @@ public class FloatingSearchView extends FrameLayout {
 
     private CardView mQuerySection;
     private OnSearchListener mSearchListener;
-    private EditText mSearchInput;
+    private SearchInputView mSearchInput;
+    private boolean mCloseSearchOnSofteKeyboardDismiss;
     private String mTitleText;
     private boolean mIsTitleSet;
     private int mSearchInputTextColor = -1;
@@ -339,7 +342,7 @@ public class FloatingSearchView extends FrameLayout {
 
         mQuerySection = (CardView) findViewById(R.id.search_query_section);
         mClearButton = (ImageView) findViewById(R.id.clear_btn);
-        mSearchInput = (EditText) findViewById(R.id.search_bar_text);
+        mSearchInput = (SearchInputView) findViewById(R.id.search_bar_text);
         mSearchInputParent = findViewById(R.id.search_input_parent);
         mLeftAction = (ImageView) findViewById(R.id.left_action);
         mSearchProgress = (ProgressBar) findViewById(R.id.search_bar_search_progress);
@@ -477,6 +480,8 @@ public class FloatingSearchView extends FrameLayout {
             setSearchHint(a.getString(R.styleable.FloatingSearchView_floatingSearch_searchHint));
             setShowSearchKey(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchKey,
                     ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT));
+            setCloseSearchOnKeyboardDismiss(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_close_search_on_keyboard_dismiss,
+                    ATTRS_DISMISS_ON_KEYBOARD_DISMISS_DEFAULT));
             setDismissOnOutsideClick(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dismissOnOutsideTouch,
                     ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT));
             setSuggestionItemTextSize(a.getDimensionPixelSize(
@@ -627,24 +632,29 @@ public class FloatingSearchView extends FrameLayout {
             }
         });
 
-        mSearchInput.setOnKeyListener(new OnKeyListener() {
-            public boolean onKey(View view, int keyCode, KeyEvent keyEvent) {
-
-                if (mShowSearchKey && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    if (mSearchListener != null) {
-                        mSearchListener.onSearchAction(getQuery());
-                    }
-                    mSkipTextChangeEvent = true;
-                    mSkipTextChangeEvent = true;
-                    if(mIsTitleSet) {
-                        setSearchBarTitle(getQuery());
-                    }else {
-                        setSearchText(getQuery());
-                    }
+        mSearchInput.setOnKeyboardDismissedListener(new SearchInputView.OnKeyboardDismissedListener() {
+            @Override
+            public void onKeyboardDismissed() {
+                if(mCloseSearchOnSofteKeyboardDismiss){
                     setSearchFocusedInternal(false);
-                    return true;
                 }
-                return false;
+            }
+        });
+
+        mSearchInput.setOnSearchKeyListener(new SearchInputView.OnKeyboardSearchKeyClickListener() {
+            @Override
+            public void onSearchKeyClicked() {
+                if (mSearchListener != null) {
+                    mSearchListener.onSearchAction(getQuery());
+                }
+                mSkipTextChangeEvent = true;
+                mSkipTextChangeEvent = true;
+                if(mIsTitleSet) {
+                    setSearchBarTitle(getQuery());
+                }else {
+                    setSearchText(getQuery());
+                }
+                setSearchFocusedInternal(false);
             }
         });
 
@@ -1012,6 +1022,17 @@ public class FloatingSearchView extends FrameLayout {
         } else {
             mSearchInput.setImeOptions(EditorInfo.IME_ACTION_NONE);
         }
+    }
+
+
+    /**
+     * Sets whether the search will lose focus when the softkeyboard
+     * gets closed from a back press
+     *
+     * @param closeSearchOnKeyboardDismiss
+     */
+    public void setCloseSearchOnKeyboardDismiss(boolean closeSearchOnKeyboardDismiss) {
+        this.mCloseSearchOnSofteKeyboardDismiss = closeSearchOnKeyboardDismiss;
     }
 
     /**
@@ -1713,6 +1734,7 @@ public class FloatingSearchView extends FrameLayout {
         savedState.menuId = mMenuId;
         savedState.leftActionMode = mLeftActionMode;
         savedState.dimBackground = mDimBackground;
+        savedState.dismissOnSoftKeyboardDismiss = this.mDismissOnOutsideTouch;
         return savedState;
     }
 
@@ -1742,6 +1764,7 @@ public class FloatingSearchView extends FrameLayout {
         setDividerColor(savedState.dividerColor);
         setLeftActionMode(savedState.leftActionMode);
         setDimBackground(savedState.dimBackground);
+        setCloseSearchOnKeyboardDismiss(savedState.dismissOnSoftKeyboardDismiss);
 
         mSuggestionsSection.setEnabled(this.mIsFocused);
         if (this.mIsFocused) {
@@ -1796,6 +1819,7 @@ public class FloatingSearchView extends FrameLayout {
         private int leftActionMode;
         private boolean dimBackground;
         private long suggestionsSectionAnimSuration;
+        private boolean dismissOnSoftKeyboardDismiss;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1826,6 +1850,7 @@ public class FloatingSearchView extends FrameLayout {
             leftActionMode = in.readInt();
             dimBackground = (in.readInt() != 0);
             suggestionsSectionAnimSuration = in.readLong();
+            dismissOnSoftKeyboardDismiss = (in.readInt() != 0);
         }
 
         @Override
@@ -1854,6 +1879,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(leftActionMode);
             out.writeInt(dimBackground ? 1 : 0);
             out.writeLong(suggestionsSectionAnimSuration);
+            out.writeInt(dismissOnSoftKeyboardDismiss ? 1 : 0);
         }
 
         public static final Creator<SavedState> CREATOR
