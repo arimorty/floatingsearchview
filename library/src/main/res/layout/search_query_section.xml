@@ -63,6 +63,7 @@
                 android:inputType="textNoSuggestions"
                 android:maxLines="1"
                 android:minHeight="@dimen/square_button_size"
+                android:longClickable="false"
                 android:singleLine="true" />
         </FrameLayout>
 
