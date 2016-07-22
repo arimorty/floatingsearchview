@@ -196,6 +196,7 @@ public class MenuView extends LinearLayout {
                 if (menuItem.getIcon() != null) {
 
                     ImageView action = createActionView();
+                    action.setContentDescription(menuItem.getTitle());
                     action.setImageDrawable(menuItem.getIcon());
                     Util.setIconColor(action, mActionIconColor);
                     addView(action);
