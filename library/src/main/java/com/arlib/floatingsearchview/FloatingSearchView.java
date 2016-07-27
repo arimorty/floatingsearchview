@@ -44,7 +44,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -55,7 +54,6 @@ import android.view.WindowManager;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -414,7 +412,7 @@ public class FloatingSearchView extends FrameLayout {
 
             refreshDimBackground();
 
-            if(isInEditMode()) {
+            if (isInEditMode()) {
                 inflateOverflowMenu(mMenuId);
             }
         }
@@ -635,7 +633,7 @@ public class FloatingSearchView extends FrameLayout {
         mSearchInput.setOnKeyboardDismissedListener(new SearchInputView.OnKeyboardDismissedListener() {
             @Override
             public void onKeyboardDismissed() {
-                if(mCloseSearchOnSofteKeyboardDismiss){
+                if (mCloseSearchOnSofteKeyboardDismiss) {
                     setSearchFocusedInternal(false);
                 }
             }
@@ -649,9 +647,9 @@ public class FloatingSearchView extends FrameLayout {
                 }
                 mSkipTextChangeEvent = true;
                 mSkipTextChangeEvent = true;
-                if(mIsTitleSet) {
+                if (mIsTitleSet) {
                     setSearchBarTitle(getQuery());
-                }else {
+                } else {
                     setSearchText(getQuery());
                 }
                 setSearchFocusedInternal(false);
@@ -690,7 +688,7 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private int actionMenuAvailWidth() {
-        if(isInEditMode()){
+        if (isInEditMode()) {
             return mQuerySection.getMeasuredWidth() / 2;
         }
         return mQuerySection.getWidth() / 2;
@@ -864,6 +862,14 @@ public class FloatingSearchView extends FrameLayout {
     public void setLeftActionMode(@LeftActionMode int mode) {
         mLeftActionMode = mode;
         refreshLeftIcon();
+    }
+    /**
+     * Set the inputType for the search input view.
+     *
+     * @param inputType
+     */
+    public void setSearchInputType(int inputType) {
+        mSearchInput.setInputType(inputType);
     }
 
     private void refreshLeftIcon() {
@@ -1213,9 +1219,9 @@ public class FloatingSearchView extends FrameLayout {
                         }
 
                         mSkipTextChangeEvent = true;
-                        if(mIsTitleSet) {
+                        if (mIsTitleSet) {
                             setSearchBarTitle(item.getBody());
-                        }else {
+                        } else {
                             setSearchText(item.getBody());
                         }
                         setSearchFocusedInternal(false);
@@ -1285,7 +1291,7 @@ public class FloatingSearchView extends FrameLayout {
         int diff = mSuggestionListContainer.getHeight() - visibleSuggestionHeight;
         int addedTranslationYForShadowOffsets = (diff <= cardTopBottomShadowPadding) ?
                 -(cardTopBottomShadowPadding - diff) :
-                diff < (mSuggestionListContainer.getHeight()-cardTopBottomShadowPadding) ? cardRadiusSize : 0;
+                diff < (mSuggestionListContainer.getHeight() - cardTopBottomShadowPadding) ? cardRadiusSize : 0;
         final float newTranslationY = -mSuggestionListContainer.getHeight() +
                 visibleSuggestionHeight + addedTranslationYForShadowOffsets;
 
@@ -1450,9 +1456,9 @@ public class FloatingSearchView extends FrameLayout {
 
     private void transitionInLeftSection(boolean withAnim) {
 
-        if(mSearchProgress.getVisibility() != View.VISIBLE) {
+        if (mSearchProgress.getVisibility() != View.VISIBLE) {
             mLeftAction.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             mLeftAction.setVisibility(View.INVISIBLE);
         }
 
