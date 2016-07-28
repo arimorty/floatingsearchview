@@ -44,7 +44,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -55,7 +54,6 @@ import android.view.WindowManager;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -78,6 +76,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.arlib.floatingsearchview.util.EditTextUtil.addImeFlag;
+import static com.arlib.floatingsearchview.util.EditTextUtil.setImeAction;
 
 /**
  * A search UI widget that implements a floating search box also called persistent
@@ -526,6 +527,7 @@ public class FloatingSearchView extends FrameLayout {
 
         mSearchInput.setTextColor(mSearchInputTextColor);
         mSearchInput.setHintTextColor(mSearchInputHintColor);
+        addImeFlag(mSearchInput, EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (!isInEditMode() && mHostActivity != null) {
             mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -1018,12 +1020,11 @@ public class FloatingSearchView extends FrameLayout {
     public void setShowSearchKey(boolean show) {
         mShowSearchKey = show;
         if (show) {
-            mSearchInput.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            setImeAction(mSearchInput, EditorInfo.IME_ACTION_SEARCH);
         } else {
-            mSearchInput.setImeOptions(EditorInfo.IME_ACTION_NONE);
+            setImeAction(mSearchInput, EditorInfo.IME_ACTION_NONE);
         }
     }
-
 
     /**
      * Sets whether the search will lose focus when the softkeyboard
