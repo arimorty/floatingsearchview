@@ -18,12 +18,14 @@ package com.arlib.floatingsearchview.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -35,6 +37,8 @@ import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import com.arlib.floatingsearchview.R;
 
 public class Util {
 
@@ -129,5 +133,13 @@ public class Util {
         } else {
             view.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
         }
+    }
+
+    public static boolean isScreenOrientationLandscape(@NonNull Context context) {
+        return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    public static boolean isTablet(@NonNull Context context) {
+        return context.getResources().getBoolean(R.bool.isTablet);
     }
 }

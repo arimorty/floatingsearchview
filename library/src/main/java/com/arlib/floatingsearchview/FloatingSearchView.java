@@ -79,6 +79,7 @@ import java.util.List;
 
 import static com.arlib.floatingsearchview.util.EditTextUtil.addImeFlag;
 import static com.arlib.floatingsearchview.util.EditTextUtil.setImeAction;
+import static com.arlib.floatingsearchview.util.Util.isScreenOrientationLandscape;
 
 /**
  * A search UI widget that implements a floating search box also called persistent
@@ -1183,24 +1184,7 @@ public class FloatingSearchView extends FrameLayout {
         mSuggestionsList.setLayoutManager(layoutManager);
         mSuggestionsList.setItemAnimator(null);
 
-        final GestureDetector gestureDetector = new GestureDetector(getContext(),
-                new GestureDetectorListenerAdapter() {
-
-                    @Override
-                    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                        if (mHostActivity != null) {
-                            Util.closeSoftKeyboard(mHostActivity);
-                        }
-                        return false;
-                    }
-                });
-        mSuggestionsList.addOnItemTouchListener(new OnItemTouchListenerAdapter() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                gestureDetector.onTouchEvent(e);
-                return false;
-            }
-        });
+        setupClosingKeyboardOnSuggestionsScroll();
 
         mSuggestionsAdapter = new SearchSuggestionsAdapter(getContext(), mSuggestionsTextSizePx,
                 new SearchSuggestionsAdapter.Listener() {
@@ -1240,6 +1224,32 @@ public class FloatingSearchView extends FrameLayout {
         //move up the suggestions section enough to cover the search bar
         //card's bottom left and right corners
         mSuggestionsSection.setTranslationY(-cardViewBottomPadding);
+    }
+
+    private void setupClosingKeyboardOnSuggestionsScroll() {
+        final GestureDetector gestureDetector = new GestureDetector(getContext(),
+                new GestureDetectorListenerAdapter() {
+
+                    @Override
+                    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                        if (shouldCloseKeyboardOnSuggestionsScroll()) {
+                            Util.closeSoftKeyboard(mHostActivity);
+                        }
+                        return false;
+                    }
+                });
+        mSuggestionsList.addOnItemTouchListener(new OnItemTouchListenerAdapter() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                gestureDetector.onTouchEvent(e);
+                return false;
+            }
+        });
+    }
+
+    private boolean shouldCloseKeyboardOnSuggestionsScroll() {
+        return mHostActivity != null
+                && isScreenOrientationLandscape(mHostActivity) && !Util.isTablet(mHostActivity);
     }
 
     private void moveSuggestListToInitialPos() {
