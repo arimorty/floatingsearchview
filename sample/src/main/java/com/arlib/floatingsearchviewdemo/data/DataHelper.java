@@ -106,7 +106,7 @@ public class DataHelper {
                 List<ColorSuggestion> suggestionList;
                 if (!TextUtils.isEmpty(constraint)) {
                     suggestionList = SPECIAL_QUERY_FOR_ALL_SUGGESTIONS.equals(constraint)
-                            ? new ArrayList<>(sColorSuggestions) : getSuggestionsWithPrefix(constraint);
+                            ? new ArrayList<>(sColorSuggestions) : getSuggestionsWithPrefix(constraint, limit);
                 } else {
                     suggestionList = Collections.emptyList();
                 }
@@ -124,14 +124,14 @@ public class DataHelper {
                 return results;
             }
 
-            private List<ColorSuggestion> getSuggestionsWithPrefix(CharSequence prefix) {
+            private List<ColorSuggestion> getSuggestionsWithPrefix(CharSequence prefix, int limit) {
                 List<ColorSuggestion> suggestionList = new ArrayList<>();
+                String prefixUpperCase = prefix.toString().toUpperCase();
 
                 for (ColorSuggestion suggestion : sColorSuggestions) {
-                    if (suggestion.getBody().toUpperCase()
-                            .startsWith(prefix.toString().toUpperCase())) {
-
+                    if (suggestion.getBody().toUpperCase().startsWith(prefixUpperCase)) {
                         suggestionList.add(suggestion);
+
                         if (limit != -1 && suggestionList.size() == limit) {
                             break;
                         }

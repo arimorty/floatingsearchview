@@ -92,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
 
                     //simulates a query call to a data source
                     //with a new query.
-                    DataHelper.findSuggestions(newQuery, 15, FIND_SUGGESTION_SIMULATED_DELAY, new DataHelper.OnFindSuggestionsListener() {
+                    DataHelper.findSuggestions(newQuery, 15, FIND_SUGGESTION_SIMULATED_DELAY,
+                            new DataHelper.OnFindSuggestionsListener() {
 
                         @Override
                         public void onResults(List<ColorSuggestion> results) {
