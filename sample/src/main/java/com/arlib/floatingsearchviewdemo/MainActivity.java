@@ -18,7 +18,6 @@ package com.arlib.floatingsearchviewdemo;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -93,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
                     //simulates a query call to a data source
                     //with a new query.
-                    DataHelper.findSuggestions(MainActivity.this, newQuery, 5, FIND_SUGGESTION_SIMULATED_DELAY, new DataHelper.OnFindSuggestionsListener() {
+                    DataHelper.findSuggestions(newQuery, 15, FIND_SUGGESTION_SIMULATED_DELAY, new DataHelper.OnFindSuggestionsListener() {
 
                         @Override
                         public void onResults(List<ColorSuggestion> results) {
@@ -260,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
 
                 textView.setTextColor(Color.parseColor(textColor));
                 String text = colorSuggestion.getBody()
-                        .replaceFirst(mSearchView.getQuery(),
+                        .replace(mSearchView.getQuery(),
                                 "<font color=\"" + textLight + "\">" + mSearchView.getQuery() + "</font>");
                 textView.setText(Html.fromHtml(text));
             }

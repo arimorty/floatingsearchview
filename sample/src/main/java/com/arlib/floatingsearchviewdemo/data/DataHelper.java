@@ -17,6 +17,7 @@ package com.arlib.floatingsearchviewdemo.data;
  */
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.widget.Filter;
 
 import com.google.gson.Gson;
@@ -34,6 +35,7 @@ import java.util.List;
 public class DataHelper {
 
     private static final String COLORS_FILE_NAME = "colors.json";
+    private static final String SPECIAL_QUERY_FOR_ALL_SUGGESTIONS = "*";
 
     private static List<ColorWrapper> sColorWrappers = new ArrayList<>();
 
@@ -87,7 +89,7 @@ public class DataHelper {
         }
     }
 
-    public static void findSuggestions(Context context, String query, final int limit, final long simulatedDelay,
+    public static void findSuggestions(String query, final int limit, final long simulatedDelay,
                                        final OnFindSuggestionsListener listener) {
         new Filter() {
 
@@ -101,19 +103,12 @@ public class DataHelper {
                 }
 
                 DataHelper.resetSuggestionsHistory();
-                List<ColorSuggestion> suggestionList = new ArrayList<>();
-                if (!(constraint == null || constraint.length() == 0)) {
-
-                    for (ColorSuggestion suggestion : sColorSuggestions) {
-                        if (suggestion.getBody().toUpperCase()
-                                .startsWith(constraint.toString().toUpperCase())) {
-
-                            suggestionList.add(suggestion);
-                            if (limit != -1 && suggestionList.size() == limit) {
-                                break;
-                            }
-                        }
-                    }
+                List<ColorSuggestion> suggestionList;
+                if (!TextUtils.isEmpty(constraint)) {
+                    suggestionList = SPECIAL_QUERY_FOR_ALL_SUGGESTIONS.equals(constraint)
+                            ? new ArrayList<>(sColorSuggestions) : getSuggestionsWithPrefix(constraint);
+                } else {
+                    suggestionList = Collections.emptyList();
                 }
 
                 FilterResults results = new FilterResults();
@@ -127,6 +122,23 @@ public class DataHelper {
                 results.count = suggestionList.size();
 
                 return results;
+            }
+
+            private List<ColorSuggestion> getSuggestionsWithPrefix(CharSequence prefix) {
+                List<ColorSuggestion> suggestionList = new ArrayList<>();
+
+                for (ColorSuggestion suggestion : sColorSuggestions) {
+                    if (suggestion.getBody().toUpperCase()
+                            .startsWith(prefix.toString().toUpperCase())) {
+
+                        suggestionList.add(suggestion);
+                        if (limit != -1 && suggestionList.size() == limit) {
+                            break;
+                        }
+                    }
+                }
+
+                return suggestionList;
             }
 
             @Override
