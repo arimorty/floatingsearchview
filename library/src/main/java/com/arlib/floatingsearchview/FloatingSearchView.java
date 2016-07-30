@@ -63,6 +63,7 @@ import android.widget.TextView;
 
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.SoftKeyboardUtil;
 import com.arlib.floatingsearchview.util.Util;
 import com.arlib.floatingsearchview.util.adapter.GestureDetectorListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.OnItemTouchListenerAdapter;
@@ -1233,7 +1234,7 @@ public class FloatingSearchView extends FrameLayout {
                     @Override
                     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
                         if (shouldCloseKeyboardOnSuggestionsScroll()) {
-                            Util.closeSoftKeyboard(mHostActivity);
+                            SoftKeyboardUtil.closeSoftKeyboard(mHostActivity);
                         }
                         return false;
                     }
@@ -1272,6 +1273,14 @@ public class FloatingSearchView extends FrameLayout {
     private void swapSuggestions(final List<? extends SearchSuggestion> newSearchSuggestions,
                                  final boolean withAnim) {
 
+        scheduleUpdatingSuggestionsSectionHeight(newSearchSuggestions, withAnim);
+        mSuggestionsAdapter.swapData(newSearchSuggestions);
+
+        mDivider.setVisibility(!newSearchSuggestions.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    private void scheduleUpdatingSuggestionsSectionHeight(final List<? extends SearchSuggestion> newSearchSuggestions,
+                                                          final boolean withAnim) {
         mSuggestionsList.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -1279,9 +1288,6 @@ public class FloatingSearchView extends FrameLayout {
                 updateSuggestionsSectionHeight(newSearchSuggestions, withAnim);
             }
         });
-        mSuggestionsAdapter.swapData(newSearchSuggestions);
-
-        mDivider.setVisibility(!newSearchSuggestions.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void updateSuggestionsSectionHeight(List<? extends SearchSuggestion>
@@ -1410,7 +1416,7 @@ public class FloatingSearchView extends FrameLayout {
             }
             mMenuView.hideIfRoomItems(true);
             transitionInLeftSection(true);
-            Util.showSoftKeyboard(getContext(), mSearchInput);
+            SoftKeyboardUtil.showSoftKeyboard(getContext(), mSearchInput);
             if (mMenuOpen) {
                 closeMenu(false);
             }
@@ -1433,7 +1439,7 @@ public class FloatingSearchView extends FrameLayout {
             transitionOutLeftSection(true);
             mClearButton.setVisibility(View.GONE);
             if (mHostActivity != null) {
-                Util.closeSoftKeyboard(mHostActivity);
+                SoftKeyboardUtil.closeSoftKeyboard(mHostActivity);
             }
             if (mIsTitleSet) {
                 mSkipTextChangeEvent = true;
@@ -1801,7 +1807,7 @@ public class FloatingSearchView extends FrameLayout {
             mClearButton.setVisibility((savedState.query.length() == 0) ? View.INVISIBLE : View.VISIBLE);
             mLeftAction.setVisibility(View.VISIBLE);
 
-            Util.showSoftKeyboard(getContext(), mSearchInput);
+            SoftKeyboardUtil.showSoftKeyboard(getContext(), mSearchInput);
         }
     }
 

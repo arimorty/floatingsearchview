@@ -22,7 +22,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -34,8 +33,6 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.arlib.floatingsearchview.R;
@@ -43,27 +40,6 @@ import com.arlib.floatingsearchview.R;
 public class Util {
 
     private static final String TAG = "Util";
-
-    public static void showSoftKeyboard(final Context context, final EditText editText) {
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
-            }
-        }, 100);
-    }
-
-    public static void closeSoftKeyboard(Activity activity) {
-
-        View currentFocusView = activity.getCurrentFocus();
-        if (currentFocusView != null) {
-            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(currentFocusView.getWindowToken(), 0);
-        }
-    }
 
     public static int dpToPx(int dp) {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
