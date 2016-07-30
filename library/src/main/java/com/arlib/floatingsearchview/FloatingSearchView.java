@@ -44,7 +44,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -64,6 +63,7 @@ import android.widget.TextView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.arlib.floatingsearchview.util.SoftKeyboardUtil;
+import com.arlib.floatingsearchview.util.SoftKeyboardViewAdjuster;
 import com.arlib.floatingsearchview.util.Util;
 import com.arlib.floatingsearchview.util.adapter.GestureDetectorListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.OnItemTouchListenerAdapter;
@@ -189,6 +189,7 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mShowMoveUpSuggestion = ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT;
     private OnSuggestionsListHeightChanged mOnSuggestionsListHeightChanged;
     private long mSuggestionSectionAnimDuration;
+    private SoftKeyboardViewAdjuster softKeyboardViewAdjuster;
 
     //An interface for implementing a listener that will get notified when the suggestions
     //section's height is set. This is to be used internally only.
@@ -339,7 +340,6 @@ public class FloatingSearchView extends FrameLayout {
 
         mHostActivity = getHostActivity();
 
-        LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mMainLayout = inflate(getContext(), R.layout.floating_search_layout, this);
         mBackgroundDrawable = new ColorDrawable(Color.BLACK);
 
@@ -1296,7 +1296,6 @@ public class FloatingSearchView extends FrameLayout {
         final int cardTopBottomShadowPadding = Util.dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT);
         final int cardRadiusSize = Util.dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT);
 
-
         int visibleSuggestionHeight = calculateSuggestionItemsHeight(newSearchSuggestions,
                 mSuggestionListContainer.getHeight());
         int diff = mSuggestionListContainer.getHeight() - visibleSuggestionHeight;
@@ -1310,6 +1309,8 @@ public class FloatingSearchView extends FrameLayout {
 
         //todo go over
         final float fullyInvisibleTranslationY = -mSuggestionListContainer.getHeight() + cardRadiusSize;
+
+        scrollSuggestionsToFirstVisiblePosition();
 
         ViewCompat.animate(mSuggestionListContainer).cancel();
         if (withAnim) {
@@ -1332,23 +1333,6 @@ public class FloatingSearchView extends FrameLayout {
                         public void onAnimationCancel(View view) {
                             mSuggestionListContainer.setTranslationY(newTranslationY);
                         }
-
-                        @Override
-                        public void onAnimationStart(View view) {
-                            if (!animateAtEnd) {
-                                mSuggestionsList.smoothScrollToPosition(0);
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationEnd(View view) {
-                            if (animateAtEnd) {
-                                int lastPos = mSuggestionsList.getAdapter().getItemCount() - 1;
-                                if (lastPos > -1) {
-                                    mSuggestionsList.smoothScrollToPosition(lastPos);
-                                }
-                            }
-                        }
                     }).start();
         } else {
             mSuggestionListContainer.setTranslationY(newTranslationY);
@@ -1356,6 +1340,13 @@ public class FloatingSearchView extends FrameLayout {
                 float newSuggestionsHeight = Math.abs(mSuggestionListContainer.getTranslationY() - fullyInvisibleTranslationY);
                 mOnSuggestionsListHeightChanged.onSuggestionsListHeightChanged(newSuggestionsHeight);
             }
+        }
+    }
+
+    private void scrollSuggestionsToFirstVisiblePosition() {
+        int firstVisiblePositionInReversedLayout = mSuggestionsList.getAdapter().getItemCount() - 1;
+        if (firstVisiblePositionInReversedLayout > -1) {
+            mSuggestionsList.smoothScrollToPosition(firstVisiblePositionInReversedLayout);
         }
     }
 
@@ -1811,8 +1802,25 @@ public class FloatingSearchView extends FrameLayout {
         }
     }
 
-    static class SavedState extends BaseSavedState {
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
 
+        softKeyboardViewAdjuster = new SoftKeyboardViewAdjuster(mHostActivity, mSuggestionsSection);
+        softKeyboardViewAdjuster.startAdjustingViewForKeyboard();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        //remove any ongoing animations to prevent leaks
+        //todo investigate if correct
+        ViewCompat.animate(mSuggestionListContainer).cancel();
+        softKeyboardViewAdjuster.stopAdjustingViewForKeyboard();
+    }
+
+    static class SavedState extends BaseSavedState {
         private List<? extends SearchSuggestion> suggestions = new ArrayList<>();
         private boolean isFocused;
         private String query;
@@ -1836,6 +1844,7 @@ public class FloatingSearchView extends FrameLayout {
         private int leftActionMode;
         private boolean dimBackground;
         private long suggestionsSectionAnimSuration;
+
         private boolean dismissOnSoftKeyboardDismiss;
 
         SavedState(Parcelable superState) {
@@ -1898,7 +1907,6 @@ public class FloatingSearchView extends FrameLayout {
             out.writeLong(suggestionsSectionAnimSuration);
             out.writeInt(dismissOnSoftKeyboardDismiss ? 1 : 0);
         }
-
         public static final Creator<SavedState> CREATOR
                 = new Creator<SavedState>() {
             public SavedState createFromParcel(Parcel in) {
@@ -1909,14 +1917,6 @@ public class FloatingSearchView extends FrameLayout {
                 return new SavedState[size];
             }
         };
-    }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        //remove any ongoing animations to prevent leaks
-        //todo investigate if correct
-        ViewCompat.animate(mSuggestionListContainer).cancel();
     }
 }

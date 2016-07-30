@@ -70,13 +70,8 @@ public class Util {
         return outMetrics.widthPixels;
     }
 
-    public static int getScreenHeight(Activity activity) {
-
-        Display display = activity.getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        return outMetrics.heightPixels;
+    public static int getScreenHeight(@NonNull Context context) {
+        return context.getResources().getDisplayMetrics().heightPixels;
     }
 
     public static void setIconColor(ImageView iconHolder, int color) {
@@ -117,5 +112,13 @@ public class Util {
 
     public static boolean isTablet(@NonNull Context context) {
         return context.getResources().getBoolean(R.bool.isTablet);
+    }
+
+    public static void setPaddingBottom(@NonNull View view, int paddingBottom) {
+        if (view.getPaddingBottom() == paddingBottom) {
+            return;
+        }
+
+        view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), paddingBottom);
     }
 }
