@@ -177,7 +177,7 @@ Available styling:
 ```
 
 ### Are you using this library?
-If you have any questions, issues, or just want to let me know how you are using this library, feel free to add a comment in the [feedback issue](https://github.com/arimorty/floatingsearchview/issues/106) and let me know. All feedback is well appreciated!
+If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) or add a comment in the [feedback issue](https://github.com/arimorty/floatingsearchview/issues/106) and let me know. All feedback is well appreciated!
 
 
 License
