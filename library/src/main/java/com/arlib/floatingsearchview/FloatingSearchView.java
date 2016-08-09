@@ -563,21 +563,7 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onItemsMenuVisibleWidthChanged(int newVisibleWidth) {
 
-                if (newVisibleWidth == 0) {
-                    mClearButton.setTranslationX(-Util.dpToPx(4));
-                    int paddingRight = newVisibleWidth + Util.dpToPx(4);
-                    if (mIsFocused) {
-                        paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH);
-                    }
-                    mSearchInput.setPadding(0, 0, paddingRight, 0);
-                } else {
-                    mClearButton.setTranslationX(-newVisibleWidth);
-                    int paddingRight = newVisibleWidth;
-                    if (mIsFocused) {
-                        paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH);
-                    }
-                    mSearchInput.setPadding(0, 0, paddingRight, 0);
-                }
+                refreshSearchInputPaddingEnd(newVisibleWidth);
             }
         });
 
@@ -687,6 +673,26 @@ public class FloatingSearchView extends FrameLayout {
         });
 
         refreshLeftIcon();
+    }
+
+    private void refreshSearchInputPaddingEnd(int menuItemsWidth){
+        if (menuItemsWidth == 0) {
+            mClearButton.setTranslationX(-Util.dpToPx(4));
+            int paddingRight = Util.dpToPx(4);
+            if (mIsFocused) {
+                paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH);
+            }else {
+                paddingRight += Util.dpToPx(14);
+            }
+            mSearchInput.setPadding(0, 0, paddingRight, 0);
+        } else {
+            mClearButton.setTranslationX(-menuItemsWidth);
+            int paddingRight = menuItemsWidth;
+            if (mIsFocused) {
+                paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH);
+            }
+            mSearchInput.setPadding(0, 0, paddingRight, 0);
+        }
     }
 
     private int actionMenuAvailWidth() {
@@ -1397,6 +1403,7 @@ public class FloatingSearchView extends FrameLayout {
             if (mDimBackground) {
                 fadeInBackground();
             }
+            refreshSearchInputPaddingEnd(0);//this must be called before  mMenuView.hideIfRoomItems(...)
             mMenuView.hideIfRoomItems(true);
             transitionInLeftSection(true);
             Util.showSoftKeyboard(getContext(), mSearchInput);
@@ -1418,6 +1425,7 @@ public class FloatingSearchView extends FrameLayout {
             if (mDimBackground) {
                 fadeOutBackground();
             }
+            refreshSearchInputPaddingEnd(0);//this must be called before  mMenuView.hideIfRoomItems(...)
             mMenuView.showIfRoomItems(true);
             transitionOutLeftSection(true);
             mClearButton.setVisibility(View.GONE);
