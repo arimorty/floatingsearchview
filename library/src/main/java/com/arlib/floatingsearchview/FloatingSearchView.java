@@ -44,8 +44,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -55,7 +53,6 @@ import android.view.WindowManager;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -65,6 +62,8 @@ import android.widget.TextView;
 
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.SoftKeyboardUtil;
+import com.arlib.floatingsearchview.util.SoftKeyboardViewAdjuster;
 import com.arlib.floatingsearchview.util.Util;
 import com.arlib.floatingsearchview.util.adapter.GestureDetectorListenerAdapter;
 import com.arlib.floatingsearchview.util.adapter.OnItemTouchListenerAdapter;
@@ -78,6 +77,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static com.arlib.floatingsearchview.util.EditTextUtil.addImeFlag;
+import static com.arlib.floatingsearchview.util.EditTextUtil.setImeAction;
+import static com.arlib.floatingsearchview.util.Util.isScreenOrientationLandscape;
 
 /**
  * A search UI widget that implements a floating search box also called persistent
@@ -186,6 +189,7 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mShowMoveUpSuggestion = ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT;
     private OnSuggestionsListHeightChanged mOnSuggestionsListHeightChanged;
     private long mSuggestionSectionAnimDuration;
+    private SoftKeyboardViewAdjuster softKeyboardViewAdjuster;
 
     //An interface for implementing a listener that will get notified when the suggestions
     //section's height is set. This is to be used internally only.
@@ -336,7 +340,6 @@ public class FloatingSearchView extends FrameLayout {
 
         mHostActivity = getHostActivity();
 
-        LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mMainLayout = inflate(getContext(), R.layout.floating_search_layout, this);
         mBackgroundDrawable = new ColorDrawable(Color.BLACK);
 
@@ -526,6 +529,7 @@ public class FloatingSearchView extends FrameLayout {
 
         mSearchInput.setTextColor(mSearchInputTextColor);
         mSearchInput.setHintTextColor(mSearchInputHintColor);
+        addImeFlag(mSearchInput, EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (!isInEditMode() && mHostActivity != null) {
             mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -1018,12 +1022,11 @@ public class FloatingSearchView extends FrameLayout {
     public void setShowSearchKey(boolean show) {
         mShowSearchKey = show;
         if (show) {
-            mSearchInput.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            setImeAction(mSearchInput, EditorInfo.IME_ACTION_SEARCH);
         } else {
-            mSearchInput.setImeOptions(EditorInfo.IME_ACTION_NONE);
+            setImeAction(mSearchInput, EditorInfo.IME_ACTION_NONE);
         }
     }
-
 
     /**
      * Sets whether the search will lose focus when the softkeyboard
@@ -1182,24 +1185,7 @@ public class FloatingSearchView extends FrameLayout {
         mSuggestionsList.setLayoutManager(layoutManager);
         mSuggestionsList.setItemAnimator(null);
 
-        final GestureDetector gestureDetector = new GestureDetector(getContext(),
-                new GestureDetectorListenerAdapter() {
-
-                    @Override
-                    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                        if (mHostActivity != null) {
-                            Util.closeSoftKeyboard(mHostActivity);
-                        }
-                        return false;
-                    }
-                });
-        mSuggestionsList.addOnItemTouchListener(new OnItemTouchListenerAdapter() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                gestureDetector.onTouchEvent(e);
-                return false;
-            }
-        });
+        setupClosingKeyboardOnSuggestionsScroll();
 
         mSuggestionsAdapter = new SearchSuggestionsAdapter(getContext(), mSuggestionsTextSizePx,
                 new SearchSuggestionsAdapter.Listener() {
@@ -1241,6 +1227,32 @@ public class FloatingSearchView extends FrameLayout {
         mSuggestionsSection.setTranslationY(-cardViewBottomPadding);
     }
 
+    private void setupClosingKeyboardOnSuggestionsScroll() {
+        final GestureDetector gestureDetector = new GestureDetector(getContext(),
+                new GestureDetectorListenerAdapter() {
+
+                    @Override
+                    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                        if (shouldCloseKeyboardOnSuggestionsScroll()) {
+                            SoftKeyboardUtil.closeSoftKeyboard(mHostActivity);
+                        }
+                        return false;
+                    }
+                });
+        mSuggestionsList.addOnItemTouchListener(new OnItemTouchListenerAdapter() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                gestureDetector.onTouchEvent(e);
+                return false;
+            }
+        });
+    }
+
+    private boolean shouldCloseKeyboardOnSuggestionsScroll() {
+        return mHostActivity != null
+                && isScreenOrientationLandscape(mHostActivity) && !Util.isTablet(mHostActivity);
+    }
+
     private void moveSuggestListToInitialPos() {
         //move the suggestions list to the collapsed position
         //which is translationY of -listContainerHeight
@@ -1261,6 +1273,14 @@ public class FloatingSearchView extends FrameLayout {
     private void swapSuggestions(final List<? extends SearchSuggestion> newSearchSuggestions,
                                  final boolean withAnim) {
 
+        scheduleUpdatingSuggestionsSectionHeight(newSearchSuggestions, withAnim);
+        mSuggestionsAdapter.swapData(newSearchSuggestions);
+
+        mDivider.setVisibility(!newSearchSuggestions.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    private void scheduleUpdatingSuggestionsSectionHeight(final List<? extends SearchSuggestion> newSearchSuggestions,
+                                                          final boolean withAnim) {
         mSuggestionsList.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -1268,9 +1288,6 @@ public class FloatingSearchView extends FrameLayout {
                 updateSuggestionsSectionHeight(newSearchSuggestions, withAnim);
             }
         });
-        mSuggestionsAdapter.swapData(newSearchSuggestions);
-
-        mDivider.setVisibility(!newSearchSuggestions.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
     private void updateSuggestionsSectionHeight(List<? extends SearchSuggestion>
@@ -1278,7 +1295,6 @@ public class FloatingSearchView extends FrameLayout {
 
         final int cardTopBottomShadowPadding = Util.dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT);
         final int cardRadiusSize = Util.dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT);
-
 
         int visibleSuggestionHeight = calculateSuggestionItemsHeight(newSearchSuggestions,
                 mSuggestionListContainer.getHeight());
@@ -1293,6 +1309,8 @@ public class FloatingSearchView extends FrameLayout {
 
         //todo go over
         final float fullyInvisibleTranslationY = -mSuggestionListContainer.getHeight() + cardRadiusSize;
+
+        scrollSuggestionsToFirstVisiblePosition();
 
         ViewCompat.animate(mSuggestionListContainer).cancel();
         if (withAnim) {
@@ -1315,23 +1333,6 @@ public class FloatingSearchView extends FrameLayout {
                         public void onAnimationCancel(View view) {
                             mSuggestionListContainer.setTranslationY(newTranslationY);
                         }
-
-                        @Override
-                        public void onAnimationStart(View view) {
-                            if (!animateAtEnd) {
-                                mSuggestionsList.smoothScrollToPosition(0);
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationEnd(View view) {
-                            if (animateAtEnd) {
-                                int lastPos = mSuggestionsList.getAdapter().getItemCount() - 1;
-                                if (lastPos > -1) {
-                                    mSuggestionsList.smoothScrollToPosition(lastPos);
-                                }
-                            }
-                        }
                     }).start();
         } else {
             mSuggestionListContainer.setTranslationY(newTranslationY);
@@ -1339,6 +1340,13 @@ public class FloatingSearchView extends FrameLayout {
                 float newSuggestionsHeight = Math.abs(mSuggestionListContainer.getTranslationY() - fullyInvisibleTranslationY);
                 mOnSuggestionsListHeightChanged.onSuggestionsListHeightChanged(newSuggestionsHeight);
             }
+        }
+    }
+
+    private void scrollSuggestionsToFirstVisiblePosition() {
+        int firstVisiblePositionInReversedLayout = mSuggestionsList.getAdapter().getItemCount() - 1;
+        if (firstVisiblePositionInReversedLayout > -1) {
+            mSuggestionsList.smoothScrollToPosition(firstVisiblePositionInReversedLayout);
         }
     }
 
@@ -1399,7 +1407,7 @@ public class FloatingSearchView extends FrameLayout {
             }
             mMenuView.hideIfRoomItems(true);
             transitionInLeftSection(true);
-            Util.showSoftKeyboard(getContext(), mSearchInput);
+            SoftKeyboardUtil.showSoftKeyboard(getContext(), mSearchInput);
             if (mMenuOpen) {
                 closeMenu(false);
             }
@@ -1422,7 +1430,7 @@ public class FloatingSearchView extends FrameLayout {
             transitionOutLeftSection(true);
             mClearButton.setVisibility(View.GONE);
             if (mHostActivity != null) {
-                Util.closeSoftKeyboard(mHostActivity);
+                SoftKeyboardUtil.closeSoftKeyboard(mHostActivity);
             }
             if (mIsTitleSet) {
                 mSkipTextChangeEvent = true;
@@ -1790,12 +1798,29 @@ public class FloatingSearchView extends FrameLayout {
             mClearButton.setVisibility((savedState.query.length() == 0) ? View.INVISIBLE : View.VISIBLE);
             mLeftAction.setVisibility(View.VISIBLE);
 
-            Util.showSoftKeyboard(getContext(), mSearchInput);
+            SoftKeyboardUtil.showSoftKeyboard(getContext(), mSearchInput);
         }
     }
 
-    static class SavedState extends BaseSavedState {
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
 
+        softKeyboardViewAdjuster = new SoftKeyboardViewAdjuster(mHostActivity, mSuggestionsSection);
+        softKeyboardViewAdjuster.startAdjustingViewForKeyboard();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        //remove any ongoing animations to prevent leaks
+        //todo investigate if correct
+        ViewCompat.animate(mSuggestionListContainer).cancel();
+        softKeyboardViewAdjuster.stopAdjustingViewForKeyboard();
+    }
+
+    static class SavedState extends BaseSavedState {
         private List<? extends SearchSuggestion> suggestions = new ArrayList<>();
         private boolean isFocused;
         private String query;
@@ -1819,6 +1844,7 @@ public class FloatingSearchView extends FrameLayout {
         private int leftActionMode;
         private boolean dimBackground;
         private long suggestionsSectionAnimSuration;
+
         private boolean dismissOnSoftKeyboardDismiss;
 
         SavedState(Parcelable superState) {
@@ -1881,7 +1907,6 @@ public class FloatingSearchView extends FrameLayout {
             out.writeLong(suggestionsSectionAnimSuration);
             out.writeInt(dismissOnSoftKeyboardDismiss ? 1 : 0);
         }
-
         public static final Creator<SavedState> CREATOR
                 = new Creator<SavedState>() {
             public SavedState createFromParcel(Parcel in) {
@@ -1892,14 +1917,6 @@ public class FloatingSearchView extends FrameLayout {
                 return new SavedState[size];
             }
         };
-    }
 
-    @Override
-    protected void onDetachedFromWindow() {
-        super.onDetachedFromWindow();
-
-        //remove any ongoing animations to prevent leaks
-        //todo investigate if correct
-        ViewCompat.animate(mSuggestionListContainer).cancel();
     }
 }

@@ -18,12 +18,13 @@ package com.arlib.floatingsearchview.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.graphics.drawable.DrawableCompat;
@@ -32,34 +33,13 @@ import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.ImageView;
+
+import com.arlib.floatingsearchview.R;
 
 public class Util {
 
     private static final String TAG = "Util";
-
-    public static void showSoftKeyboard(final Context context, final EditText editText) {
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-                InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
-            }
-        }, 100);
-    }
-
-    public static void closeSoftKeyboard(Activity activity) {
-
-        View currentFocusView = activity.getCurrentFocus();
-        if (currentFocusView != null) {
-            InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(currentFocusView.getWindowToken(), 0);
-        }
-    }
 
     public static int dpToPx(int dp) {
         DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
@@ -90,13 +70,8 @@ public class Util {
         return outMetrics.widthPixels;
     }
 
-    public static int getScreenHeight(Activity activity) {
-
-        Display display = activity.getWindowManager().getDefaultDisplay();
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        display.getMetrics(outMetrics);
-
-        return outMetrics.heightPixels;
+    public static int getScreenHeight(@NonNull Context context) {
+        return context.getResources().getDisplayMetrics().heightPixels;
     }
 
     public static void setIconColor(ImageView iconHolder, int color) {
@@ -129,5 +104,21 @@ public class Util {
         } else {
             view.getViewTreeObserver().removeOnGlobalLayoutListener(layoutListener);
         }
+    }
+
+    public static boolean isScreenOrientationLandscape(@NonNull Context context) {
+        return context.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+    }
+
+    public static boolean isTablet(@NonNull Context context) {
+        return context.getResources().getBoolean(R.bool.isTablet);
+    }
+
+    public static void setPaddingBottom(@NonNull View view, int paddingBottom) {
+        if (view.getPaddingBottom() == paddingBottom) {
+            return;
+        }
+
+        view.setPadding(view.getPaddingLeft(), view.getPaddingTop(), view.getPaddingRight(), paddingBottom);
     }
 }
