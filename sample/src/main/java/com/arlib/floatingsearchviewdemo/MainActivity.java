@@ -284,29 +284,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupDrawer() {
-        mDrawerLayout.addDrawerListener(new DrawerLayout.DrawerListener() {
-            @Override
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-            }
-
-            @Override
-            public void onDrawerOpened(View drawerView) {
-
-                //since the drawer might have opened as a results of
-                //a click on the left menu, we need to make sure
-                //to close it right after the drawer opens, so that
-                //it is closed when the drawer is  closed.
-                mSearchView.setLeftMenuOpen(false);
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-            }
-
-            @Override
-            public void onDrawerStateChanged(int newState) {
-            }
-        });
+        mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
     }
 
     @Override

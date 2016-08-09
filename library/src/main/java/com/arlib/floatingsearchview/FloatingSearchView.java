@@ -37,6 +37,7 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.widget.CardView;
@@ -1802,6 +1803,16 @@ public class FloatingSearchView extends FrameLayout {
         }
     }
 
+    private DrawerLayout.DrawerListener mDrawerListener = new DrawerListener();
+
+    public void attachNavigationDrawerToMenuButton(DrawerLayout drawerLayout){
+        drawerLayout.addDrawerListener(mDrawerListener);
+    }
+
+    public void detachNavigationDrawerFromMenuButton(DrawerLayout drawerLayout){
+        drawerLayout.removeDrawerListener(mDrawerListener);
+    }
+
     static class SavedState extends BaseSavedState {
 
         private List<? extends SearchSuggestion> suggestions = new ArrayList<>();
@@ -1909,5 +1920,27 @@ public class FloatingSearchView extends FrameLayout {
         //remove any ongoing animations to prevent leaks
         //todo investigate if correct
         ViewCompat.animate(mSuggestionListContainer).cancel();
+    }
+
+    private class DrawerListener implements DrawerLayout.DrawerListener{
+        @Override
+        public void onDrawerSlide(View drawerView, float slideOffset) {
+            setMenuIconProgress(slideOffset);
+        }
+
+        @Override
+        public void onDrawerOpened(View drawerView) {
+
+        }
+
+        @Override
+        public void onDrawerClosed(View drawerView) {
+
+        }
+
+        @Override
+        public void onDrawerStateChanged(int newState) {
+
+        }
     }
 }
