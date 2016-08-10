@@ -83,6 +83,11 @@ Listen to *hamburger* button clicks:
         new FloatingSearchView.OnLeftMenuClickListener() { ...} );          
 ```
 
+To quickly connect your **NavigationDrawer** to the *hamburger* button:
+```
+   mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
+```
+
 Listen to home (back arrow) button clicks:
 ```
   mSearchView.setOnHomeActionClickListener(
