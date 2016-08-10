@@ -2,13 +2,13 @@ package com.arlib.floatingsearchview;
 
 /**
  * Copyright (C) 2015 Ari C.
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,7 +33,9 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.DrawableCompat;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPropertyAnimatorListenerAdapter;
 import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
@@ -45,7 +47,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -56,7 +57,6 @@ import android.view.WindowManager;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -415,7 +415,7 @@ public class FloatingSearchView extends FrameLayout {
 
             refreshDimBackground();
 
-            if(isInEditMode()) {
+            if (isInEditMode()) {
                 inflateOverflowMenu(mMenuId);
             }
         }
@@ -622,7 +622,7 @@ public class FloatingSearchView extends FrameLayout {
         mSearchInput.setOnKeyboardDismissedListener(new SearchInputView.OnKeyboardDismissedListener() {
             @Override
             public void onKeyboardDismissed() {
-                if(mCloseSearchOnSofteKeyboardDismiss){
+                if (mCloseSearchOnSofteKeyboardDismiss) {
                     setSearchFocusedInternal(false);
                 }
             }
@@ -636,9 +636,9 @@ public class FloatingSearchView extends FrameLayout {
                 }
                 mSkipTextChangeEvent = true;
                 mSkipTextChangeEvent = true;
-                if(mIsTitleSet) {
+                if (mIsTitleSet) {
                     setSearchBarTitle(getQuery());
-                }else {
+                } else {
                     setSearchText(getQuery());
                 }
                 setSearchFocusedInternal(false);
@@ -676,13 +676,13 @@ public class FloatingSearchView extends FrameLayout {
         refreshLeftIcon();
     }
 
-    private void refreshSearchInputPaddingEnd(int menuItemsWidth){
+    private void refreshSearchInputPaddingEnd(int menuItemsWidth) {
         if (menuItemsWidth == 0) {
             mClearButton.setTranslationX(-Util.dpToPx(4));
             int paddingRight = Util.dpToPx(4);
             if (mIsFocused) {
                 paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH);
-            }else {
+            } else {
                 paddingRight += Util.dpToPx(14);
             }
             mSearchInput.setPadding(0, 0, paddingRight, 0);
@@ -697,7 +697,7 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private int actionMenuAvailWidth() {
-        if(isInEditMode()){
+        if (isInEditMode()) {
             return mQuerySection.getMeasuredWidth() / 2;
         }
         return mQuerySection.getWidth() / 2;
@@ -1220,9 +1220,9 @@ public class FloatingSearchView extends FrameLayout {
                         }
 
                         mSkipTextChangeEvent = true;
-                        if(mIsTitleSet) {
+                        if (mIsTitleSet) {
                             setSearchBarTitle(item.getBody());
-                        }else {
+                        } else {
                             setSearchText(item.getBody());
                         }
                         setSearchFocusedInternal(false);
@@ -1292,7 +1292,7 @@ public class FloatingSearchView extends FrameLayout {
         int diff = mSuggestionListContainer.getHeight() - visibleSuggestionHeight;
         int addedTranslationYForShadowOffsets = (diff <= cardTopBottomShadowPadding) ?
                 -(cardTopBottomShadowPadding - diff) :
-                diff < (mSuggestionListContainer.getHeight()-cardTopBottomShadowPadding) ? cardRadiusSize : 0;
+                diff < (mSuggestionListContainer.getHeight() - cardTopBottomShadowPadding) ? cardRadiusSize : 0;
         final float newTranslationY = -mSuggestionListContainer.getHeight() +
                 visibleSuggestionHeight + addedTranslationYForShadowOffsets;
 
@@ -1459,9 +1459,9 @@ public class FloatingSearchView extends FrameLayout {
 
     private void transitionInLeftSection(boolean withAnim) {
 
-        if(mSearchProgress.getVisibility() != View.VISIBLE) {
+        if (mSearchProgress.getVisibility() != View.VISIBLE) {
             mLeftAction.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             mLeftAction.setVisibility(View.INVISIBLE);
         }
 
@@ -1805,12 +1805,14 @@ public class FloatingSearchView extends FrameLayout {
 
     private DrawerLayout.DrawerListener mDrawerListener = new DrawerListener();
 
-    public void attachNavigationDrawerToMenuButton(DrawerLayout drawerLayout){
+    public void attachNavigationDrawerToMenuButton(@NonNull DrawerLayout drawerLayout) {
         drawerLayout.addDrawerListener(mDrawerListener);
+        setOnLeftMenuClickListener(new NavDrawerLeftMenuClickListener(drawerLayout));
     }
 
-    public void detachNavigationDrawerFromMenuButton(DrawerLayout drawerLayout){
+    public void detachNavigationDrawerFromMenuButton(@NonNull DrawerLayout drawerLayout) {
         drawerLayout.removeDrawerListener(mDrawerListener);
+        setOnLeftMenuClickListener(null);
     }
 
     static class SavedState extends BaseSavedState {
@@ -1922,7 +1924,7 @@ public class FloatingSearchView extends FrameLayout {
         ViewCompat.animate(mSuggestionListContainer).cancel();
     }
 
-    private class DrawerListener implements DrawerLayout.DrawerListener{
+    private class DrawerListener implements DrawerLayout.DrawerListener {
         @Override
         public void onDrawerSlide(View drawerView, float slideOffset) {
             setMenuIconProgress(slideOffset);
@@ -1941,6 +1943,25 @@ public class FloatingSearchView extends FrameLayout {
         @Override
         public void onDrawerStateChanged(int newState) {
 
+        }
+    }
+
+    private class NavDrawerLeftMenuClickListener implements OnLeftMenuClickListener {
+
+        DrawerLayout mDrawerLayout;
+
+        public NavDrawerLeftMenuClickListener(DrawerLayout drawerLayout) {
+            mDrawerLayout = drawerLayout;
+        }
+
+        @Override
+        public void onMenuOpened() {
+            mDrawerLayout.openDrawer(GravityCompat.START);
+        }
+
+        @Override
+        public void onMenuClosed() {
+            //do nothing
         }
     }
 }

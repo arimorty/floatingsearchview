@@ -203,21 +203,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //use this listener to listen to menu clicks when app:floatingSearch_leftAction="showHamburger"
-        mSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
-            @Override
-            public void onMenuOpened() {
-
-                Log.d(TAG, "onMenuOpened()");
-                mDrawerLayout.openDrawer(GravityCompat.START);
-            }
-
-            @Override
-            public void onMenuClosed() {
-                Log.d(TAG, "onMenuClosed()");
-            }
-        });
-
         //use this listener to listen to menu clicks when app:floatingSearch_leftAction="showHome"
         mSearchView.setOnHomeActionClickListener(new FloatingSearchView.OnHomeActionClickListener() {
             @Override
