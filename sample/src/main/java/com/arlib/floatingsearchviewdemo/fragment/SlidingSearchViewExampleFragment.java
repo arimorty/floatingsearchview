@@ -1,6 +1,12 @@
 package com.arlib.floatingsearchviewdemo.fragment;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
@@ -12,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +41,11 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
 
     public static final long FIND_SUGGESTION_SIMULATED_DELAY = 250;
 
+    private static final long ANIM_DURATION = 350;
+
+    private View mHeaderView;
+    private View mDimSearchViewBackground;
+    private ColorDrawable mDimDrawable;
     private FloatingSearchView mSearchView;
 
     private boolean mIsDarkSearchTheme = false;
@@ -54,6 +66,16 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         mSearchView = (FloatingSearchView) view.findViewById(R.id.floating_search_view);
+        mHeaderView = view.findViewById(R.id.header_view);
+
+        mDimSearchViewBackground = view.findViewById(R.id.dim_background);
+        mDimDrawable = new ColorDrawable(Color.BLACK);
+        mDimDrawable.setAlpha(0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            mDimSearchViewBackground.setBackground(mDimDrawable);
+        }else {
+            mDimSearchViewBackground.setBackgroundDrawable(mDimDrawable);
+        }
 
         setupFloatingSearch();
         setupDrawer();
@@ -116,15 +138,33 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
         mSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
             @Override
             public void onFocus() {
+                int headerHeight = getResources().getDimensionPixelOffset(R.dimen.sliding_search_view_header_height);
+                ObjectAnimator anim = ObjectAnimator.ofFloat(mSearchView, "translationY",
+                        headerHeight, 0);
+                anim.setDuration(350);
+                fadeDimBackground(0, 150, null);
+                anim.addListener(new AnimatorListenerAdapter() {
 
-                //show suggestions when search bar gains focus (typically history suggestions)
-                mSearchView.swapSuggestions(DataHelper.getHistory(getActivity(), 3));
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        //show suggestions when search bar gains focus (typically history suggestions)
+                        mSearchView.swapSuggestions(DataHelper.getHistory(getActivity(), 3));
+
+                    }
+                });
+                anim.start();
 
                 Log.d(TAG, "onFocus()");
             }
 
             @Override
             public void onFocusCleared() {
+                int headerHeight = getResources().getDimensionPixelOffset(R.dimen.sliding_search_view_header_height);
+                ObjectAnimator anim = ObjectAnimator.ofFloat(mSearchView, "translationY",
+                        0, headerHeight);
+                anim.setDuration(350);
+                anim.start();
+                fadeDimBackground(150, 0, null);
 
                 //set the title of the bar so that when focus is returned a new query begins
                 mSearchView.setSearchBarTitle(mLastQuery);
@@ -234,4 +274,20 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
         attachSearchViewActivityDrawer(mSearchView);
     }
 
+    private void fadeDimBackground(int from, int to, Animator.AnimatorListener listener) {
+        ValueAnimator anim = ValueAnimator.ofInt(from, to);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+
+                int value = (Integer) animation.getAnimatedValue();
+                mDimDrawable.setAlpha(value);
+            }
+        });
+        if(listener != null) {
+            anim.addListener(listener);
+        }
+        anim.setDuration(ANIM_DURATION);
+        anim.start();
+    }
 }
