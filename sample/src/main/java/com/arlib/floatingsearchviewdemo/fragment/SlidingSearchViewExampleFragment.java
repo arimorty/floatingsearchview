@@ -10,15 +10,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,9 +25,7 @@ import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.arlib.floatingsearchview.util.Util;
 import com.arlib.floatingsearchviewdemo.R;
-import com.arlib.floatingsearchviewdemo.adapter.SearchResultsListAdapter;
 import com.arlib.floatingsearchviewdemo.data.ColorSuggestion;
-import com.arlib.floatingsearchviewdemo.data.ColorWrapper;
 import com.arlib.floatingsearchviewdemo.data.DataHelper;
 
 import java.util.List;
@@ -73,7 +68,7 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
         mDimDrawable.setAlpha(0);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             mDimSearchViewBackground.setBackground(mDimDrawable);
-        }else {
+        } else {
             mDimSearchViewBackground.setBackgroundDrawable(mDimDrawable);
         }
 
@@ -255,6 +250,20 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
             }
 
         });
+
+        /*
+         * When the user types some text into the search field, a clear button (and 'x' to the
+         * right) of the search text is shown.
+         *
+         * This listener provides a callback for when this button is clicked.
+         */
+        mSearchView.setOnClearSearchActionListener(new FloatingSearchView.OnClearSearchActionListener() {
+            @Override
+            public void onClearSearchClicked() {
+
+                Log.d(TAG, "onClearSearchClicked()");
+            }
+        });
     }
 
 
@@ -284,7 +293,7 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
                 mDimDrawable.setAlpha(value);
             }
         });
-        if(listener != null) {
+        if (listener != null) {
             anim.addListener(listener);
         }
         anim.setDuration(ANIM_DURATION);
