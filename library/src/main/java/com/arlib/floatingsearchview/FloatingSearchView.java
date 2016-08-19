@@ -187,6 +187,7 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mShowMoveUpSuggestion = ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT;
     private OnSuggestionsListHeightChanged mOnSuggestionsListHeightChanged;
     private long mSuggestionSectionAnimDuration;
+    private OnClearSearchActionListener mOnClearSearchActionListener;
 
     //An interface for implementing a listener that will get notified when the suggestions
     //section's height is set. This is to be used internally only.
@@ -322,6 +323,20 @@ public class FloatingSearchView extends FrameLayout {
          * and listeners are no more active.
          */
         void onFocusCleared();
+    }
+
+    /**
+     * Interface for implementing a callback to be
+     * invoked when the clear search text action button
+     * (the x to the right of the text) is clicked.
+     */
+    public interface OnClearSearchActionListener {
+
+        /**
+         * Called when the clear search text button
+         * was clicked.
+         */
+        void onClearSearchClicked();
     }
 
     public FloatingSearchView(Context context) {
@@ -576,6 +591,9 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onClick(View v) {
                 mSearchInput.setText("");
+                if (mOnClearSearchActionListener != null) {
+                    mOnClearSearchActionListener.onClearSearchClicked();
+                }
             }
         });
 
@@ -1645,6 +1663,17 @@ public class FloatingSearchView extends FrameLayout {
     public void setOnMenuItemClickListener(OnMenuItemClickListener listener) {
         this.mActionMenuItemListener = listener;
         //todo reset menu view listener
+    }
+
+    /**
+     * Sets the listener that will be called when the
+     * clear search text action button (the x to the right
+     * of the search text) is clicked.
+     *
+     * @param listener
+     */
+    public void setOnClearSearchActionListener(OnClearSearchActionListener listener) {
+        this.mOnClearSearchActionListener = listener;
     }
 
     private void openMenuDrawable(final DrawerArrowDrawable drawerArrowDrawable, boolean withAnim) {
