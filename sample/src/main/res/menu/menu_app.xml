@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/sliding_list_example"
+            android:checked="false"
+            android:icon="@drawable/ic_lightbulb_outline_black_24dp"
+            android:title="@string/action_example_with_sliding_list"/>
+
+        <item
+            android:id="@+id/sliding_search_bar_example"
+            android:checked="false"
+            android:icon="@drawable/ic_lightbulb_outline_black_24dp"
+            android:title="@string/action_example_sliding_search_bar"/>
+    </group>
+</menu>

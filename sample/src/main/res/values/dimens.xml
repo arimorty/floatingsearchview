@@ -1,3 +1,4 @@
 <resources>
     <dimen name="search_view_inset">5dp</dimen>
+    <dimen name="sliding_search_view_header_height">250dp</dimen>
 </resources>

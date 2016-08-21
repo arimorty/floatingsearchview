@@ -12,7 +12,7 @@ Usage
 
 1. In your dependencies, add
     ```
-         compile 'com.github.arimorty:floatingsearchview:2.0.2'
+         compile 'com.github.arimorty:floatingsearchview:2.0.3'
     ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen
@@ -81,6 +81,11 @@ Listen to *hamburger* button clicks:
 ```
  mSearchView.setOnLeftMenuClickListener(
         new FloatingSearchView.OnLeftMenuClickListener() { ...} );          
+```
+
+To quickly connect your **NavigationDrawer** to the *hamburger* button:
+```
+   mSearchView.attachNavigationDrawerToMenuButton(mDrawerLayout);
 ```
 
 Listen to home (back arrow) button clicks:
@@ -177,7 +182,7 @@ Available styling:
 ```
 
 ### Are you using this library?
-If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) and let me know. All feedback is well appreciated!
+If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) or add a comment in the [feedback issue](https://github.com/arimorty/floatingsearchview/issues/106) and let me know. All feedback is well appreciated!
 
 
 License
