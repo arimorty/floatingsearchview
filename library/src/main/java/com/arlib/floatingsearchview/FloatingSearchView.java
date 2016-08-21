@@ -80,6 +80,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.arlib.floatingsearchview.util.EditTextUtil.addImeFlag;
+import static com.arlib.floatingsearchview.util.EditTextUtil.setImeAction;
+
 /**
  * A search UI widget that implements a floating search box also called persistent
  * search.
@@ -527,6 +530,7 @@ public class FloatingSearchView extends FrameLayout {
 
         mSearchInput.setTextColor(mSearchInputTextColor);
         mSearchInput.setHintTextColor(mSearchInputHintColor);
+        addImeFlag(mSearchInput, EditorInfo.IME_FLAG_NO_EXTRACT_UI);
 
         if (!isInEditMode() && mHostActivity != null) {
             mHostActivity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -1025,12 +1029,11 @@ public class FloatingSearchView extends FrameLayout {
     public void setShowSearchKey(boolean show) {
         mShowSearchKey = show;
         if (show) {
-            mSearchInput.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+            setImeAction(mSearchInput, EditorInfo.IME_ACTION_SEARCH);
         } else {
-            mSearchInput.setImeOptions(EditorInfo.IME_ACTION_NONE);
+            setImeAction(mSearchInput, EditorInfo.IME_ACTION_NONE);
         }
     }
-
 
     /**
      * Sets whether the search will lose focus when the softkeyboard
