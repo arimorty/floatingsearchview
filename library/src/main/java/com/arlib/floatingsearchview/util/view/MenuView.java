@@ -21,11 +21,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.support.annotation.MenuRes;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuItemImpl;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -140,15 +142,17 @@ public class MenuView extends LinearLayout {
      * , removes all of its associated action views, and re-creates
      * the menu and action items to fit in the new width.</p>
      *
+     * @param menu Menu resource to inflate
      * @param availWidth the width available for the menu to use. If
      *                   there is room, menu items that are flagged with
      *                   android:showAsAction="ifRoom" or android:showAsAction="always"
      *                   will show as actions.
+     * @return Instance of {@link Menu} inflated with the provided menu resource or null of the provided menu resource is -1.
      */
-    public void reset(int menu, int availWidth) {
+    public Menu reset(@MenuRes int menu, int availWidth) {
         mMenu = menu;
         if (mMenu == -1) {
-            return;
+            return null;
         }
 
         mActionShowAlwaysItems = new ArrayList<>();
@@ -248,6 +252,8 @@ public class MenuView extends LinearLayout {
             mVisibleWidth = ((int) ACTION_DIMENSION_PX * getChildCount()) - (mHasOverflow ? Util.dpToPx(8) : 0);
             mOnVisibleWidthChangedListener.onItemsMenuVisibleWidthChanged(mVisibleWidth);
         }
+
+        return mMenuBuilder;
     }
 
     public int getVisibleWidth() {
