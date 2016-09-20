@@ -81,12 +81,22 @@ public class MenuView extends LinearLayout {
     private boolean mHasOverflow = false;
 
     private OnVisibleWidthChangedListener mOnVisibleWidthChangedListener;
+    private OnPrepareShowOverflowMenuListener mOnPrepareShowOverflowMenuListener;
+
     private int mVisibleWidth;
 
     private List<ObjectAnimator> anims = new ArrayList<>();
 
     public interface OnVisibleWidthChangedListener {
         void onItemsMenuVisibleWidthChanged(int newVisibleWidth);
+    }
+
+    public interface OnPrepareShowOverflowMenuListener {
+        /**
+         * This is called before the overflow menu popup gets shown
+         * @param menu Instance of {@link Menu} representing the overflow menu
+         */
+        void onPrepareShowOverflowMenu(Menu menu);
     }
 
     public MenuView(Context context) {
@@ -234,6 +244,10 @@ public class MenuView extends LinearLayout {
             overflowAction.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if(mOnPrepareShowOverflowMenuListener != null) {
+                        mOnPrepareShowOverflowMenuListener.onPrepareShowOverflowMenu(mMenuBuilder);
+                    }
+
                     mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, overflowAction);
                     mMenuPopupHelper.setGravity(Gravity.END);
                     mMenuPopupHelper.tryShow(overflowAction.getWidth(), -(overflowAction.getHeight() - (getResources().getDimensionPixelOffset(R.dimen.square_button_padding) / 2 + getResources().getDimensionPixelOffset(R.dimen.search_bar_right_icon_right_margin))));
@@ -548,6 +562,14 @@ public class MenuView extends LinearLayout {
 
     public void setOnVisibleWidthChanged(OnVisibleWidthChangedListener listener) {
         this.mOnVisibleWidthChangedListener = listener;
+    }
+
+    /**
+     * Sets a new instance of {@link OnPrepareShowOverflowMenuListener}. {@link OnPrepareShowOverflowMenuListener#onPrepareShowOverflowMenu(Menu)} will be called before showing the overflow menu popup.
+     * @param listener Instance of {@link OnPrepareShowOverflowMenuListener}
+     */
+    public void setOnPrepareShowOverflowMenuListener(OnPrepareShowOverflowMenuListener listener) {
+        this.mOnPrepareShowOverflowMenuListener = listener;
     }
 
     private void cancelChildAnimListAndClear() {

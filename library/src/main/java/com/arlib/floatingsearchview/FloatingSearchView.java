@@ -1635,6 +1635,14 @@ public class FloatingSearchView extends FrameLayout {
         //todo reset menu view listener
     }
 
+    /**
+     * Sets the listener which will be called before opening the overflow menu popup.
+     * @param listener Instance of {@link com.arlib.floatingsearchview.util.view.MenuView.OnPrepareShowOverflowMenuListener}
+     */
+    public void setOnPrepareOverflowMenuListener(MenuView.OnPrepareShowOverflowMenuListener listener) {
+        this.mMenuView.setOnPrepareShowOverflowMenuListener(listener);
+    }
+
     private void openMenuDrawable(final DrawerArrowDrawable drawerArrowDrawable, boolean withAnim) {
         if (withAnim) {
             ValueAnimator anim = ValueAnimator.ofFloat(0.0f, 1.0f);
