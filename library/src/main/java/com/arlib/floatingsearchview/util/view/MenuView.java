@@ -25,7 +25,9 @@ import android.support.annotation.MenuRes;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuItemImpl;
+import android.support.v7.view.menu.MenuPopupHelper;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -39,7 +41,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.arlib.floatingsearchview.R;
-import com.arlib.floatingsearchview.util.MenuPopupHelper;
 import com.arlib.floatingsearchview.util.Util;
 import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator;
 
@@ -100,7 +101,6 @@ public class MenuView extends LinearLayout {
 
     private void init() {
         mMenuBuilder = new MenuBuilder(getContext());
-        mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, this);
         mActionIconColor = Util.getColor(getContext(), R.color.gray_active_icon);
         mOverflowIconColor = Util.getColor(getContext(), R.color.gray_active_icon);
     }
@@ -159,7 +159,6 @@ public class MenuView extends LinearLayout {
         mActionItems = new ArrayList<>();
         mMenuItems = new ArrayList<>();
         mMenuBuilder = new MenuBuilder(getContext());
-        mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, this);
 
         //clean view and re-inflate
         removeAllViews();
@@ -227,7 +226,7 @@ public class MenuView extends LinearLayout {
         mHasOverflow = addOverflowAtTheEnd;
         if (addOverflowAtTheEnd) {
 
-            ImageView overflowAction = getOverflowActionView();
+            final ImageView overflowAction = getOverflowActionView();
             overflowAction.setImageResource(R.drawable.ic_more_vert_black_24dp);
             Util.setIconColor(overflowAction, mOverflowIconColor);
             addView(overflowAction);
@@ -235,7 +234,9 @@ public class MenuView extends LinearLayout {
             overflowAction.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mMenuPopupHelper.show();
+                    mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, overflowAction);
+                    mMenuPopupHelper.setGravity(Gravity.END);
+                    mMenuPopupHelper.tryShow(overflowAction.getWidth(), -(overflowAction.getHeight() - (getResources().getDimensionPixelOffset(R.dimen.square_button_padding) / 2 + getResources().getDimensionPixelOffset(R.dimen.search_bar_right_icon_right_margin))));
                 }
             });
 
