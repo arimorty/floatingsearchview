@@ -38,6 +38,7 @@
             app:floatingSearch_showSearchKey="true"
             app:floatingSearch_suggestionsListAnimDuration="250"
             app:floatingSearch_dimBackground="false"
-            app:floatingSearch_close_search_on_keyboard_dismiss="false"/>
+            app:floatingSearch_close_search_on_keyboard_dismiss="false"
+            app:floatingSearch_searchBarTextSize="16sp"/>
     </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

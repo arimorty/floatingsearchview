@@ -6,6 +6,7 @@
         <attr name="floatingSearch_searchBarMarginLeft" format="dimension"/>
         <attr name="floatingSearch_searchBarMarginRight" format="dimension"/>
         <attr name="floatingSearch_searchSuggestionTextSize" format="dimension"/>
+        <attr name="floatingSearch_searchBarTextSize" format="dimension"/>
         <attr name="floatingSearch_showMenuAction" format="boolean"/>
         <attr name="floatingSearch_leftActionMode">
             <enum name="showHamburger" value="1" />
