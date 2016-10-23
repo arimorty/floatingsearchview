@@ -21,11 +21,15 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.support.annotation.MenuRes;
 import android.support.v7.view.SupportMenuInflater;
 import android.support.v7.view.menu.MenuBuilder;
 import android.support.v7.view.menu.MenuItemImpl;
+import android.support.v7.view.menu.MenuPopupHelper;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +41,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 
 import com.arlib.floatingsearchview.R;
-import com.arlib.floatingsearchview.util.MenuPopupHelper;
 import com.arlib.floatingsearchview.util.Util;
 import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator;
 
@@ -78,12 +81,22 @@ public class MenuView extends LinearLayout {
     private boolean mHasOverflow = false;
 
     private OnVisibleWidthChangedListener mOnVisibleWidthChangedListener;
+    private OnPrepareShowOverflowMenuListener mOnPrepareShowOverflowMenuListener;
+
     private int mVisibleWidth;
 
     private List<ObjectAnimator> anims = new ArrayList<>();
 
     public interface OnVisibleWidthChangedListener {
         void onItemsMenuVisibleWidthChanged(int newVisibleWidth);
+    }
+
+    public interface OnPrepareShowOverflowMenuListener {
+        /**
+         * This is called before the overflow menu popup gets shown
+         * @param menu Instance of {@link Menu} representing the overflow menu
+         */
+        void onPrepareShowOverflowMenu(Menu menu);
     }
 
     public MenuView(Context context) {
@@ -98,7 +111,6 @@ public class MenuView extends LinearLayout {
 
     private void init() {
         mMenuBuilder = new MenuBuilder(getContext());
-        mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, this);
         mActionIconColor = Util.getColor(getContext(), R.color.gray_active_icon);
         mOverflowIconColor = Util.getColor(getContext(), R.color.gray_active_icon);
     }
@@ -140,22 +152,23 @@ public class MenuView extends LinearLayout {
      * , removes all of its associated action views, and re-creates
      * the menu and action items to fit in the new width.</p>
      *
+     * @param menu Menu resource to inflate
      * @param availWidth the width available for the menu to use. If
      *                   there is room, menu items that are flagged with
      *                   android:showAsAction="ifRoom" or android:showAsAction="always"
      *                   will show as actions.
+     * @return Instance of {@link Menu} inflated with the provided menu resource or null of the provided menu resource is -1.
      */
-    public void reset(int menu, int availWidth) {
+    public Menu reset(@MenuRes int menu, int availWidth) {
         mMenu = menu;
         if (mMenu == -1) {
-            return;
+            return null;
         }
 
         mActionShowAlwaysItems = new ArrayList<>();
         mActionItems = new ArrayList<>();
         mMenuItems = new ArrayList<>();
         mMenuBuilder = new MenuBuilder(getContext());
-        mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, this);
 
         //clean view and re-inflate
         removeAllViews();
@@ -223,7 +236,7 @@ public class MenuView extends LinearLayout {
         mHasOverflow = addOverflowAtTheEnd;
         if (addOverflowAtTheEnd) {
 
-            ImageView overflowAction = getOverflowActionView();
+            final ImageView overflowAction = getOverflowActionView();
             overflowAction.setImageResource(R.drawable.ic_more_vert_black_24dp);
             Util.setIconColor(overflowAction, mOverflowIconColor);
             addView(overflowAction);
@@ -231,7 +244,13 @@ public class MenuView extends LinearLayout {
             overflowAction.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mMenuPopupHelper.show();
+                    if(mOnPrepareShowOverflowMenuListener != null) {
+                        mOnPrepareShowOverflowMenuListener.onPrepareShowOverflowMenu(mMenuBuilder);
+                    }
+
+                    mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, overflowAction);
+                    mMenuPopupHelper.setGravity(Gravity.END);
+                    mMenuPopupHelper.tryShow(overflowAction.getWidth(), -(overflowAction.getHeight() - (getResources().getDimensionPixelOffset(R.dimen.square_button_padding) / 2 + getResources().getDimensionPixelOffset(R.dimen.search_bar_right_icon_right_margin))));
                 }
             });
 
@@ -248,6 +267,8 @@ public class MenuView extends LinearLayout {
             mVisibleWidth = ((int) ACTION_DIMENSION_PX * getChildCount()) - (mHasOverflow ? Util.dpToPx(8) : 0);
             mOnVisibleWidthChangedListener.onItemsMenuVisibleWidthChanged(mVisibleWidth);
         }
+
+        return mMenuBuilder;
     }
 
     public int getVisibleWidth() {
@@ -541,6 +562,14 @@ public class MenuView extends LinearLayout {
 
     public void setOnVisibleWidthChanged(OnVisibleWidthChangedListener listener) {
         this.mOnVisibleWidthChangedListener = listener;
+    }
+
+    /**
+     * Sets a new instance of {@link OnPrepareShowOverflowMenuListener}. {@link OnPrepareShowOverflowMenuListener#onPrepareShowOverflowMenu(Menu)} will be called before showing the overflow menu popup.
+     * @param listener Instance of {@link OnPrepareShowOverflowMenuListener}
+     */
+    public void setOnPrepareShowOverflowMenuListener(OnPrepareShowOverflowMenuListener listener) {
+        this.mOnPrepareShowOverflowMenuListener = listener;
     }
 
     private void cancelChildAnimListAndClear() {

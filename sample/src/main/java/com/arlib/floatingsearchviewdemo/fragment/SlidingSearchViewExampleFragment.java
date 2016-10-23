@@ -10,15 +10,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,9 +25,7 @@ import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.arlib.floatingsearchview.util.Util;
 import com.arlib.floatingsearchviewdemo.R;
-import com.arlib.floatingsearchviewdemo.adapter.SearchResultsListAdapter;
 import com.arlib.floatingsearchviewdemo.data.ColorSuggestion;
-import com.arlib.floatingsearchviewdemo.data.ColorWrapper;
 import com.arlib.floatingsearchviewdemo.data.DataHelper;
 
 import java.util.List;
@@ -179,10 +174,11 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
 
         //handle menu clicks the same way as you would
         //in a regular activity
-        mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+        mSearchView.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener()
+        {
             @Override
-            public void onActionMenuItemSelected(MenuItem item) {
-
+            public boolean onMenuItemClick(MenuItem item)
+            {
                 if (item.getItemId() == R.id.action_change_colors) {
 
                     mIsDarkSearchTheme = true;
@@ -204,6 +200,7 @@ public class SlidingSearchViewExampleFragment extends BaseExampleFragment {
                             Toast.LENGTH_SHORT).show();
                 }
 
+                return true;
             }
         });
 

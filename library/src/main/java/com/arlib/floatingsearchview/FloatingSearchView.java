@@ -33,6 +33,7 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
+import android.support.annotation.MenuRes;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GravityCompat;
@@ -48,6 +49,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -163,7 +165,7 @@ public class FloatingSearchView extends FrameLayout {
     private int mMenuId = -1;
     private int mActionMenuItemColor;
     private int mOverflowIconColor;
-    private OnMenuItemClickListener mActionMenuItemListener;
+    private MenuItem.OnMenuItemClickListener mActionMenuItemListener;
     private ImageView mClearButton;
     private int mClearBtnColor;
     private Drawable mIconClear;
@@ -287,22 +289,6 @@ public class FloatingSearchView extends FrameLayout {
          * clicked.
          */
         void onHomeClicked();
-    }
-
-    /**
-     * Interface for implementing a listener to listen
-     * when an item in the action (the item can be presented as an action
-     * ,or as a menu item in the overflow menu) menu has been selected.
-     */
-    public interface OnMenuItemClickListener {
-
-        /**
-         * Called when a menu item in has been
-         * selected.
-         *
-         * @param item the selected menu item.
-         */
-        void onActionMenuItemSelected(MenuItem item);
     }
 
     /**
@@ -547,10 +533,9 @@ public class FloatingSearchView extends FrameLayout {
             public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
 
                 if (mActionMenuItemListener != null) {
-                    mActionMenuItemListener.onActionMenuItemSelected(item);
+                    return mActionMenuItemListener.onMenuItemClick(item);
                 }
 
-                //todo check if we should care about this return or not
                 return false;
             }
 
@@ -994,13 +979,16 @@ public class FloatingSearchView extends FrameLayout {
      * an xml resource.
      *
      * @param menuId a menu xml resource reference
+     * @return Instance of {@link Menu} inflated with the provided menu resource
      */
-    public void inflateOverflowMenu(int menuId) {
+    public Menu inflateOverflowMenu(@MenuRes int menuId) {
         mMenuId = menuId;
-        mMenuView.reset(menuId, actionMenuAvailWidth());
+        Menu inflatedMenu = mMenuView.reset(menuId, actionMenuAvailWidth());
         if (mIsFocused) {
             mMenuView.hideIfRoomItems(false);
         }
+
+        return inflatedMenu;
     }
 
     /**
@@ -1642,9 +1630,17 @@ public class FloatingSearchView extends FrameLayout {
      *
      * @param listener listener to listen to menu item clicks
      */
-    public void setOnMenuItemClickListener(OnMenuItemClickListener listener) {
+    public void setOnMenuItemClickListener(MenuItem.OnMenuItemClickListener listener) {
         this.mActionMenuItemListener = listener;
         //todo reset menu view listener
+    }
+
+    /**
+     * Sets the listener which will be called before opening the overflow menu popup.
+     * @param listener Instance of {@link com.arlib.floatingsearchview.util.view.MenuView.OnPrepareShowOverflowMenuListener}
+     */
+    public void setOnPrepareOverflowMenuListener(MenuView.OnPrepareShowOverflowMenuListener listener) {
+        this.mMenuView.setOnPrepareShowOverflowMenuListener(listener);
     }
 
     private void openMenuDrawable(final DrawerArrowDrawable drawerArrowDrawable, boolean withAnim) {
