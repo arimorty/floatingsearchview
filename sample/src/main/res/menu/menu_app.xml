@@ -12,5 +12,11 @@
             android:checked="false"
             android:icon="@drawable/ic_lightbulb_outline_black_24dp"
             android:title="@string/action_example_sliding_search_bar"/>
+
+        <item
+            android:id="@+id/scrolling_search_bar_example"
+            android:checked="false"
+            android:icon="@drawable/ic_lightbulb_outline_black_24dp"
+            android:title="@string/action_example_scrolling_search_bar"/>
     </group>
 </menu>

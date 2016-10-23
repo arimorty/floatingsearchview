@@ -26,6 +26,7 @@ import android.view.MenuItem;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchviewdemo.fragment.BaseExampleFragment;
+import com.arlib.floatingsearchviewdemo.fragment.ScrollingSearchExampleFragment;
 import com.arlib.floatingsearchviewdemo.fragment.SlidingSearchResultsExampleFragment;
 import com.arlib.floatingsearchviewdemo.fragment.SlidingSearchViewExampleFragment;
 
@@ -74,6 +75,9 @@ public class MainActivity extends AppCompatActivity
                 return true;
             case R.id.sliding_search_bar_example:
                 showFragment(new SlidingSearchViewExampleFragment());
+                return true;
+            case R.id.scrolling_search_bar_example:
+                showFragment(new ScrollingSearchExampleFragment());
                 return true;
             default:
                 return true;
