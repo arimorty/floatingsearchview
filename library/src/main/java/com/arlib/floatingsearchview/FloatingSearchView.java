@@ -872,6 +872,14 @@ public class FloatingSearchView extends FrameLayout {
         mLeftActionMode = mode;
         refreshLeftIcon();
     }
+    /**
+     * Set the inputType for the search input view.
+     *
+     * @param inputType
+     */
+    public void setSearchInputType(int inputType) {
+        mSearchInput.setInputType(inputType);
+    }
 
     private void refreshLeftIcon() {
         int leftActionWidthAndMarginLeft = Util.dpToPx(LEFT_MENU_WIDTH_AND_MARGIN_START);
