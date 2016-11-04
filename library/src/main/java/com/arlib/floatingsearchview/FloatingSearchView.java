@@ -46,6 +46,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -157,6 +158,7 @@ public class FloatingSearchView extends FrameLayout {
     int mLeftActionMode = LEFT_ACTION_MODE_NOT_SET;
     private int mLeftActionIconColor;
     private String mSearchHint;
+    private float mSearchBarTextSize;
     private boolean mShowSearchKey;
     private boolean mMenuOpen = false;
     private MenuView mMenuView;
@@ -479,6 +481,8 @@ public class FloatingSearchView extends FrameLayout {
             mSuggestionsSection.setLayoutParams(suggestListSectionLP);
 
             setSearchHint(a.getString(R.styleable.FloatingSearchView_floatingSearch_searchHint));
+            setSearchBarTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchBarTextSize,
+                    getResources().getDimensionPixelSize(R.dimen.search_bar_text_size)));
             setShowSearchKey(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchKey,
                     ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT));
             setCloseSearchOnKeyboardDismiss(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_close_search_on_keyboard_dismiss,
@@ -1002,6 +1006,19 @@ public class FloatingSearchView extends FrameLayout {
             mMenuView.hideIfRoomItems(false);
         }
     }
+
+    /**
+     * Sets the size of the search text that will appear in the
+     * search input. Default size is R.dimens.search_bar_text_size
+     *
+     * @param searchBarTextSize
+     */
+    public void setSearchBarTextSize(int searchBarTextSize) {
+        mSearchBarTextSize = searchBarTextSize;
+        mSearchInput.setTextSize(TypedValue.COMPLEX_UNIT_PX, mSearchBarTextSize);
+
+    }
+
 
     /**
      * Set a hint that will appear in the
@@ -1744,6 +1761,8 @@ public class FloatingSearchView extends FrameLayout {
         savedState.leftActionMode = mLeftActionMode;
         savedState.dimBackground = mDimBackground;
         savedState.dismissOnSoftKeyboardDismiss = this.mDismissOnOutsideTouch;
+        savedState.searchBarTextSize = this.mSearchBarTextSize;
+
         return savedState;
     }
 
@@ -1841,6 +1860,7 @@ public class FloatingSearchView extends FrameLayout {
         private boolean dimBackground;
         private long suggestionsSectionAnimSuration;
         private boolean dismissOnSoftKeyboardDismiss;
+        private float searchBarTextSize;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1872,6 +1892,7 @@ public class FloatingSearchView extends FrameLayout {
             dimBackground = (in.readInt() != 0);
             suggestionsSectionAnimSuration = in.readLong();
             dismissOnSoftKeyboardDismiss = (in.readInt() != 0);
+            searchBarTextSize = in.readFloat();
         }
 
         @Override
@@ -1901,6 +1922,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(dimBackground ? 1 : 0);
             out.writeLong(suggestionsSectionAnimSuration);
             out.writeInt(dismissOnSoftKeyboardDismiss ? 1 : 0);
+            out.writeFloat(searchBarTextSize);
         }
 
         public static final Creator<SavedState> CREATOR
