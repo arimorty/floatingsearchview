@@ -47,7 +47,7 @@ public class Util {
             public void run() {
 
                 InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
-                inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_IMPLICIT);
+                inputMethodManager.showSoftInput(editText, InputMethodManager.SHOW_FORCED);
             }
         }, 100);
     }
