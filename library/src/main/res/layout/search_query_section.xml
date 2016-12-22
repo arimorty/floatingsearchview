@@ -59,6 +59,7 @@
                 android:background="@color/transparent"
                 android:ellipsize="end"
                 android:hint="@string/abc_search_hint"
+                android:textSize="@dimen/search_bar_text_size"
                 android:imeOptions="actionSearch"
                 android:inputType="textNoSuggestions"
                 android:maxLines="1"

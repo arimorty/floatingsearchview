@@ -122,6 +122,7 @@ public class FloatingSearchView extends FrameLayout {
     private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = true;
     private final boolean ATTRS_DISMISS_ON_KEYBOARD_DISMISS_DEFAULT = false;
     private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
+    private final int ATTRS_QUERY_TEXT_SIZE_SP_DEFAULT = 18;
     private final int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
     private final boolean ATTRS_SHOW_DIM_BACKGROUND_DEFAULT = true;
 
@@ -140,6 +141,7 @@ public class FloatingSearchView extends FrameLayout {
     private CardView mQuerySection;
     private OnSearchListener mSearchListener;
     private SearchInputView mSearchInput;
+    private int mQueryTextSize;
     private boolean mCloseSearchOnSofteKeyboardDismiss;
     private String mTitleText;
     private boolean mIsTitleSet;
@@ -480,6 +482,8 @@ public class FloatingSearchView extends FrameLayout {
             mDivider.setLayoutParams(dividerLP);
             mSuggestionsSection.setLayoutParams(suggestListSectionLP);
 
+            setQueryTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchQueryTextSize,
+                    ATTRS_QUERY_TEXT_SIZE_SP_DEFAULT));
             setSearchHint(a.getString(R.styleable.FloatingSearchView_floatingSearch_searchHint));
             setShowSearchKey(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchKey,
                     ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT));
@@ -814,6 +818,16 @@ public class FloatingSearchView extends FrameLayout {
         if (mSearchInput != null) {
             mSearchInput.setTextColor(mSearchInputTextColor);
         }
+    }
+
+    /**
+     * Set the text size of the text in the search box.
+     *
+     * @param sizePx
+     */
+    public void setQueryTextSize(int sizePx) {
+        this.mQueryTextSize = sizePx;
+        mSearchInput.setTextSize(mQueryTextSize);
     }
 
     /**
@@ -1767,6 +1781,7 @@ public class FloatingSearchView extends FrameLayout {
         setBackgroundColor(savedState.backgroundColor);
         setSuggestionsTextColor(savedState.suggestionsTextColor);
         setQueryTextColor(savedState.queryTextColor);
+        setQueryTextSize(savedState.queryTextSize);
         setHintTextColor(savedState.searchHintTextColor);
         setActionMenuOverflowColor(savedState.actionOverflowMenueColor);
         setMenuItemIconColor(savedState.menuItemIconColor);
@@ -1823,6 +1838,7 @@ public class FloatingSearchView extends FrameLayout {
         private List<? extends SearchSuggestion> suggestions = new ArrayList<>();
         private boolean isFocused;
         private String query;
+        private int queryTextSize;
         private int suggestionTextSize;
         private String searchHint;
         private boolean dismissOnOutsideClick;
@@ -1854,6 +1870,7 @@ public class FloatingSearchView extends FrameLayout {
             in.readList(suggestions, getClass().getClassLoader());
             isFocused = (in.readInt() != 0);
             query = in.readString();
+            queryTextSize = in.readInt();
             suggestionTextSize = in.readInt();
             searchHint = in.readString();
             dismissOnOutsideClick = (in.readInt() != 0);
@@ -1883,6 +1900,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeList(suggestions);
             out.writeInt(isFocused ? 1 : 0);
             out.writeString(query);
+            out.writeInt(queryTextSize);
             out.writeInt(suggestionTextSize);
             out.writeString(searchHint);
             out.writeInt(dismissOnOutsideClick ? 1 : 0);

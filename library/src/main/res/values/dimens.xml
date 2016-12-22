@@ -5,7 +5,6 @@
     <dimen name="search_bar_search_input_left_margin">20dp</dimen>
     <dimen name="search_bar_search_input_right_margin">68dp</dimen>
     <dimen name="search_bar_filter_section_marin_left">64dp</dimen>
-    <dimen name="search_bar_text_size">16dp</dimen>
     <dimen name="text_content_margin">16dp</dimen>
 
     <!-- Sizes for a square button with a system icon on it -->
@@ -14,4 +13,5 @@
     <dimen name="square_button_padding">12dp</dimen>
 
     <dimen name="suggestion_body_text_size">18sp</dimen>
+    <dimen name="search_bar_text_size">16sp</dimen>
 </resources>
