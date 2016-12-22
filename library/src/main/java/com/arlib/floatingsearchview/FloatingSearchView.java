@@ -107,6 +107,8 @@ public class FloatingSearchView extends FrameLayout {
     public final static int LEFT_ACTION_MODE_SHOW_HOME = 3;
     public final static int LEFT_ACTION_MODE_NO_LEFT_ACTION = 4;
     private final static int LEFT_ACTION_MODE_NOT_SET = -1;
+    private static final float MENU_BUTTON_PROGRESS_ARROW = 1.0f;
+    private static final float MENU_BUTTON_PROGRESS_HAMBURGER = 0.0f;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LEFT_ACTION_MODE_SHOW_HAMBURGER, LEFT_ACTION_MODE_SHOW_SEARCH,
@@ -881,13 +883,14 @@ public class FloatingSearchView extends FrameLayout {
         switch (mLeftActionMode) {
             case LEFT_ACTION_MODE_SHOW_HAMBURGER:
                 mLeftAction.setImageDrawable(mMenuBtnDrawable);
+                mMenuBtnDrawable.setProgress(MENU_BUTTON_PROGRESS_HAMBURGER);
                 break;
             case LEFT_ACTION_MODE_SHOW_SEARCH:
                 mLeftAction.setImageDrawable(mIconSearch);
                 break;
             case LEFT_ACTION_MODE_SHOW_HOME:
                 mLeftAction.setImageDrawable(mMenuBtnDrawable);
-                mMenuBtnDrawable.setProgress(1.0f);
+                mMenuBtnDrawable.setProgress(MENU_BUTTON_PROGRESS_ARROW);
                 break;
             case LEFT_ACTION_MODE_NO_LEFT_ACTION:
                 mLeftAction.setVisibility(View.INVISIBLE);
