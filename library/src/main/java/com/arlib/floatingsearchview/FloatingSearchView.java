@@ -1125,7 +1125,7 @@ public class FloatingSearchView extends FrameLayout {
      *                  clicked.
      */
     public void setSearchFocusable(boolean focusable) {
-        mSearchInput.setFocusable(focusable);
+        mSearchInput.setFocusableInTouchMode(focusable);
     }
 
     /**
