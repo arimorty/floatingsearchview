@@ -250,6 +250,20 @@ public class SlidingSearchResultsExampleFragment extends BaseExampleFragment {
                 mSearchResultsList.setTranslationY(newHeight);
             }
         });
+
+        /*
+         * When the user types some text into the search field, a clear button (and 'x' to the
+         * right) of the search text is shown.
+         *
+         * This listener provides a callback for when this button is clicked.
+         */
+        mSearchView.setOnClearSearchActionListener(new FloatingSearchView.OnClearSearchActionListener() {
+            @Override
+            public void onClearSearchClicked() {
+
+                Log.d(TAG, "onClearSearchClicked()");
+            }
+        });
     }
 
     private void setupResultsList() {
