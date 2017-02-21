@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/search_query_section"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:clickable="true"
+    card_view:cardCornerRadius="@dimen/search_view_corner_radius"
     card_view:cardUseCompatPadding="true">
 
     <RelativeLayout
@@ -29,7 +31,7 @@
                 android:background="@drawable/oval_btn_selector"
                 android:clickable="true"
                 android:padding="@dimen/square_button_padding"
-                android:src="@drawable/ic_arrow_back_black_24dp" />
+                android:src="@drawable/ic_arrow_back_black_24dp"/>
 
             <ProgressBar
                 android:id="@+id/search_bar_search_progress"
@@ -37,7 +39,7 @@
                 android:layout_height="@dimen/square_button_size"
                 android:clickable="false"
                 android:padding="@dimen/square_button_padding"
-                android:visibility="gone" />
+                android:visibility="gone"/>
         </FrameLayout>
 
         <FrameLayout
@@ -59,11 +61,11 @@
                 android:background="@color/transparent"
                 android:ellipsize="end"
                 android:hint="@string/abc_search_hint"
-                android:textSize="@dimen/search_bar_text_size"
                 android:imeOptions="actionSearch"
                 android:inputType="textNoSuggestions"
                 android:maxLines="1"
-                android:minHeight="@dimen/square_button_size" />
+                android:minHeight="@dimen/square_button_size"
+                android:textSize="@dimen/search_bar_text_size"/>
         </FrameLayout>
 
         <ImageView
@@ -76,7 +78,7 @@
             android:alpha="1"
             android:background="@drawable/oval_btn_selector"
             android:clickable="true"
-            android:padding="@dimen/square_button_padding" />
+            android:padding="@dimen/square_button_padding"/>
 
         <com.arlib.floatingsearchview.util.view.MenuView
             android:id="@+id/menu_view"
@@ -87,6 +89,6 @@
             android:layout_centerVertical="true"
             android:layout_marginEnd="@dimen/search_bar_right_icon_right_margin"
             android:layout_marginRight="@dimen/search_bar_right_icon_right_margin"
-            android:orientation="horizontal" />
+            android:orientation="horizontal"/>
     </RelativeLayout>
 </android.support.v7.widget.CardView>
