@@ -23,7 +23,6 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -86,29 +85,36 @@ import java.util.List;
  */
 public class FloatingSearchView extends FrameLayout {
 
-    private static final String TAG = "FloatingSearchView";
+    private final static String TAG = FloatingSearchView.class.getSimpleName();
+    //The CardView's top or bottom height used for its shadow
+    private final static int CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT = 3;
+    //The CardView's (default) corner radius height
+    private final static int CARD_VIEW_CORNERS_HEIGHT = 2;
+    private final static int CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT =
+            CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT + CARD_VIEW_CORNERS_HEIGHT;
 
-    private static final int CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT = 3;
-    private static final int CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT = 5;
-    private static final long CLEAR_BTN_FADE_ANIM_DURATION = 500;
-    private static final int CLEAR_BTN_WIDTH = 48;
-    private static final int LEFT_MENU_WIDTH_AND_MARGIN_START = 52;
+    private final static long CLEAR_BTN_FADE_ANIM_DURATION = 500;
+    private final static int CLEAR_BTN_WIDTH_DP = 48;
 
-    private final int BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED = 150;
-    private final int BACKGROUND_DRAWABLE_ALPHA_SEARCH_NOT_FOCUSED = 0;
-    private final int BACKGROUND_FADE_ANIM_DURATION = 250;
+    private final static int LEFT_MENU_WIDTH_AND_MARGIN_START_DP = 52;
 
-    private final int MENU_ICON_ANIM_DURATION = 250;
+    private final static float MENU_BUTTON_PROGRESS_ARROW = 1.0f;
+    private final static float MENU_BUTTON_PROGRESS_HAMBURGER = 0.0f;
 
-    private final int ATTRS_SEARCH_BAR_MARGIN_DEFAULT = 0;
+    private final static int BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED = 150;
+    private final static int BACKGROUND_DRAWABLE_ALPHA_SEARCH_NOT_FOCUSED = 0;
+    private final static int BACKGROUND_FADE_ANIM_DURATION = 250;
+
+    private final static int MENU_ICON_ANIM_DURATION = 250;
+
+
+    private final static Interpolator SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR = new LinearInterpolator();
 
     public final static int LEFT_ACTION_MODE_SHOW_HAMBURGER = 1;
     public final static int LEFT_ACTION_MODE_SHOW_SEARCH = 2;
     public final static int LEFT_ACTION_MODE_SHOW_HOME = 3;
     public final static int LEFT_ACTION_MODE_NO_LEFT_ACTION = 4;
     private final static int LEFT_ACTION_MODE_NOT_SET = -1;
-    private static final float MENU_BUTTON_PROGRESS_ARROW = 1.0f;
-    private static final float MENU_BUTTON_PROGRESS_HAMBURGER = 0.0f;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LEFT_ACTION_MODE_SHOW_HAMBURGER, LEFT_ACTION_MODE_SHOW_SEARCH,
@@ -117,17 +123,16 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     @LeftActionMode
-    private final int ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT = LEFT_ACTION_MODE_NO_LEFT_ACTION;
-    private final boolean ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT = false;
-    private final boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = true;
-    private final boolean ATTRS_DISMISS_ON_KEYBOARD_DISMISS_DEFAULT = false;
-    private final boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
-    private final int ATTRS_QUERY_TEXT_SIZE_SP_DEFAULT = 18;
-    private final int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
-    private final boolean ATTRS_SHOW_DIM_BACKGROUND_DEFAULT = true;
-
-    private final Interpolator SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR = new LinearInterpolator();
-    private final int ATTRS_SUGGESTION_ANIM_DURATION_DEFAULT = 250;
+    private final static int ATTRS_SEARCH_BAR_LEFT_ACTION_MODE_DEFAULT = LEFT_ACTION_MODE_NO_LEFT_ACTION;
+    private final static boolean ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT = false;
+    private final static boolean ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT = true;
+    private final static boolean ATTRS_DISMISS_ON_KEYBOARD_DISMISS_DEFAULT = false;
+    private final static boolean ATTRS_SEARCH_BAR_SHOW_SEARCH_KEY_DEFAULT = true;
+    private final static int ATTRS_QUERY_TEXT_SIZE_SP_DEFAULT = 18;
+    private final static int ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT = 18;
+    private final static boolean ATTRS_SHOW_DIM_BACKGROUND_DEFAULT = true;
+    private final static int ATTRS_SUGGESTION_ANIM_DURATION_DEFAULT = 250;
+    private final static int ATTRS_SEARCH_BAR_MARGIN_DEFAULT = 0;
 
     private Activity mHostActivity;
 
@@ -187,7 +192,7 @@ public class FloatingSearchView extends FrameLayout {
     private SearchSuggestionsAdapter.OnBindSuggestionCallback mOnBindSuggestionCallback;
     private int mSuggestionsTextSizePx;
     private boolean mIsInitialLayout = true;
-    private boolean mIsSuggestionsSecHeightSet;
+    private boolean mIsSuggestionsSectionHeightSet;
     private boolean mShowMoveUpSuggestion = ATTRS_SHOW_MOVE_UP_SUGGESTION_DEFAULT;
     private OnSuggestionsListHeightChanged mOnSuggestionsListHeightChanged;
     private long mSuggestionSectionAnimDuration;
@@ -202,9 +207,9 @@ public class FloatingSearchView extends FrameLayout {
     private OnSuggestionSecHeightSetListener mSuggestionSecHeightListener;
 
     /**
-     * Interface for implementing a listener to listen
-     * changes in suggestion list height that occur when the list is expands/shrinks
-     * because of calls to {@link FloatingSearchView#swapSuggestions(List)}
+     * Interface for implementing a listener to listen to
+     * changes in the suggestion list height that occur when the list is expands/shrinks
+     * following calls to {@link FloatingSearchView#swapSuggestions(List)}
      */
     public interface OnSuggestionsListHeightChanged {
 
@@ -354,7 +359,7 @@ public class FloatingSearchView extends FrameLayout {
 
     private void init(AttributeSet attrs) {
 
-        mHostActivity = getHostActivity();
+        mHostActivity = Util.getHostActivity(getContext());
 
         LayoutInflater layoutInflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mMainLayout = inflate(getContext(), R.layout.floating_search_layout, this);
@@ -377,17 +382,6 @@ public class FloatingSearchView extends FrameLayout {
         mSuggestionsList = (RecyclerView) findViewById(R.id.suggestions_list);
 
         setupViews(attrs);
-    }
-
-    private Activity getHostActivity() {
-        Context context = getContext();
-        while (context instanceof ContextWrapper) {
-            if (context instanceof Activity) {
-                return (Activity) context;
-            }
-            context = ((ContextWrapper) context).getBaseContext();
-        }
-        return null;
     }
 
     private void initDrawables() {
@@ -420,7 +414,7 @@ public class FloatingSearchView extends FrameLayout {
                     if (mSuggestionsSection.getHeight() == finalHeight) {
                         Util.removeGlobalLayoutObserver(mSuggestionListContainer, this);
 
-                        mIsSuggestionsSecHeightSet = true;
+                        mIsSuggestionsSectionHeightSet = true;
                         moveSuggestListToInitialPos();
                         if (mSuggestionSecHeightListener != null) {
                             mSuggestionSecHeightListener.onSuggestionSecHeightSet();
@@ -584,8 +578,7 @@ public class FloatingSearchView extends FrameLayout {
         mMenuView.setOnVisibleWidthChanged(new MenuView.OnVisibleWidthChangedListener() {
             @Override
             public void onItemsMenuVisibleWidthChanged(int newVisibleWidth) {
-
-                refreshSearchInputPaddingEnd(newVisibleWidth);
+                handleOnVisibleMenuItemsWidthChanged(newVisibleWidth);
             }
         });
 
@@ -700,31 +693,26 @@ public class FloatingSearchView extends FrameLayout {
         refreshLeftIcon();
     }
 
-    private void refreshSearchInputPaddingEnd(int menuItemsWidth) {
+    //ensures that the end margin of the search input is according to Material specs
+    private void handleOnVisibleMenuItemsWidthChanged(int menuItemsWidth) {
         if (menuItemsWidth == 0) {
             mClearButton.setTranslationX(-Util.dpToPx(4));
             int paddingRight = Util.dpToPx(4);
             if (mIsFocused) {
-                paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH);
+                paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH_DP);//adding the icon's left 12dp
+                // padding will give a paddingRight sum of 16dp as per design guidelines
             } else {
-                paddingRight += Util.dpToPx(14);
+                paddingRight += Util.dpToPx(14);//will give a paddingRight sum of 16dp as per design guidelines
             }
             mSearchInput.setPadding(0, 0, paddingRight, 0);
         } else {
             mClearButton.setTranslationX(-menuItemsWidth);
             int paddingRight = menuItemsWidth;
             if (mIsFocused) {
-                paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH);
+                paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH_DP);
             }
             mSearchInput.setPadding(0, 0, paddingRight, 0);
         }
-    }
-
-    private int actionMenuAvailWidth() {
-        if (isInEditMode()) {
-            return mQuerySection.getMeasuredWidth() / 2;
-        }
-        return mQuerySection.getWidth() / 2;
     }
 
     /**
@@ -908,7 +896,7 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     private void refreshLeftIcon() {
-        int leftActionWidthAndMarginLeft = Util.dpToPx(LEFT_MENU_WIDTH_AND_MARGIN_START);
+        int leftActionWidthAndMarginLeft = Util.dpToPx(LEFT_MENU_WIDTH_AND_MARGIN_START_DP);
         int queryTranslationX = 0;
 
         mLeftAction.setVisibility(VISIBLE);
@@ -1036,6 +1024,13 @@ public class FloatingSearchView extends FrameLayout {
         if (mIsFocused) {
             mMenuView.hideIfRoomItems(false);
         }
+    }
+
+    private int actionMenuAvailWidth() {
+        if (isInEditMode()) {
+            return mQuerySection.getMeasuredWidth() / 2;
+        }
+        return mQuerySection.getWidth() / 2;
     }
 
     /**
@@ -1203,7 +1198,7 @@ public class FloatingSearchView extends FrameLayout {
         boolean updatedToNotFocused = !focused && this.mIsFocused;
 
         if ((focused != this.mIsFocused) && mSuggestionSecHeightListener == null) {
-            if (mIsSuggestionsSecHeightSet) {
+            if (mIsSuggestionsSectionHeightSet) {
                 setSearchFocusedInternal(focused);
             } else {
                 mSuggestionSecHeightListener = new OnSuggestionSecHeightSetListener() {
@@ -1440,7 +1435,7 @@ public class FloatingSearchView extends FrameLayout {
             if (mDimBackground) {
                 fadeInBackground();
             }
-            refreshSearchInputPaddingEnd(0);//this must be called before  mMenuView.hideIfRoomItems(...)
+            handleOnVisibleMenuItemsWidthChanged(0);//this must be called before  mMenuView.hideIfRoomItems(...)
             mMenuView.hideIfRoomItems(true);
             transitionInLeftSection(true);
             Util.showSoftKeyboard(getContext(), mSearchInput);
@@ -1462,7 +1457,7 @@ public class FloatingSearchView extends FrameLayout {
             if (mDimBackground) {
                 fadeOutBackground();
             }
-            refreshSearchInputPaddingEnd(0);//this must be called before  mMenuView.hideIfRoomItems(...)
+            handleOnVisibleMenuItemsWidthChanged(0);//this must be called before  mMenuView.hideIfRoomItems(...)
             mMenuView.showIfRoomItems(true);
             transitionOutLeftSection(true);
             mClearButton.setVisibility(View.GONE);
@@ -1572,7 +1567,7 @@ public class FloatingSearchView extends FrameLayout {
 
                 if (withAnim) {
                     ObjectAnimator searchInputTransXAnim = ViewPropertyObjectAnimator.animate(mSearchInputParent)
-                            .translationX(-Util.dpToPx(LEFT_MENU_WIDTH_AND_MARGIN_START)).get();
+                            .translationX(-Util.dpToPx(LEFT_MENU_WIDTH_AND_MARGIN_START_DP)).get();
 
                     ObjectAnimator scaleXArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleX(0.5f).get();
                     ObjectAnimator scaleYArrowAnim = ViewPropertyObjectAnimator.animate(mLeftAction).scaleY(0.5f).get();
