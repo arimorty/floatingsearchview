@@ -107,7 +107,6 @@ public class FloatingSearchView extends FrameLayout {
 
     private final static int MENU_ICON_ANIM_DURATION = 250;
 
-
     private final static Interpolator SUGGEST_ITEM_ADD_ANIM_INTERPOLATOR = new LinearInterpolator();
 
     public final static int LEFT_ACTION_MODE_SHOW_HAMBURGER = 1;
@@ -699,10 +698,9 @@ public class FloatingSearchView extends FrameLayout {
             mClearButton.setTranslationX(-Util.dpToPx(4));
             int paddingRight = Util.dpToPx(4);
             if (mIsFocused) {
-                paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH_DP);//adding the icon's left 12dp
-                // padding will give a paddingRight sum of 16dp as per design guidelines
+                paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH_DP);
             } else {
-                paddingRight += Util.dpToPx(14);//will give a paddingRight sum of 16dp as per design guidelines
+                paddingRight += Util.dpToPx(14);
             }
             mSearchInput.setPadding(0, 0, paddingRight, 0);
         } else {
@@ -1170,7 +1168,7 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void setSearchText(CharSequence text) {
         mIsTitleSet = false;
-        mSearchInput.setText(text);
+        setQueryText(text);
     }
 
     /**
@@ -1262,9 +1260,7 @@ public class FloatingSearchView extends FrameLayout {
                     @Override
                     public void onMoveItemToSearchClicked(SearchSuggestion item) {
 
-                        mSearchInput.setText(item.getBody());
-                        //move cursor to end of text
-                        mSearchInput.setSelection(mSearchInput.getText().length());
+                        setQueryText(item.getBody());
                     }
                 });
         refreshShowMoveUpSuggestion();
@@ -1277,6 +1273,12 @@ public class FloatingSearchView extends FrameLayout {
         //move up the suggestions section enough to cover the search bar
         //card's bottom left and right corners
         mSuggestionsSection.setTranslationY(-cardViewBottomPadding);
+    }
+
+    private void setQueryText(CharSequence text){
+        mSearchInput.setText(text);
+        //move cursor to end of text
+        mSearchInput.setSelection(mSearchInput.getText().length());
     }
 
     private void moveSuggestListToInitialPos() {
@@ -1445,6 +1447,8 @@ public class FloatingSearchView extends FrameLayout {
             if (mIsTitleSet) {
                 mSkipTextChangeEvent = true;
                 mSearchInput.setText("");
+            }else {
+                mSearchInput.setSelection(mSearchInput.getText().length());
             }
             mClearButton.setVisibility((mSearchInput.getText().toString().length() == 0) ?
                     View.INVISIBLE : View.VISIBLE);
