@@ -1170,7 +1170,8 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void setSearchText(CharSequence text) {
         mIsTitleSet = false;
-        mSearchInput.setText(text);
+        clearQuery();
+        mSearchInput.append(text);
     }
 
     /**
