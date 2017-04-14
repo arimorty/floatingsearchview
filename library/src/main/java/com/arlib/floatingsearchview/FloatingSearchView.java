@@ -947,7 +947,7 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
-     * Mimics a menu click that opens the menu. Useful when for navigation
+     * Mimics a menu click that opens the menu. Useful for navigation
      * drawers when they open as a result of dragging.
      */
     public void openMenu(boolean withAnim) {
