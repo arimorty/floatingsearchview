@@ -146,7 +146,7 @@ First, implement [SearchSuggestion](https://github.com/arimorty/floatingsearchvi
 
 Set a callback for when a given suggestion is bound to the suggestion list.
 
-For the history icons to show, you would need to implement this. You can refer [the sample project for more details](https://github.com/ericn37/floatingsearchview/blob/master/sample/src/main/java/com/arlib/floatingsearchviewdemo/MainActivity.java).
+For the history icons to show, you would need to implement this. Refer to the sample app for an [example implementation](https://github.com/arimorty/floatingsearchview/blob/master/sample/src/main/java/com/arlib/floatingsearchviewdemo/fragment/ScrollingSearchExampleFragment.java#L222).
 ``` 
    mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
@@ -184,7 +184,7 @@ Available styling:
 ```
 
 ### Are you using this library?
-If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) or add a comment in the [feedback issue](https://github.com/arimorty/floatingsearchview/issues/106) and let me know. All feedback is well appreciated!
+If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) or drop me an email at cmaricontact@gmail.com
 
 
 License
