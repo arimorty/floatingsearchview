@@ -490,7 +490,7 @@ public class FloatingSearchView extends FrameLayout {
             mDivider.setLayoutParams(dividerLP);
             mSuggestionsSection.setLayoutParams(suggestListSectionLP);
 
-            setQueryTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchQueryTextSize,
+            setQueryTextSize(a.getDimensionPixelSize(R.styleable.FloatingSearchView_floatingSearch_searchInputTextSize,
                     ATTRS_QUERY_TEXT_SIZE_SP_DEFAULT));
             setSearchHint(a.getString(R.styleable.FloatingSearchView_floatingSearch_searchHint));
             setShowSearchKey(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_showSearchKey,
