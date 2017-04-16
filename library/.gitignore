@@ -1,2 +1,5 @@
 /build
 gradle.properties
+maven-push.gradle
+.idea
+*.iml
