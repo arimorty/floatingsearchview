@@ -526,8 +526,13 @@ public class FloatingSearchView extends FrameLayout {
                     , Util.getColor(getContext(), R.color.divider)));
             setClearBtnColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_clearBtnColor
                     , Util.getColor(getContext(), R.color.clear_btn_color)));
-            setViewTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_viewTextColor
-                    , Util.getColor(getContext(), R.color.dark_gray)));
+            int viewTextColor = a.getColor(R.styleable.FloatingSearchView_floatingSearch_viewTextColor
+                    , Util.getColor(getContext(), R.color.dark_gray));
+            setViewTextColor(viewTextColor);
+            setQueryTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_viewSearchInputTextColor
+                    , viewTextColor));
+            setSuggestionsTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_viewSuggestionItemTextColor
+                    , viewTextColor));
             setHintTextColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_hintTextColor
                     , Util.getColor(getContext(), R.color.hint_color)));
             setSuggestionRightIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_suggestionRightIconColor
