@@ -1294,7 +1294,6 @@ public class FloatingSearchView extends FrameLayout {
      * @param newSearchSuggestions a list containing the new suggestions
      */
     public void swapSuggestions(final List<? extends SearchSuggestion> newSearchSuggestions) {
-        Collections.reverse(newSearchSuggestions);
         swapSuggestions(newSearchSuggestions, true);
     }
 
@@ -1305,7 +1304,16 @@ public class FloatingSearchView extends FrameLayout {
             @Override
             public void onGlobalLayout() {
                 Util.removeGlobalLayoutObserver(mSuggestionsList, this);
-                updateSuggestionsSectionHeight(newSearchSuggestions, withAnim);
+                boolean isSuggestionItemsFillRecyclerView = updateSuggestionsSectionHeight(newSearchSuggestions, withAnim);
+
+                //we only need to employ the reverse layout technique if the items don't fill up the RecyclerView
+                LinearLayoutManager suggestionsListLm = (LinearLayoutManager)mSuggestionsList.getLayoutManager();
+                if(isSuggestionItemsFillRecyclerView){
+                    suggestionsListLm.setReverseLayout(false);
+                }else {
+                    Collections.reverse(newSearchSuggestions);
+                    suggestionsListLm.setReverseLayout(true);
+                }
             }
         });
         mSuggestionsAdapter.swapData(newSearchSuggestions);
@@ -1313,12 +1321,12 @@ public class FloatingSearchView extends FrameLayout {
         mDivider.setVisibility(!newSearchSuggestions.isEmpty() ? View.VISIBLE : View.GONE);
     }
 
-    private void updateSuggestionsSectionHeight(List<? extends SearchSuggestion>
+    //returns true if the suggestion items occupy the full RecyclerView's height, false otherwise
+    private boolean updateSuggestionsSectionHeight(List<? extends SearchSuggestion>
                                                         newSearchSuggestions, boolean withAnim) {
 
         final int cardTopBottomShadowPadding = Util.dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT);
         final int cardRadiusSize = Util.dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT);
-
 
         int visibleSuggestionHeight = calculateSuggestionItemsHeight(newSearchSuggestions,
                 mSuggestionListContainer.getHeight());
@@ -1328,8 +1336,6 @@ public class FloatingSearchView extends FrameLayout {
                 diff < (mSuggestionListContainer.getHeight() - cardTopBottomShadowPadding) ? cardRadiusSize : 0;
         final float newTranslationY = -mSuggestionListContainer.getHeight() +
                 visibleSuggestionHeight + addedTranslationYForShadowOffsets;
-
-        final boolean animateAtEnd = newTranslationY >= mSuggestionListContainer.getTranslationY();
 
         //todo go over
         final float fullyInvisibleTranslationY = -mSuggestionListContainer.getHeight() + cardRadiusSize;
@@ -1355,23 +1361,6 @@ public class FloatingSearchView extends FrameLayout {
                         public void onAnimationCancel(View view) {
                             mSuggestionListContainer.setTranslationY(newTranslationY);
                         }
-
-                        @Override
-                        public void onAnimationStart(View view) {
-                            if (!animateAtEnd) {
-                                mSuggestionsList.smoothScrollToPosition(0);
-                            }
-                        }
-
-                        @Override
-                        public void onAnimationEnd(View view) {
-                            if (animateAtEnd) {
-                                int lastPos = mSuggestionsList.getAdapter().getItemCount() - 1;
-                                if (lastPos > -1) {
-                                    mSuggestionsList.smoothScrollToPosition(lastPos);
-                                }
-                            }
-                        }
                     }).start();
         } else {
             mSuggestionListContainer.setTranslationY(newTranslationY);
@@ -1380,12 +1369,16 @@ public class FloatingSearchView extends FrameLayout {
                 mOnSuggestionsListHeightChanged.onSuggestionsListHeightChanged(newSuggestionsHeight);
             }
         }
+
+        return mSuggestionListContainer.getHeight() == visibleSuggestionHeight;
     }
 
     //returns the cumulative height that the current suggestion items take up or the given max if the
     //results is >= max. The max option allows us to avoid doing unnecessary and potentially long calculations.
     private int calculateSuggestionItemsHeight(List<? extends SearchSuggestion> suggestions, int max) {
 
+        //todo
+        // 'i < suggestions.size()' in the below 'for' seems unneeded, investigate if there is a use for it.
         int visibleItemsHeight = 0;
         for (int i = 0; i < suggestions.size() && i < mSuggestionsList.getChildCount(); i++) {
             visibleItemsHeight += mSuggestionsList.getChildAt(i).getHeight();
