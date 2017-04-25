@@ -22,4 +22,4 @@ dependencies {
     compile 'com.bartoszlipinski:viewpropertyobjectanimator:1.2.0'
 }
 
-apply from: 'maven-push.gradle'
+//enable when uploading lib// apply from: 'maven-push.gradle'
