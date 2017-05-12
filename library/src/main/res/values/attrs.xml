@@ -37,5 +37,8 @@
         <attr name="floatingSearch_dividerColor" format="color"/>
         <attr name="floatingSearch_dimBackground" format="boolean"/>
         <attr name="floatingSearch_suggestionRightIconColor" format="color"/>
+        <!-- skip-save-state : If Set To True, Skip onSaveInstanceState(); -->
+        <attr name="floatingSearch_skipSaveState" format="boolean"/>
+        <!-- skip-save-state  -->
     </declare-styleable>
 </resources>

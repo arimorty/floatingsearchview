@@ -114,6 +114,8 @@ public class FloatingSearchView extends FrameLayout {
     public final static int LEFT_ACTION_MODE_SHOW_HOME = 3;
     public final static int LEFT_ACTION_MODE_NO_LEFT_ACTION = 4;
     private final static int LEFT_ACTION_MODE_NOT_SET = -1;
+    // save-state-flag; set default to false for backward compatibility
+    private final static boolean ATTRS_SKIP_SAVE_STATE = false;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({LEFT_ACTION_MODE_SHOW_HAMBURGER, LEFT_ACTION_MODE_SHOW_SEARCH,
@@ -196,6 +198,7 @@ public class FloatingSearchView extends FrameLayout {
     private OnSuggestionsListHeightChanged mOnSuggestionsListHeightChanged;
     private long mSuggestionSectionAnimDuration;
     private OnClearSearchActionListener mOnClearSearchActionListener;
+    private boolean mSkipSaveState;
 
     //An interface for implementing a listener that will get notified when the suggestions
     //section's height is set. This is to be used internally only.
@@ -537,6 +540,12 @@ public class FloatingSearchView extends FrameLayout {
                     , Util.getColor(getContext(), R.color.hint_color)));
             setSuggestionRightIconColor(a.getColor(R.styleable.FloatingSearchView_floatingSearch_suggestionRightIconColor
                     , Util.getColor(getContext(), R.color.gray_active_icon)));
+            /**
+             * feature: skip-save-state
+             * if set to true, onSaveInstanceState(); don't call anyway and restore last view
+             */
+            setRestoreInstanceState(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_skipSaveState,
+                    ATTRS_SKIP_SAVE_STATE));
         } finally {
             a.recycle();
         }
@@ -896,6 +905,19 @@ public class FloatingSearchView extends FrameLayout {
     public void setLeftActionMode(@LeftActionMode int mode) {
         mLeftActionMode = mode;
         refreshLeftIcon();
+    }
+
+    /**
+     * Set toggle between retrieving last-state or not
+     * @param restore
+     */
+
+    public void setRestoreInstanceState(boolean restore) {
+        if (restore) {
+            mSkipSaveState = true;
+        } else {
+            mSkipSaveState = false;
+        }
     }
 
     private void refreshLeftIcon() {
@@ -1799,56 +1821,59 @@ public class FloatingSearchView extends FrameLayout {
     public void onRestoreInstanceState(Parcelable state) {
         final SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
+        // check whether skip-save-state set to true or not
+        //if mSkipSaveState==true then view retrieve from last state
+        if(!mSkipSaveState) {
+            this.mIsFocused = savedState.isFocused;
+            this.mIsTitleSet = savedState.isTitleSet;
+            this.mMenuId = savedState.menuId;
+            this.mSuggestionSectionAnimDuration = savedState.suggestionsSectionAnimSuration;
+            setSuggestionItemTextSize(savedState.suggestionTextSize);
+            setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
+            setShowMoveUpSuggestion(savedState.showMoveSuggestionUpBtn);
+            setShowSearchKey(savedState.showSearchKey);
+            setSearchHint(savedState.searchHint);
+            setBackgroundColor(savedState.backgroundColor);
+            setSuggestionsTextColor(savedState.suggestionsTextColor);
+            setQueryTextColor(savedState.queryTextColor);
+            setQueryTextSize(savedState.queryTextSize);
+            setHintTextColor(savedState.searchHintTextColor);
+            setActionMenuOverflowColor(savedState.actionOverflowMenueColor);
+            setMenuItemIconColor(savedState.menuItemIconColor);
+            setLeftActionIconColor(savedState.leftIconColor);
+            setClearBtnColor(savedState.clearBtnColor);
+            setSuggestionRightIconColor(savedState.suggestionUpBtnColor);
+            setDividerColor(savedState.dividerColor);
+            setLeftActionMode(savedState.leftActionMode);
+            setDimBackground(savedState.dimBackground);
+            setCloseSearchOnKeyboardDismiss(savedState.dismissOnSoftKeyboardDismiss);
 
-        this.mIsFocused = savedState.isFocused;
-        this.mIsTitleSet = savedState.isTitleSet;
-        this.mMenuId = savedState.menuId;
-        this.mSuggestionSectionAnimDuration = savedState.suggestionsSectionAnimSuration;
-        setSuggestionItemTextSize(savedState.suggestionTextSize);
-        setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
-        setShowMoveUpSuggestion(savedState.showMoveSuggestionUpBtn);
-        setShowSearchKey(savedState.showSearchKey);
-        setSearchHint(savedState.searchHint);
-        setBackgroundColor(savedState.backgroundColor);
-        setSuggestionsTextColor(savedState.suggestionsTextColor);
-        setQueryTextColor(savedState.queryTextColor);
-        setQueryTextSize(savedState.queryTextSize);
-        setHintTextColor(savedState.searchHintTextColor);
-        setActionMenuOverflowColor(savedState.actionOverflowMenueColor);
-        setMenuItemIconColor(savedState.menuItemIconColor);
-        setLeftActionIconColor(savedState.leftIconColor);
-        setClearBtnColor(savedState.clearBtnColor);
-        setSuggestionRightIconColor(savedState.suggestionUpBtnColor);
-        setDividerColor(savedState.dividerColor);
-        setLeftActionMode(savedState.leftActionMode);
-        setDimBackground(savedState.dimBackground);
-        setCloseSearchOnKeyboardDismiss(savedState.dismissOnSoftKeyboardDismiss);
+            mSuggestionsSection.setEnabled(this.mIsFocused);
+            if (this.mIsFocused) {
 
-        mSuggestionsSection.setEnabled(this.mIsFocused);
-        if (this.mIsFocused) {
+                mBackgroundDrawable.setAlpha(BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED);
+                mSkipTextChangeEvent = true;
+                mSkipQueryFocusChangeEvent = true;
 
-            mBackgroundDrawable.setAlpha(BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED);
-            mSkipTextChangeEvent = true;
-            mSkipQueryFocusChangeEvent = true;
+                mSuggestionsSection.setVisibility(VISIBLE);
 
-            mSuggestionsSection.setVisibility(VISIBLE);
+                //restore suggestions list when suggestion section's height is fully set
+                mSuggestionSecHeightListener = new OnSuggestionSecHeightSetListener() {
+                    @Override
+                    public void onSuggestionSecHeightSet() {
+                        swapSuggestions(savedState.suggestions, false);
+                        mSuggestionSecHeightListener = null;
 
-            //restore suggestions list when suggestion section's height is fully set
-            mSuggestionSecHeightListener = new OnSuggestionSecHeightSetListener() {
-                @Override
-                public void onSuggestionSecHeightSet() {
-                    swapSuggestions(savedState.suggestions, false);
-                    mSuggestionSecHeightListener = null;
+                        //todo refactor move to a better location
+                        transitionInLeftSection(false);
+                    }
+                };
 
-                    //todo refactor move to a better location
-                    transitionInLeftSection(false);
-                }
-            };
+                mClearButton.setVisibility((savedState.query.length() == 0) ? View.INVISIBLE : View.VISIBLE);
+                mLeftAction.setVisibility(View.VISIBLE);
 
-            mClearButton.setVisibility((savedState.query.length() == 0) ? View.INVISIBLE : View.VISIBLE);
-            mLeftAction.setVisibility(View.VISIBLE);
-
-            Util.showSoftKeyboard(getContext(), mSearchInput);
+                Util.showSoftKeyboard(getContext(), mSearchInput);
+            }
         }
     }
 
