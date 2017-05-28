@@ -1317,12 +1317,13 @@ public class FloatingSearchView extends FrameLayout {
                     suggestionsListLm.setReverseLayout(false);
                 }else {
                     Collections.reverse(newSearchSuggestions);
-                    mSuggestionsAdapter.notifyDataSetChanged();
                     suggestionsListLm.setReverseLayout(true);
                 }
+                mSuggestionsList.setAlpha(1);
             }
         });
         mSuggestionsList.setAdapter(mSuggestionsAdapter);//workaround to avoid list retaining scroll pos
+        mSuggestionsList.setAlpha(0);
         mSuggestionsAdapter.swapData(newSearchSuggestions);
 
         mDivider.setVisibility(!newSearchSuggestions.isEmpty() ? View.VISIBLE : View.GONE);
