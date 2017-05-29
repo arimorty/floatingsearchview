@@ -132,6 +132,7 @@ public class FloatingSearchView extends FrameLayout {
     private final static boolean ATTRS_SHOW_DIM_BACKGROUND_DEFAULT = true;
     private final static int ATTRS_SUGGESTION_ANIM_DURATION_DEFAULT = 250;
     private final static int ATTRS_SEARCH_BAR_MARGIN_DEFAULT = 0;
+    private final static boolean ATTRS_DISMISS_FOCUS_ON_ITEM_SELECTION_DEFAULT = false;
 
     private Activity mHostActivity;
 
@@ -141,6 +142,7 @@ public class FloatingSearchView extends FrameLayout {
     private boolean mDismissOnOutsideTouch = true;
     private boolean mIsFocused;
     private OnFocusChangeListener mFocusChangeListener;
+    private boolean mDismissFocusOnItemSelection = ATTRS_DISMISS_FOCUS_ON_ITEM_SELECTION_DEFAULT;
 
     private CardView mQuerySection;
     private OnSearchListener mSearchListener;
@@ -499,6 +501,8 @@ public class FloatingSearchView extends FrameLayout {
                     ATTRS_DISMISS_ON_KEYBOARD_DISMISS_DEFAULT));
             setDismissOnOutsideClick(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dismissOnOutsideTouch,
                     ATTRS_DISMISS_ON_OUTSIDE_TOUCH_DEFAULT));
+            setDismissFocusOnItemSelection(a.getBoolean(R.styleable.FloatingSearchView_floatingSearch_dismissFocusOnItemSelection,
+                    ATTRS_DISMISS_FOCUS_ON_ITEM_SELECTION_DEFAULT));
             setSuggestionItemTextSize(a.getDimensionPixelSize(
                     R.styleable.FloatingSearchView_floatingSearch_searchSuggestionTextSize,
                     Util.spToPx(ATTRS_SUGGESTION_TEXT_SIZE_SP_DEFAULT)));
@@ -793,6 +797,15 @@ public class FloatingSearchView extends FrameLayout {
     public void setViewTextColor(int color) {
         setSuggestionsTextColor(color);
         setQueryTextColor(color);
+    }
+
+    /**
+     * Sets whether the search will lose focus when a suggestion item is clicked.
+     *
+     * @param dismissFocusOnItemSelection
+     */
+    public void setDismissFocusOnItemSelection(boolean dismissFocusOnItemSelection) {
+        mDismissFocusOnItemSelection = dismissFocusOnItemSelection;
     }
 
     /**
@@ -1247,19 +1260,22 @@ public class FloatingSearchView extends FrameLayout {
 
                     @Override
                     public void onItemSelected(SearchSuggestion item) {
-                        mIsFocused = false;
-
                         if (mSearchListener != null) {
                             mSearchListener.onSuggestionClicked(item);
                         }
 
-                        mSkipTextChangeEvent = true;
-                        if (mIsTitleSet) {
-                            setSearchBarTitle(item.getBody());
-                        } else {
-                            setSearchText(item.getBody());
+                        if (mDismissFocusOnItemSelection) {
+                            mIsFocused = false;
+                            
+                            mSkipTextChangeEvent = true;
+                            if (mIsTitleSet) {
+                                setSearchBarTitle(item.getBody());
+                            } else {
+                                setSearchText(item.getBody());
+                            }
+
+                            setSearchFocusedInternal(false);
                         }
-                        setSearchFocusedInternal(false);
                     }
 
                     @Override
@@ -1280,7 +1296,7 @@ public class FloatingSearchView extends FrameLayout {
         mSuggestionsSection.setTranslationY(-cardViewBottomPadding);
     }
 
-    private void setQueryText(CharSequence text){
+    private void setQueryText(CharSequence text) {
         mSearchInput.setText(text);
         //move cursor to end of text
         mSearchInput.setSelection(mSearchInput.getText().length());
@@ -1312,10 +1328,10 @@ public class FloatingSearchView extends FrameLayout {
                 boolean isSuggestionItemsFillRecyclerView = updateSuggestionsSectionHeight(newSearchSuggestions, withAnim);
 
                 //we only need to employ the reverse layout technique if the items don't fill up the RecyclerView
-                LinearLayoutManager suggestionsListLm = (LinearLayoutManager)mSuggestionsList.getLayoutManager();
-                if(isSuggestionItemsFillRecyclerView){
+                LinearLayoutManager suggestionsListLm = (LinearLayoutManager) mSuggestionsList.getLayoutManager();
+                if (isSuggestionItemsFillRecyclerView) {
                     suggestionsListLm.setReverseLayout(false);
-                }else {
+                } else {
                     Collections.reverse(newSearchSuggestions);
                     suggestionsListLm.setReverseLayout(true);
                 }
@@ -1331,7 +1347,7 @@ public class FloatingSearchView extends FrameLayout {
 
     //returns true if the suggestion items occupy the full RecyclerView's height, false otherwise
     private boolean updateSuggestionsSectionHeight(List<? extends SearchSuggestion>
-                                                        newSearchSuggestions, boolean withAnim) {
+                                                           newSearchSuggestions, boolean withAnim) {
 
         final int cardTopBottomShadowPadding = Util.dpToPx(CARD_VIEW_CORNERS_AND_TOP_BOTTOM_SHADOW_HEIGHT);
         final int cardRadiusSize = Util.dpToPx(CARD_VIEW_TOP_BOTTOM_SHADOW_HEIGHT);
@@ -1448,7 +1464,7 @@ public class FloatingSearchView extends FrameLayout {
             if (mIsTitleSet) {
                 mSkipTextChangeEvent = true;
                 mSearchInput.setText("");
-            }else {
+            } else {
                 mSearchInput.setSelection(mSearchInput.getText().length());
             }
             mSearchInput.setLongClickable(true);
@@ -1793,6 +1809,7 @@ public class FloatingSearchView extends FrameLayout {
         savedState.leftActionMode = mLeftActionMode;
         savedState.dimBackground = mDimBackground;
         savedState.dismissOnSoftKeyboardDismiss = this.mDismissOnOutsideTouch;
+        savedState.dismissFocusOnSuggestionItemClick = this.mDismissFocusOnItemSelection;
         return savedState;
     }
 
@@ -1824,6 +1841,7 @@ public class FloatingSearchView extends FrameLayout {
         setLeftActionMode(savedState.leftActionMode);
         setDimBackground(savedState.dimBackground);
         setCloseSearchOnKeyboardDismiss(savedState.dismissOnSoftKeyboardDismiss);
+        setDismissFocusOnItemSelection(savedState.dismissFocusOnSuggestionItemClick);
 
         mSuggestionsSection.setEnabled(this.mIsFocused);
         if (this.mIsFocused) {
@@ -1892,6 +1910,7 @@ public class FloatingSearchView extends FrameLayout {
         private boolean dimBackground;
         private long suggestionsSectionAnimSuration;
         private boolean dismissOnSoftKeyboardDismiss;
+        private boolean dismissFocusOnSuggestionItemClick;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1924,6 +1943,7 @@ public class FloatingSearchView extends FrameLayout {
             dimBackground = (in.readInt() != 0);
             suggestionsSectionAnimSuration = in.readLong();
             dismissOnSoftKeyboardDismiss = (in.readInt() != 0);
+            dismissFocusOnSuggestionItemClick = (in.readInt() != 0);
         }
 
         @Override
@@ -1954,6 +1974,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(dimBackground ? 1 : 0);
             out.writeLong(suggestionsSectionAnimSuration);
             out.writeInt(dismissOnSoftKeyboardDismiss ? 1 : 0);
+            out.writeInt(dismissFocusOnSuggestionItemClick ? 1 : 0);
         }
 
         public static final Creator<SavedState> CREATOR
