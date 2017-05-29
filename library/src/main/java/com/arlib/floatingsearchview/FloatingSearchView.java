@@ -41,6 +41,7 @@ import android.support.v4.view.ViewPropertyAnimatorUpdateListener;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.graphics.drawable.DrawerArrowDrawable;
 import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -775,6 +776,15 @@ public class FloatingSearchView extends FrameLayout {
     }
 
     /**
+     * Provides clients access to the menu items
+     *
+     * @return
+     */
+    public List<MenuItemImpl> getCurrentMenuItems(){
+        return mMenuView.getCurrentMenuItems();
+    }
+
+    /**
      * Sets the action menu overflow icon's color.
      *
      * @param color the color to be applied to the
@@ -1281,7 +1291,7 @@ public class FloatingSearchView extends FrameLayout {
 
                         if (mDismissFocusOnItemSelection) {
                             mIsFocused = false;
-                            
+
                             mSkipTextChangeEvent = true;
                             if (mIsTitleSet) {
                                 setSearchBarTitle(item.getBody());

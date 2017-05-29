@@ -96,6 +96,10 @@ public class MenuView extends LinearLayout {
         init();
     }
 
+    public List<MenuItemImpl> getCurrentMenuItems(){
+        return mMenuItems;
+    }
+
     private void init() {
         mMenuBuilder = new MenuBuilder(getContext());
         mMenuPopupHelper = new MenuPopupHelper(getContext(), mMenuBuilder, this);
