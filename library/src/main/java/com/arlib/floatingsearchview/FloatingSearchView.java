@@ -180,6 +180,7 @@ public class FloatingSearchView extends FrameLayout {
     private int mBackgroundColor;
     private boolean mSkipQueryFocusChangeEvent;
     private boolean mSkipTextChangeEvent;
+    private View.OnClickListener mLeftMenuClickListener;
 
     private View mDivider;
     private int mDividerColor;
@@ -679,7 +680,11 @@ public class FloatingSearchView extends FrameLayout {
                 } else {
                     switch (mLeftActionMode) {
                         case LEFT_ACTION_MODE_SHOW_HAMBURGER:
-                            toggleLeftMenu();
+                            if(mLeftMenuClickListener != null){
+                                mLeftMenuClickListener.onClick(mLeftAction);
+                            }else {
+                                toggleLeftMenu();
+                            }
                             break;
                         case LEFT_ACTION_MODE_SHOW_SEARCH:
                             setSearchFocusedInternal(true);
@@ -733,6 +738,16 @@ public class FloatingSearchView extends FrameLayout {
         mMenuBtnDrawable.setColor(color);
         DrawableCompat.setTint(mIconBackArrow, color);
         DrawableCompat.setTint(mIconSearch, color);
+    }
+
+    /**
+     * If set, the left menu won't open or close and the client is assumed to handle its
+     * clicks.
+     *
+     * @param onMenuClickListener
+     */
+    public void setOnMenuClickListener(OnLeftMenuClickListener onMenuClickListener) {
+        mOnMenuClickListener = onMenuClickListener;
     }
 
     /**
