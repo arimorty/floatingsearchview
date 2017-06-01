@@ -10,7 +10,6 @@ buildscript {
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 25
@@ -34,27 +33,3 @@ dependencies {
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
-
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "source"
-}
-
-publishing {
-    publications {
-        'library-rxbinding-kotlin'(MavenPublication) {
-            groupId 'com.github.arimorty'
-            artifactId 'floatingsearchview-rxbinding-kotlin'
-            version '2.0.5'
-            artifact(sourceJar)
-            artifact("$buildDir/outputs/aar/library-rxbinding-kotlin-release.aar")
-        }
-    }
-    repositories {
-        maven {
-            url "$buildDir/repo"
-        }
-    }
-}
-
-publishToMavenLocal.dependsOn(assemble)

@@ -21,31 +21,3 @@ dependencies {
 
 sourceCompatibility = "1.7"
 targetCompatibility = "1.7"
-repositories {
-    mavenCentral()
-}
-
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "source"
-}
-
-publishing {
-    publications {
-        'library-rxbinding'(MavenPublication) {
-            groupId 'com.github.arimorty'
-            artifactId 'floatingsearchview-rxbinding'
-            version '2.0.5'
-            artifact(sourceJar)
-            artifact("$buildDir/outputs/aar/library-rxbinding-release.aar")
-        }
-    }
-    repositories {
-        maven {
-            url "$buildDir/repo"
-        }
-    }
-}
-
-publishToMavenLocal.dependsOn(assemble)
-
