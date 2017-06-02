@@ -47,7 +47,7 @@ final public class QueryObservable extends InitialValueObservable<CharSequence> 
 
         @Override
         public void onSearchTextChanged(String oldQuery, String newQuery) {
-            if(!isDisposed() && newQuery != null && newQuery.length() > minQueryLength) {
+            if(!isDisposed() && newQuery != null && newQuery.length() >= minQueryLength) {
                 observer.onNext(newQuery);
             }
         }
