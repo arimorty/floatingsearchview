@@ -182,7 +182,20 @@ Available styling:
            <item name="floatingSearch_actionMenuOverflowColor"></item>
    </style>
 ```
+### RxBinding Extension
+The RxBinding library allows you to listen for query changes using RxJava Obervables. 
 
+```java
+Observable<CharSequence> queryObservable = RxFloatingSearchView.queryChanges(view);
+queryObservable.doOnNext { query -> Toast.makeText(this, "Query is %s".format(query), Toast.LENGTH_LONG).show() }.subscribe();
+```
+
+### The Kotlin Extension
+The Kotlin extension adds an extension function to the view for more goodness.
+
+```kotlin
+view.queryChanges(5).doOnNext { query -> Toast.makeText(this, "Query is %s".format(query), Toast.LENGTH_LONG).show() }.subscribe()
+```
 ### Are you using this library?
 If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) or drop me an email at cmaricontact@gmail.com
 
