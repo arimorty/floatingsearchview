@@ -12,8 +12,15 @@ public final class RxFloatingSearchView {
     @NonNull
     public static InitialValueObservable<CharSequence> queryChanges(
             @NonNull FloatingSearchView view) {
+        return queryChanges(view, 1);
+    }
+
+    @CheckResult
+    @NonNull
+    public static InitialValueObservable<CharSequence> queryChanges(
+            @NonNull FloatingSearchView view, int characterLimit) {
         checkNotNull(view, "view == null");
-        return new QueryObservable(view);
+        return new QueryObservable(view, characterLimit);
     }
 
     public static void checkNotNull(Object value, String message) {
