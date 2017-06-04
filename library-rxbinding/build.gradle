@@ -1,0 +1,23 @@
+apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion '25.0.3'
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 25
+        versionCode 11
+        versionName "2.0.4"
+    }
+}
+
+dependencies {
+    compile 'com.android.support:support-annotations:25.3.1'
+    compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+    compile project(path: ':library')
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
