@@ -1811,30 +1811,30 @@ public class FloatingSearchView extends FrameLayout {
     public Parcelable onSaveInstanceState() {
         Parcelable superState = super.onSaveInstanceState();
         SavedState savedState = new SavedState(superState);
-        savedState.suggestions = this.mSuggestionsAdapter.getDataSet();
-        savedState.isFocused = this.mIsFocused;
+        savedState.suggestions = mSuggestionsAdapter.getDataSet();
+        savedState.isFocused = mIsFocused;
         savedState.query = getQuery();
-        savedState.suggestionTextSize = this.mSuggestionsTextSizePx;
-        savedState.searchHint = this.mSearchHint;
-        savedState.dismissOnOutsideClick = this.mDismissOnOutsideTouch;
-        savedState.showMoveSuggestionUpBtn = this.mShowMoveUpSuggestion;
-        savedState.showSearchKey = this.mShowSearchKey;
-        savedState.isTitleSet = this.mIsTitleSet;
-        savedState.backgroundColor = this.mBackgroundColor;
-        savedState.suggestionsTextColor = this.mSuggestionTextColor;
-        savedState.queryTextColor = this.mSearchInputTextColor;
-        savedState.searchHintTextColor = this.mSearchInputHintColor;
-        savedState.actionOverflowMenueColor = this.mOverflowIconColor;
-        savedState.menuItemIconColor = this.mActionMenuItemColor;
-        savedState.leftIconColor = this.mLeftActionIconColor;
-        savedState.clearBtnColor = this.mClearBtnColor;
-        savedState.suggestionUpBtnColor = this.mSuggestionTextColor;
-        savedState.dividerColor = this.mDividerColor;
+        savedState.suggestionTextSize = mSuggestionsTextSizePx;
+        savedState.searchHint = mSearchHint;
+        savedState.dismissOnOutsideClick = mDismissOnOutsideTouch;
+        savedState.showMoveSuggestionUpBtn = mShowMoveUpSuggestion;
+        savedState.showSearchKey = mShowSearchKey;
+        savedState.isTitleSet = mIsTitleSet;
+        savedState.backgroundColor = mBackgroundColor;
+        savedState.suggestionsTextColor = mSuggestionTextColor;
+        savedState.queryTextColor = mSearchInputTextColor;
+        savedState.searchHintTextColor = mSearchInputHintColor;
+        savedState.actionOverflowMenuColor = mOverflowIconColor;
+        savedState.menuItemIconColor = mActionMenuItemColor;
+        savedState.leftIconColor = mLeftActionIconColor;
+        savedState.clearBtnColor = mClearBtnColor;
+        savedState.suggestionUpBtnColor = mSuggestionTextColor;
+        savedState.dividerColor = mDividerColor;
         savedState.menuId = mMenuId;
         savedState.leftActionMode = mLeftActionMode;
         savedState.dimBackground = mDimBackground;
-        savedState.dismissOnSoftKeyboardDismiss = this.mDismissOnOutsideTouch;
-        savedState.dismissFocusOnSuggestionItemClick = this.mDismissFocusOnItemSelection;
+        savedState.dismissOnSoftKeyboardDismiss = mDismissOnOutsideTouch;
+        savedState.dismissFocusOnSuggestionItemClick = mDismissFocusOnItemSelection;
         return savedState;
     }
 
@@ -1842,11 +1842,11 @@ public class FloatingSearchView extends FrameLayout {
     public void onRestoreInstanceState(Parcelable state) {
         final SavedState savedState = (SavedState) state;
         super.onRestoreInstanceState(savedState.getSuperState());
-
-        this.mIsFocused = savedState.isFocused;
-        this.mIsTitleSet = savedState.isTitleSet;
-        this.mMenuId = savedState.menuId;
-        this.mSuggestionSectionAnimDuration = savedState.suggestionsSectionAnimSuration;
+        mIsFocused = savedState.isFocused;
+        mIsTitleSet = savedState.isTitleSet;
+        mMenuId = savedState.menuId;
+        mOldQuery = savedState.query;
+        mSuggestionSectionAnimDuration = savedState.suggestionsSectionAnimSuration;
         setSuggestionItemTextSize(savedState.suggestionTextSize);
         setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
         setShowMoveUpSuggestion(savedState.showMoveSuggestionUpBtn);
@@ -1857,7 +1857,7 @@ public class FloatingSearchView extends FrameLayout {
         setQueryTextColor(savedState.queryTextColor);
         setQueryTextSize(savedState.queryTextSize);
         setHintTextColor(savedState.searchHintTextColor);
-        setActionMenuOverflowColor(savedState.actionOverflowMenueColor);
+        setActionMenuOverflowColor(savedState.actionOverflowMenuColor);
         setMenuItemIconColor(savedState.menuItemIconColor);
         setLeftActionIconColor(savedState.leftIconColor);
         setClearBtnColor(savedState.clearBtnColor);
@@ -1868,8 +1868,8 @@ public class FloatingSearchView extends FrameLayout {
         setCloseSearchOnKeyboardDismiss(savedState.dismissOnSoftKeyboardDismiss);
         setDismissFocusOnItemSelection(savedState.dismissFocusOnSuggestionItemClick);
 
-        mSuggestionsSection.setEnabled(this.mIsFocused);
-        if (this.mIsFocused) {
+        mSuggestionsSection.setEnabled(mIsFocused);
+        if (mIsFocused) {
 
             mBackgroundDrawable.setAlpha(BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED);
             mSkipTextChangeEvent = true;
@@ -1896,18 +1896,6 @@ public class FloatingSearchView extends FrameLayout {
         }
     }
 
-    private DrawerLayout.DrawerListener mDrawerListener = new DrawerListener();
-
-    public void attachNavigationDrawerToMenuButton(@NonNull DrawerLayout drawerLayout) {
-        drawerLayout.addDrawerListener(mDrawerListener);
-        setOnLeftMenuClickListener(new NavDrawerLeftMenuClickListener(drawerLayout));
-    }
-
-    public void detachNavigationDrawerFromMenuButton(@NonNull DrawerLayout drawerLayout) {
-        drawerLayout.removeDrawerListener(mDrawerListener);
-        setOnLeftMenuClickListener(null);
-    }
-
     static class SavedState extends BaseSavedState {
 
         private List<? extends SearchSuggestion> suggestions = new ArrayList<>();
@@ -1924,7 +1912,7 @@ public class FloatingSearchView extends FrameLayout {
         private int suggestionsTextColor;
         private int queryTextColor;
         private int searchHintTextColor;
-        private int actionOverflowMenueColor;
+        private int actionOverflowMenuColor;
         private int menuItemIconColor;
         private int leftIconColor;
         private int clearBtnColor;
@@ -1957,7 +1945,7 @@ public class FloatingSearchView extends FrameLayout {
             suggestionsTextColor = in.readInt();
             queryTextColor = in.readInt();
             searchHintTextColor = in.readInt();
-            actionOverflowMenueColor = in.readInt();
+            actionOverflowMenuColor = in.readInt();
             menuItemIconColor = in.readInt();
             leftIconColor = in.readInt();
             clearBtnColor = in.readInt();
@@ -1988,7 +1976,7 @@ public class FloatingSearchView extends FrameLayout {
             out.writeInt(suggestionsTextColor);
             out.writeInt(queryTextColor);
             out.writeInt(searchHintTextColor);
-            out.writeInt(actionOverflowMenueColor);
+            out.writeInt(actionOverflowMenuColor);
             out.writeInt(menuItemIconColor);
             out.writeInt(leftIconColor);
             out.writeInt(clearBtnColor);
@@ -2012,6 +2000,18 @@ public class FloatingSearchView extends FrameLayout {
                 return new SavedState[size];
             }
         };
+    }
+
+    private DrawerLayout.DrawerListener mDrawerListener = new DrawerListener();
+
+    public void attachNavigationDrawerToMenuButton(@NonNull DrawerLayout drawerLayout) {
+        drawerLayout.addDrawerListener(mDrawerListener);
+        setOnLeftMenuClickListener(new NavDrawerLeftMenuClickListener(drawerLayout));
+    }
+
+    public void detachNavigationDrawerFromMenuButton(@NonNull DrawerLayout drawerLayout) {
+        drawerLayout.removeDrawerListener(mDrawerListener);
+        setOnLeftMenuClickListener(null);
     }
 
     @Override
