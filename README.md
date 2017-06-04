@@ -15,6 +15,9 @@ This project is not being actively maintained. Have a look [here](https://github
 that might help you make changes to your own copy of the code base.
 
 
+...
+
+
 Usage
 -----
 
@@ -204,8 +207,6 @@ The Kotlin extension adds an extension function to the view for more goodness.
 ```kotlin
 view.queryChanges(5).doOnNext { query -> Toast.makeText(this, "Query is %s".format(query), Toast.LENGTH_LONG).show() }.subscribe()
 ```
-### Are you using this library?
-If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) or drop me an email at cmaricontact@gmail.com
 
 
 License
