@@ -38,7 +38,7 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     private static final String TAG = "SearchSuggestionsAdapter";
 
-    private List<SearchSuggestion> mSearchSuggestions = new ArrayList<>();
+    private List<? extends SearchSuggestion> mSearchSuggestions = new ArrayList<>();
 
     private Listener mListener;
 
@@ -122,8 +122,7 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
     }
 
     public void swapData(List<? extends SearchSuggestion> searchSuggestions) {
-        mSearchSuggestions.clear();
-        mSearchSuggestions.addAll(searchSuggestions);
+        mSearchSuggestions = searchSuggestions;
         notifyDataSetChanged();
     }
 

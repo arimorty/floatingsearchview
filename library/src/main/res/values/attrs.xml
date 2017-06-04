@@ -8,6 +8,7 @@
         <attr name="floatingSearch_searchSuggestionTextSize" format="dimension"/>
         <attr name="floatingSearch_searchInputTextSize" format="dimension"/>
         <attr name="floatingSearch_showMenuAction" format="boolean"/>
+        <attr name="floatingSearch_dismissFocusOnItemSelection" format="boolean"/>
         <attr name="floatingSearch_leftActionMode">
             <enum name="showHamburger" value="1" />
             <enum name="showSearch" value="2" />

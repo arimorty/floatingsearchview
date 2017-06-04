@@ -7,12 +7,23 @@ An implementation of a floating search box with search suggestions, also called 
 ![Alt text](/images/1506tq.gif)
 ![Alt text](/images/1508kn.gif)
 
+
+Note
+-----
+
+This project is not being actively maintained. Have a look [here](https://github.com/arimorty/floatingsearchview/wiki) for information
+that might help you make changes to your own copy of the code base.
+
+
+...
+
+
 Usage
 -----
 
 1. In your dependencies, add
     ```
-         compile 'com.github.arimorty:floatingsearchview:2.0.4'
+         compile 'com.github.arimorty:floatingsearchview:2.1.0'
     ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen
@@ -182,9 +193,20 @@ Available styling:
            <item name="floatingSearch_actionMenuOverflowColor"></item>
    </style>
 ```
+### RxBinding Extension
+The RxBinding library allows you to listen for query changes using RxJava Obervables. 
 
-### Are you using this library?
-If you have any questions, issues, or just want to let me know how you are using this library, feel free to create a [new issue](https://github.com/arimorty/floatingsearchview/issues/new) or drop me an email at cmaricontact@gmail.com
+```java
+Observable<CharSequence> queryObservable = RxFloatingSearchView.queryChanges(view);
+queryObservable.doOnNext { query -> Toast.makeText(this, "Query is %s".format(query), Toast.LENGTH_LONG).show() }.subscribe();
+```
+
+### The Kotlin Extension
+The Kotlin extension adds an extension function to the view for more goodness.
+
+```kotlin
+view.queryChanges(5).doOnNext { query -> Toast.makeText(this, "Query is %s".format(query), Toast.LENGTH_LONG).show() }.subscribe()
+```
 
 
 License
