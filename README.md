@@ -7,12 +7,20 @@ An implementation of a floating search box with search suggestions, also called 
 ![Alt text](/images/1506tq.gif)
 ![Alt text](/images/1508kn.gif)
 
+
+Note
+-----
+
+This project is not being actively maintained. Have a look [here](https://github.com/arimorty/floatingsearchview/wiki) for information
+that might help you make changes to your own copy of the code base.
+
+
 Usage
 -----
 
 1. In your dependencies, add
     ```
-         compile 'com.github.arimorty:floatingsearchview:2.0.4'
+         compile 'com.github.arimorty:floatingsearchview:2.1.0'
     ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen
