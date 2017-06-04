@@ -155,7 +155,7 @@ public class FloatingSearchView extends FrameLayout {
     private int mSearchInputTextColor = -1;
     private int mSearchInputHintColor = -1;
     private View mSearchInputParent;
-    private String mOldQuery = "";
+    private String mOldQuery = "ddd";
     private OnQueryChangeListener mQueryListener;
     private ImageView mLeftAction;
     private OnLeftMenuClickListener mOnMenuClickListener;
@@ -873,7 +873,7 @@ public class FloatingSearchView extends FrameLayout {
      * @param sizePx
      */
     public void setQueryTextSize(int sizePx) {
-        this.mQueryTextSize = sizePx;
+        mQueryTextSize = sizePx;
         mSearchInput.setTextSize(mQueryTextSize);
     }
 
@@ -884,7 +884,7 @@ public class FloatingSearchView extends FrameLayout {
      * @param color the color to be applied to the search hint.
      */
     public void setHintTextColor(int color) {
-        this.mSearchInputHintColor = color;
+        mSearchInputHintColor = color;
         if (mSearchInput != null) {
             mSearchInput.setHintTextColor(color);
         }
@@ -1832,6 +1832,7 @@ public class FloatingSearchView extends FrameLayout {
         savedState.dividerColor = mDividerColor;
         savedState.menuId = mMenuId;
         savedState.leftActionMode = mLeftActionMode;
+        savedState.queryTextSize = mQueryTextSize;
         savedState.dimBackground = mDimBackground;
         savedState.dismissOnSoftKeyboardDismiss = mDismissOnOutsideTouch;
         savedState.dismissFocusOnSuggestionItemClick = mDismissFocusOnItemSelection;
@@ -1846,6 +1847,7 @@ public class FloatingSearchView extends FrameLayout {
         mIsTitleSet = savedState.isTitleSet;
         mMenuId = savedState.menuId;
         mOldQuery = savedState.query;
+        setSearchText(mOldQuery);
         mSuggestionSectionAnimDuration = savedState.suggestionsSectionAnimSuration;
         setSuggestionItemTextSize(savedState.suggestionTextSize);
         setDismissOnOutsideClick(savedState.dismissOnOutsideClick);
