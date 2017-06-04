@@ -155,7 +155,7 @@ public class FloatingSearchView extends FrameLayout {
     private int mSearchInputTextColor = -1;
     private int mSearchInputHintColor = -1;
     private View mSearchInputParent;
-    private String mOldQuery = "ddd";
+    private String mOldQuery = "";
     private OnQueryChangeListener mQueryListener;
     private ImageView mLeftAction;
     private OnLeftMenuClickListener mOnMenuClickListener;
