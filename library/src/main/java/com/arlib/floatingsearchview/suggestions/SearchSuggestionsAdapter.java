@@ -32,6 +32,7 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.arlib.floatingsearchview.util.Util;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -236,5 +237,10 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
         if (notify) {
             notifyDataSetChanged();
         }
+    }
+
+    public void reverseList() {
+        Collections.reverse(mSearchSuggestions);
+        notifyDataSetChanged();
     }
 }
