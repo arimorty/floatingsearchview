@@ -1235,7 +1235,7 @@ public class FloatingSearchView extends FrameLayout {
      * calling supper.onBackPress() in the hosting activity only if this method returns false
      */
     public boolean setSearchFocused(final boolean focused) {
-
+        boolean updateToFocus = focused && !this.mIsFocused;
         boolean updatedToNotFocused = !focused && this.mIsFocused;
 
         if ((focused != this.mIsFocused) && mSuggestionSecHeightListener == null) {
@@ -1250,6 +1250,10 @@ public class FloatingSearchView extends FrameLayout {
                     }
                 };
             }
+        }
+        //put the selection cursor to the end of the current query
+        if (updateToFocus && mOldQuery != null){
+            mSearchInput.setSelection(mOldQuery.length());
         }
         return updatedToNotFocused;
     }
