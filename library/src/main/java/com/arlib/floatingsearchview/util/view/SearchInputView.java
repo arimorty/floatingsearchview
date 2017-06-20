@@ -1,10 +1,16 @@
 package com.arlib.floatingsearchview.util.view;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import java.lang.reflect.Field;
 
 public class SearchInputView extends EditText {
 
@@ -40,6 +46,34 @@ public class SearchInputView extends EditText {
 
     private void init() {
         setOnKeyListener(mOnKeyListener);
+    }
+
+    public void setCursorColor(int color) {
+        try {
+            // Get the cursor resource id
+            Field field = TextView.class.getDeclaredField("mCursorDrawableRes");
+            field.setAccessible(true);
+            int drawableResId = field.getInt(this);
+
+            // Get the editor
+            field = TextView.class.getDeclaredField("mEditor");
+            field.setAccessible(true);
+            Object editor = field.get(this);
+
+            // Get the drawable and set a color filter
+            Drawable drawable = ContextCompat.getDrawable(this.getContext(), drawableResId);
+            drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+            Drawable[] drawables = {drawable, drawable};
+
+            // Set the drawables
+            field = editor.getClass().getDeclaredField("mCursorDrawable");
+            field.setAccessible(true);
+            field.set(editor, drawables);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
