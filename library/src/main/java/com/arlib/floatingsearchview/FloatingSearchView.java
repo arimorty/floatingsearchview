@@ -77,6 +77,7 @@ import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -2022,15 +2023,6 @@ public class FloatingSearchView extends FrameLayout {
         //remove any ongoing animations to prevent leaks
         //todo investigate if correct
         ViewCompat.animate(mSuggestionListContainer).cancel();
-    }
-
-    @Override
-    protected void onVisibilityChanged(@NonNull View changedView, int visibility) {
-        super.onVisibilityChanged(changedView, visibility);
-
-        if (visibility != VISIBLE) {
-            Util.closeSoftKeyboard(mHostActivity);
-        }
     }
 
     private class DrawerListener implements DrawerLayout.DrawerListener {
