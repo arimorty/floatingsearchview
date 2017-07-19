@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity
         List fragments = getSupportFragmentManager().getFragments();
         BaseExampleFragment currentFragment = (BaseExampleFragment) fragments.get(fragments.size() - 1);
 
-        if (!currentFragment.onActivityBackPress()) {
+        if (currentFragment != null && !currentFragment.onActivityBackPress()) {
             super.onBackPressed();
         }
     }
