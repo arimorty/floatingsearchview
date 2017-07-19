@@ -438,7 +438,7 @@ public class FloatingSearchView extends FrameLayout {
 
     private void setupViews(AttributeSet attrs) {
 
-        mSuggestionsSection.setEnabled(false);
+        setEnabled(false);
 
         if (attrs != null) {
             applyXmlAttributes(attrs);
@@ -1869,7 +1869,7 @@ public class FloatingSearchView extends FrameLayout {
         setCloseSearchOnKeyboardDismiss(savedState.dismissOnSoftKeyboardDismiss);
         setDismissFocusOnItemSelection(savedState.dismissFocusOnSuggestionItemClick);
 
-        mSuggestionsSection.setEnabled(mIsFocused);
+        setEnabled(mIsFocused);
         if (mIsFocused) {
 
             mBackgroundDrawable.setAlpha(BACKGROUND_DRAWABLE_ALPHA_SEARCH_FOCUSED);
