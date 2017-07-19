@@ -77,7 +77,6 @@ import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -200,6 +199,7 @@ public class FloatingSearchView extends FrameLayout {
     private OnSuggestionsListHeightChanged mOnSuggestionsListHeightChanged;
     private long mSuggestionSectionAnimDuration;
     private OnClearSearchActionListener mOnClearSearchActionListener;
+    private ViewTreeObserver.OnGlobalLayoutListener mOnGlobalLayoutListener;
 
     //An interface for implementing a listener that will get notified when the suggestions
     //section's height is set. This is to be used internally only.
@@ -1345,8 +1345,11 @@ public class FloatingSearchView extends FrameLayout {
 
     private void swapSuggestions(final List<? extends SearchSuggestion> newSearchSuggestions,
                                  final boolean withAnim) {
-
-        mSuggestionsList.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        // Prevent calling twice for single swap
+        if (mOnGlobalLayoutListener != null) {
+            Util.removeGlobalLayoutObserver(mSuggestionsList, mOnGlobalLayoutListener);
+        }
+        mOnGlobalLayoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
                 Util.removeGlobalLayoutObserver(mSuggestionsList, this);
@@ -1362,7 +1365,9 @@ public class FloatingSearchView extends FrameLayout {
                 }
                 mSuggestionsList.setAlpha(1);
             }
-        });
+        };
+        mSuggestionsList.getViewTreeObserver().addOnGlobalLayoutListener(mOnGlobalLayoutListener);
+
         mSuggestionsList.setAdapter(mSuggestionsAdapter);//workaround to avoid list retaining scroll pos
         mSuggestionsList.setAlpha(0);
         mSuggestionsAdapter.swapData(newSearchSuggestions);
