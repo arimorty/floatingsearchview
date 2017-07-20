@@ -1814,7 +1814,8 @@ public class FloatingSearchView extends FrameLayout {
 
         savedState.suggestions = mSuggestionsAdapter.getDataSet();
         if (mSuggestionsAdapter.isReversed()) {
-            Collections.reverse(savedState.suggestions);
+            // Reverse a copy of the suggestions to avoid altering original list
+            Collections.reverse(new ArrayList<>(savedState.suggestions));
         }
 
         savedState.isFocused = mIsFocused;
