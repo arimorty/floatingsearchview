@@ -77,7 +77,6 @@ import com.bartoszlipinski.viewpropertyobjectanimator.ViewPropertyObjectAnimator
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -1425,9 +1424,15 @@ public class FloatingSearchView extends FrameLayout {
     //returns the cumulative height that the current suggestion items take up or the given max if the
     //results is >= max. The max option allows us to avoid doing unnecessary and potentially long calculations.
     private int calculateSuggestionItemsHeight(List<? extends SearchSuggestion> suggestions, int max) {
+        if (mSuggestionsList.getChildCount() < suggestions.size()) {
+            return max;
+        }
 
         //todo
         // 'i < suggestions.size()' in the below 'for' seems unneeded, investigate if there is a use for it.
+        // NOTE ebosch: 20/07/2017 I think 'i < suggestions.size()' might be here to avoid
+        // calculating more children than the number of current suggestions. But if this happens
+        // might be that mSuggestionsList has not already been populated with new suggestions items.
         int visibleItemsHeight = 0;
         for (int i = 0; i < suggestions.size() && i < mSuggestionsList.getChildCount(); i++) {
             visibleItemsHeight += mSuggestionsList.getChildAt(i).getHeight();
