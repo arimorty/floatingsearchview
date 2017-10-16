@@ -32,6 +32,7 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.IntDef;
+import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v4.view.GravityCompat;
@@ -853,6 +854,19 @@ public class FloatingSearchView extends FrameLayout {
      */
     public void setSuggestionsAnimDuration(long duration) {
         this.mSuggestionSectionAnimDuration = duration;
+    }
+
+    /**
+     * Sets a custom layout resource which should be inflated instead of the default one.
+     * Pass -1 to use the default resource again.
+     * Be sure to add the views of the default resource:
+     * - {@link ImageView} with id left_icon
+     * - {@link ImageView} with id right_icon
+     * - {@link TextView} with id body
+     * @param layoutResource Id of the custom layout resource
+     */
+    public void setSuggestionsLayoutResource(@LayoutRes int layoutResource) {
+        this.mSuggestionsAdapter.setLayoutResource(layoutResource);
     }
 
     /**

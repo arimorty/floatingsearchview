@@ -18,6 +18,7 @@ package com.arlib.floatingsearchview.suggestions;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.LayoutRes;
 import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.TypedValue;
@@ -44,6 +45,9 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
     private Listener mListener;
 
     private Context mContext;
+
+    @LayoutRes
+    private int layoutResource = -1;
 
     private Drawable mRightIconDrawable;
     private boolean mShowRightMoveUpBtn = false;
@@ -138,8 +142,9 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
 
-        View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.search_suggestion_item, viewGroup, false);
+        int layoutToInflate = layoutResource > -1 ? layoutResource : R.layout.search_suggestion_item;
+
+        View view = LayoutInflater.from(viewGroup.getContext()).inflate(layoutToInflate, viewGroup, false);
         SearchSuggestionViewHolder viewHolder = new SearchSuggestionViewHolder(view,
                 new SearchSuggestionViewHolder.Listener() {
 
@@ -201,6 +206,18 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
     @Override
     public int getItemCount() {
         return mSearchSuggestions != null ? mSearchSuggestions.size() : 0;
+    }
+
+    /**
+     * Sets a custom layout resource which should be inflated instead of the default one.
+     * Be sure to add the views of the default resource:
+     * - {@link ImageView} with id left_icon
+     * - {@link ImageView} with id right_icon
+     * - {@link TextView} with id body
+     * @param layoutResource Id of the custom layout resource
+     */
+    public void setLayoutResource(@LayoutRes int layoutResource) {
+        this.layoutResource = layoutResource;
     }
 
     public void setTextColor(int color) {
