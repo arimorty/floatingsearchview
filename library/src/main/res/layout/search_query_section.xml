@@ -49,6 +49,8 @@
             android:layout_centerInParent="true"
             android:layout_marginLeft="20dp"
             android:layout_marginStart="20dp"
+            android:layout_toLeftOf="@+id/clear_btn"
+            android:layout_toStartOf="@+id/clear_btn"
             android:layout_toEndOf="@+id/search_bar_left_action_container"
             android:layout_toRightOf="@+id/search_bar_left_action_container">
 
@@ -75,6 +77,8 @@
             android:layout_height="@dimen/square_button_size"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/search_bar_left_icon_left_margin"
+            android:layout_marginEnd="@dimen/search_bar_left_icon_left_margin"
             android:layout_centerVertical="true"
             android:alpha="1"
             android:background="@drawable/oval_btn_selector"
