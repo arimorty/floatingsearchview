@@ -710,21 +710,22 @@ public class FloatingSearchView extends FrameLayout {
     //ensures that the end margin of the search input is according to Material specs
     private void handleOnVisibleMenuItemsWidthChanged(int menuItemsWidth) {
         if (menuItemsWidth == 0) {
-            mClearButton.setTranslationX(-Util.dpToPx(4));
+            int translationX = Util.dpToPx(4);
+            mClearButton.setTranslationX(isRTL() ? translationX : -translationX);
             int paddingRight = Util.dpToPx(4);
             if (mIsFocused) {
                 paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH_DP);
             } else {
                 paddingRight += Util.dpToPx(14);
             }
-            mSearchInput.setPadding(0, 0, paddingRight, 0);
+            mSearchInput.setPadding(isRTL() ? paddingRight : 0, 0, isRTL() ? 0 : paddingRight, 0);
         } else {
-            mClearButton.setTranslationX(-menuItemsWidth);
+            mClearButton.setTranslationX(isRTL() ? menuItemsWidth : -menuItemsWidth);
             int paddingRight = menuItemsWidth;
             if (mIsFocused) {
                 paddingRight += Util.dpToPx(CLEAR_BTN_WIDTH_DP);
             }
-            mSearchInput.setPadding(0, 0, paddingRight, 0);
+            mSearchInput.setPadding(isRTL() ? paddingRight : 0, 0, isRTL() ? 0 : paddingRight, 0);
         }
     }
 
@@ -958,7 +959,7 @@ public class FloatingSearchView extends FrameLayout {
                 queryTranslationX = -leftActionWidthAndMarginLeft;
                 break;
         }
-        mSearchInputParent.setTranslationX(queryTranslationX);
+        mSearchInputParent.setTranslationX(isRTL() ? -queryTranslationX : queryTranslationX);
     }
 
     private void toggleLeftMenu() {
