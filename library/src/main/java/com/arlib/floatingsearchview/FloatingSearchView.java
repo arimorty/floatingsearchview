@@ -1834,7 +1834,7 @@ public class FloatingSearchView extends FrameLayout {
         savedState.leftActionMode = mLeftActionMode;
         savedState.queryTextSize = mQueryTextSize;
         savedState.dimBackground = mDimBackground;
-        savedState.dismissOnSoftKeyboardDismiss = mDismissOnOutsideTouch;
+        savedState.dismissOnSoftKeyboardDismiss = mCloseSearchOnSofteKeyboardDismiss;
         savedState.dismissFocusOnSuggestionItemClick = mDismissFocusOnItemSelection;
         return savedState;
     }
