@@ -796,6 +796,10 @@ public class FloatingSearchView extends FrameLayout {
             mMenuView.setOverflowColor(this.mOverflowIconColor);
         }
     }
+    
+       @Override void setKeyListener(KeyListener input) {
+            mSearchInput.setKeyListener(input);
+        }
 
     /**
      * Sets the background color of the search
