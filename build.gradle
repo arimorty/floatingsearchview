@@ -18,6 +18,7 @@ buildscript {
 
 allprojects {
     repositories {
+        google() // make it first element
         mavenCentral()
         jcenter()
         maven {
