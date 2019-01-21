@@ -2,13 +2,13 @@ apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 17
         targetSdkVersion 27
         versionCode 13
         versionName "2.1.1"
+        vectorDrawables.useSupportLibrary = true
         //consumerProguardFiles 'consumer-proguard-rules.txt'
     }
 }
