@@ -3,13 +3,13 @@ apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 17
         targetSdkVersion 27
         versionCode 11
         versionName "2.0.4"
+        vectorDrawables.useSupportLibrary = true
     }
 }
 
