@@ -45,6 +45,7 @@ import android.support.v7.view.menu.MenuItemImpl;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.KeyListener;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -796,10 +797,6 @@ public class FloatingSearchView extends FrameLayout {
             mMenuView.setOverflowColor(this.mOverflowIconColor);
         }
     }
-    
-       @Override void setKeyListener(KeyListener input) {
-            mSearchInput.setKeyListener(input);
-        }
 
     /**
      * Sets the background color of the search
@@ -828,6 +825,32 @@ public class FloatingSearchView extends FrameLayout {
         setQueryTextColor(color);
     }
 
+    /**
+         * Sets the key listener to be used with this TextView.  This can be null
+         * to disallow user input.  Note that this method has significant and
+         * subtle interactions with soft keyboards and other input method:
+         * see {@link KeyListener#getInputType() KeyListener.getInputType()}
+         * for important details.  Calling this method will replace the current
+         * content type of the text view with the content type returned by the
+         * key listener.
+         * <p>
+         * Be warned that if you want a TextView with a key listener or movement
+         * method not to be focusable, or if you want a TextView without a
+         * key listener or movement method to be focusable, you must call
+         * {@link #setFocusable} again after calling this to get the focusability
+         * back the way you want it.
+         *
+         * @attr ref android.R.styleable#TextView_numeric
+         * @attr ref android.R.styleable#TextView_digits
+         * @attr ref android.R.styleable#TextView_phoneNumber
+         * @attr ref android.R.styleable#TextView_inputMethod
+         * @attr ref android.R.styleable#TextView_capitalize
+         * @attr ref android.R.styleable#TextView_autoText
+         */
+        void setKeyListener(KeyListener input) {
+            mSearchInput.setKeyListener(input);
+        }
+    
     /**
      * Sets whether the search will lose focus when a suggestion item is clicked.
      *
