@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.1.2-3'
+    ext.kotlin_version = '1.2.51'
     repositories {
         mavenCentral()
     }
@@ -13,13 +13,13 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 27
-    buildToolsVersion '27.0.3'
 
     defaultConfig {
-        minSdkVersion 14
+        minSdkVersion 17
         targetSdkVersion 27
         versionCode 11
         versionName "2.0.4"
+        vectorDrawables.useSupportLibrary = true
     }
     sourceSets{
         main.java.srcDirs += 'src/main/kotlin'
