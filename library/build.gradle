@@ -7,19 +7,18 @@ android {
         minSdkVersion 17
         targetSdkVersion 27
         versionCode 13
-        versionName "2.1.1"
-        vectorDrawables.useSupportLibrary = true
+        versionName "1.0.1"
         //consumerProguardFiles 'consumer-proguard-rules.txt'
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support:recyclerview-v7:27.1.1'
-    compile 'com.android.support:design:27.1.1'
-    compile 'com.android.support:cardview-v7:27.1.1'
-    compile 'com.bartoszlipinski:viewpropertyobjectanimator:1.2.0'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support:design:27.1.1'
+    implementation 'com.android.support:cardview-v7:27.1.1'
+    implementation 'com.bartoszlipinski:viewpropertyobjectanimator:1.2.0'
 }
 
 //enable when uploading lib// apply from: 'maven-push.gradle'

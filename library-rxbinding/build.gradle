@@ -14,9 +14,9 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:28.0.0'
-    compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
-    compile project(path: ':library')
+    implementation 'com.android.support:support-annotations:28.0.0'
+    implementation 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+    implementation project(path: ':library')
 }
 
 sourceCompatibility = "1.7"
