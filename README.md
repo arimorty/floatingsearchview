@@ -23,7 +23,7 @@ Usage
 
 1. In your dependencies, add
     ```
-         compile 'com.github.arimorty:floatingsearchview:2.1.1'
+         implementation 'com.github.arimorty:floatingsearchview:2.1.1'
     ```
 2. Add a FloatingSearchView to your view hierarchy, and make sure that it takes
    up the full width and height of the screen
