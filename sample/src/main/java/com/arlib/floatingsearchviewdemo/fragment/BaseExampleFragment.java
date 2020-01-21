@@ -1,7 +1,7 @@
 package com.arlib.floatingsearchviewdemo.fragment;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 
