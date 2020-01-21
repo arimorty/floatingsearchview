@@ -1,7 +1,7 @@
 package com.arlib.floatingsearchbiew.rxbinding;
 
-import android.support.annotation.CheckResult;
-import android.support.annotation.NonNull;
+import androidx.annotation.CheckResult;
+import androidx.annotation.NonNull;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.jakewharton.rxbinding2.InitialValueObservable;

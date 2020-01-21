@@ -7,7 +7,7 @@
     android:background="@color/transparent"
     android:visibility="invisible">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:id="@+id/suggestions_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,12 +15,12 @@
         card_view:cardCornerRadius="@dimen/search_view_corner_radius"
         card_view:cardUseCompatPadding="true">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/suggestions_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
             android:isScrollContainer="false"
             android:overScrollMode="never" />
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 </RelativeLayout>
