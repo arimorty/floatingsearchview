@@ -1,7 +1,8 @@
 package com.arlib.floatingsearchviewdemo.fragment;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
+
+import androidx.fragment.app.Fragment;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
 
@@ -13,7 +14,7 @@ public abstract class BaseExampleFragment extends Fragment {
 
     private BaseExampleFragmentCallbacks mCallbacks;
 
-    public interface BaseExampleFragmentCallbacks{
+    public interface BaseExampleFragmentCallbacks {
 
         void onAttachSearchViewToDrawer(FloatingSearchView searchView);
     }
@@ -35,8 +36,8 @@ public abstract class BaseExampleFragment extends Fragment {
         mCallbacks = null;
     }
 
-    protected void attachSearchViewActivityDrawer(FloatingSearchView searchView){
-        if(mCallbacks != null){
+    protected void attachSearchViewActivityDrawer(FloatingSearchView searchView) {
+        if (mCallbacks != null) {
             mCallbacks.onAttachSearchViewToDrawer(searchView);
         }
     }

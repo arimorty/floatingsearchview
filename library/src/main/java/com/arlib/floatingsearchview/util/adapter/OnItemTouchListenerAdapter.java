@@ -16,20 +16,22 @@ package com.arlib.floatingsearchview.util.adapter;
  * limitations under the License.
  */
 
-import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 public abstract class OnItemTouchListenerAdapter implements RecyclerView.OnItemTouchListener {
 
     private static final String TAG = "OnItemTouchListenerAdapter";
 
     @Override
-    public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+    public boolean onInterceptTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
         return false;
     }
 
     @Override
-    public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+    public void onTouchEvent(@NonNull RecyclerView rv, @NonNull MotionEvent e) {
 
     }
 

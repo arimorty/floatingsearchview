@@ -16,17 +16,11 @@ package com.arlib.floatingsearchview.util;
  * limitations under the License.
  */
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.os.Build;
 import android.os.Parcelable;
-import android.support.v7.view.menu.ListMenuItemView;
-import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.view.menu.MenuItemImpl;
-import android.support.v7.view.menu.MenuPresenter;
-import android.support.v7.view.menu.MenuView;
-import android.support.v7.view.menu.SubMenuBuilder;
-import android.support.v7.widget.ListPopupWindow;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -41,6 +35,14 @@ import android.widget.FrameLayout;
 import android.widget.ListAdapter;
 import android.widget.PopupWindow;
 
+import androidx.appcompat.view.menu.ListMenuItemView;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuItemImpl;
+import androidx.appcompat.view.menu.MenuPresenter;
+import androidx.appcompat.view.menu.MenuView;
+import androidx.appcompat.view.menu.SubMenuBuilder;
+import androidx.appcompat.widget.ListPopupWindow;
+
 import com.arlib.floatingsearchview.R;
 
 import java.util.ArrayList;
@@ -48,6 +50,8 @@ import java.util.ArrayList;
 /**
  * Presents a menu as a small, simple popup anchored to another view.
  */
+
+@SuppressLint("RestrictedApi")
 public class MenuPopupHelper implements AdapterView.OnItemClickListener, View.OnKeyListener,
         ViewTreeObserver.OnGlobalLayoutListener, PopupWindow.OnDismissListener,
         MenuPresenter {

@@ -20,10 +20,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.v7.view.SupportMenuInflater;
-import android.support.v7.view.menu.MenuBuilder;
-import android.support.v7.view.menu.MenuItemImpl;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -35,6 +33,10 @@ import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import androidx.appcompat.view.SupportMenuInflater;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuItemImpl;
 
 import com.arlib.floatingsearchview.R;
 import com.arlib.floatingsearchview.util.MenuPopupHelper;
@@ -50,6 +52,8 @@ import java.util.List;
  * A view that shows menu items as actions or
  * as items in a overflow popup.
  */
+
+@SuppressLint("RestrictedApi")
 public class MenuView extends LinearLayout {
 
     private final int HIDE_IF_ROOM_ITEMS_ANIM_DURATION = 400;
